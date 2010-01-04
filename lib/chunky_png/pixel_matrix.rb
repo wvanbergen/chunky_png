@@ -8,7 +8,7 @@ module ChunkyPNG
     FILTER_AVERAGE = 3
     FILTER_PAETH   = 4
     
-    attr_accessor :pixels, :width, :height
+    attr_accessor :pixels, :palette, :width, :height
     
     def self.load(header, content)
       matrix = self.new(header.width, header.height)
@@ -16,9 +16,18 @@ module ChunkyPNG
       return matrix
     end
     
-    def initialize(width, height, background_color = ChunkyPNG::Color::Black)
+    def [](x, y)
+      pixels[y * width + x]
+    end
+    
+    def []=(x, y, color)
+      pixels[y * width + x] = color
+    end
+    
+    def initialize(width, height, background_color = ChunkyPNG::Color::BLACK)
       @width, @height = width, height
-      @pixels = Array.new(width * height)
+      @pixels  = Array.new(width * height)
+      @palette = Set.new
     end
     
     def decode_pixelstream(stream, header = nil)
@@ -58,7 +67,7 @@ module ChunkyPNG
     end
     
     def decode_scanline_sub(bytes, previous_bytes, header = nil)
-      bytes.each_with_index { |b, i| bytes[i] = (b + bytes[i-3]) % 256 }
+      bytes.each_with_index { |b, i| bytes[i] = (b + (i >= 3 ? bytes[i-3] : 0)) % 256 }
       bytes
     end
     
