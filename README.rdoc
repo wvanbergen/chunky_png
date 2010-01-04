@@ -5,9 +5,9 @@ maximum portability. It requires the standard Zlib library.
 
 == Usage
 
-  require 'chunk_png'
+  require 'chunky_png'
   
-  png = ChunkPNG.load('filename.png')
+  png = ChunkyPNG.load('filename.png')
   puts png.chunks.inspect
   puts png.pixel_matrix.inspect
   
