@@ -16,7 +16,7 @@ module ChunkyPNG
       return matrix
     end
     
-    def initialize(width, height, background_color = PNG::Color::Black)
+    def initialize(width, height, background_color = ChunkyPNG::Color::Black)
       @width, @height = width, height
       @pixels = Array.new(width * height)
     end
@@ -38,7 +38,7 @@ module ChunkyPNG
     
     def decode_pixels(bytes, header)
       (0...width).map do |i|
-        PNG::Color.rgb(bytes[i*3+0], bytes[i*3+1], bytes[i*3+2])
+        ChunkyPNG::Color.rgb(bytes[i*3+0], bytes[i*3+1], bytes[i*3+2])
       end
     end
     

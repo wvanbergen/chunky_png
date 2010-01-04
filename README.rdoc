@@ -1,0 +1,24 @@
+= Chunky PNG
+
+This library can read and write PNG files. It is written in pure Ruby for
+maximum portability. It requires the standard Zlib library.
+
+== Usage
+
+  require 'chunk_png'
+  
+  png = ChunkPNG.load('filename.png')
+  puts png.chunks.inspect
+  puts png.pixel_matrix.inspect
+  
+  # do something with the PNG file
+  
+  File.open('out.png', 'w') { |f| png.write(f) }
+
+(Note: this is subject to change while work is in progress)
+
+== About
+
+The library is written by Willem van Bergen for Floorplanner.com, and released
+under the MIT license (see LICENSE). Please contact me for questions or
+remarks. Patches are greatly appreciated! :-)
