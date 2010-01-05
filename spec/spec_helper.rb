@@ -7,7 +7,7 @@ require 'chunky_png'
 
 module ResourceFileHelper
   def resource_file(name)
-    File.expand_path("../resources/#{name}", File.dirname(__FILE__))
+    File.expand_path("./resources/#{name}", File.dirname(__FILE__))
   end
 end
 

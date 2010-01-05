@@ -30,13 +30,24 @@ module ChunkyPNG
     # CONVERSION
     ###########################################
 
-    def to_true_color
-      [r, g, b].pack('CCC')
+    def to_rgb_array
+      [r, g, b]
+    end
+    
+    def to_rgba_array
+      [r, g, b, a]
+    end    
+    
+    def to_rgb
+      to_rgb_array.pack('CCC')
     end
 
     def inspect
       '#%02x%02x%02x' % [r, g, b]
     end
-
+    
+    def ==(other)
+      other.kind_of?(self.class) && to_rgba_array == other.to_rgba_array
+    end
   end
 end

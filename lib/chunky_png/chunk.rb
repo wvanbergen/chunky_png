@@ -73,10 +73,28 @@ module ChunkyPNG
       end
     end
     
+    class End < Base
+      def initialize
+        super('IEND')
+      end
+      
+      def self.read(type, content)
+        raise 'The IEND chunk should be empty!' if content != ''
+        self.new
+      end
+      
+      def content
+        ''
+      end
+    end
+
+    class ImageData < Generic
+    end
+    
     # Maps chunk types to classes.
     # If a chunk type is not given in this hash, a generic chunk type will be used.
     CHUNK_TYPES = {
-      'IHDR' => Header,
+      'IHDR' => Header, 'IEND' => End, 'IDAT' => ImageData
     }
     
   end

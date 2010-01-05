@@ -43,4 +43,29 @@ describe ChunkyPNG::PixelMatrix do
       decoded_bytes.should == [255, 126, 254, 127, 254, 126, 0, 127, 255]
     end
   end
+  
+  describe '#encode_scanline' do
+    before(:each) do
+      @matrix = ChunkyPNG::PixelMatrix.new(3, 3)
+    end
+    
+    it "should encode a scanline without filtering correctly" do
+      bytes = [0, 0, 0, 1, 1, 1, 2, 2, 2]
+      encoded_bytes = @matrix.encode_scanline(ChunkyPNG::PixelMatrix::FILTER_NONE, bytes, nil, nil)
+      encoded_bytes.should == [0, 0, 0, 0, 1, 1, 1, 2, 2, 2]
+    end
+    
+    it "should encode a scanline with sub filtering correctly" do
+      bytes = [255, 255, 255, 255, 255, 255, 255, 255, 255]
+      encoded_bytes = @matrix.encode_scanline(ChunkyPNG::PixelMatrix::FILTER_SUB, bytes, nil, nil)
+      encoded_bytes.should == [1, 255, 255, 255, 0, 0, 0, 0, 0, 0]
+    end
+    
+    it "should encode a scanline with up filtering correctly" do
+      bytes          = [255, 255, 255, 255, 255, 255, 255, 255, 255]
+      previous_bytes = [255, 255, 255, 255, 255, 255, 255, 255, 255]
+      encoded_bytes = @matrix.encode_scanline(ChunkyPNG::PixelMatrix::FILTER_UP, bytes, previous_bytes, nil)
+      encoded_bytes.should == [2, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    end    
+  end
 end

@@ -20,21 +20,36 @@ module ChunkyPNG
       pixels[y * width + x]
     end
     
-    def []=(x, y, color)
-      pixels[y * width + x] = color
+    def each_scanline(&block)
+      height.times do |i|
+        scanline = @pixels[height * i, width]
+        yield(scanline)
+      end
     end
     
-    def initialize(width, height, background_color = ChunkyPNG::Color::BLACK)
+    def []=(x, y, color)
+      @palette[@pixels[y * width + x]] -= 1
+      @palette[color]  += 1
+      @pixels[y * width + x] = color
+    end
+    
+    def initialize(width, height, background_color = ChunkyPNG::Color::WHITE)
       @width, @height = width, height
-      @pixels  = Array.new(width * height)
-      @palette = Set.new
+      @pixels  = Array.new(width * height, background_color)
+      @palette = { background_color => width * height }
+      @palette.default = 0
+    end
+    
+    def reset_pixels!
+      @pixels = []
+      @palette.clear
     end
     
     def decode_pixelstream(stream, header = nil)
       verify_length!(stream.length)
+      reset_pixels!
       
       decoded_bytes = Array.new(header.width * 3, 0)
-      @pixels = []
       height.times do |line_no|
         position      = line_no * (width * 3 + 1)
         line_length   = header.width * 3
@@ -47,7 +62,9 @@ module ChunkyPNG
     
     def decode_pixels(bytes, header)
       (0...width).map do |i|
-        ChunkyPNG::Color.rgb(bytes[i*3+0], bytes[i*3+1], bytes[i*3+2])
+        color = ChunkyPNG::Color.rgb(bytes[i*3+0], bytes[i*3+1], bytes[i*3+2])
+        @palette[color] += 1
+        color
       end
     end
     
@@ -76,9 +93,42 @@ module ChunkyPNG
       bytes
     end
     
-    def verify_length!(bytes)
-      raise "Invalid stream length!" unless bytes == width * height * 3 + height
+    def verify_length!(bytes_count)
+      raise "Invalid stream length!" unless bytes_count == width * height * 3 + height
     end
     
+    def encode_scanline(filter, bytes, previous_bytes, header = nil)
+      case filter
+      when FILTER_NONE    then encode_scanline_none( bytes, previous_bytes, header)
+      when FILTER_SUB     then encode_scanline_sub(  bytes, previous_bytes, header)
+      when FILTER_UP      then encode_scanline_up(   bytes, previous_bytes, header)
+      when FILTER_AVERAGE then raise "Average filter are not yet supported!"
+      when FILTER_PAETH   then raise "Paeth filter are not yet supported!"
+      else raise "Unknown filter type"
+      end
+    end
+    
+    def encode_scanline_none(bytes, previous_bytes, header = nil)
+      [FILTER_NONE] + bytes
+    end
+    
+    def encode_scanline_sub(bytes, previous_bytes, header = nil)
+      encoded = (3...bytes.length).map { |n| (bytes[n-3] - bytes[n]) % 256 }
+      [FILTER_SUB] + bytes[0...3] + encoded
+    end
+    
+    def encode_scanline_up(bytes, previous_bytes, header = nil)
+      encoded = (0...bytes.length).map { |n| previous_bytes[n] - bytes[n] % 256 }
+      [FILTER_UP] + encoded
+    end
+    
+    def to_rgb_pixelstream
+      stream = ""
+      each_scanline do |line|
+        bytes = line.map(&:to_rgb_array).flatten
+        stream << encode_scanline(FILTER_NONE, bytes, nil, nil).pack('C*')
+      end
+      return stream
+    end
   end
 end
