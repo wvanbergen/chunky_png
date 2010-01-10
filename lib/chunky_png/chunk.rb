@@ -63,7 +63,7 @@ module ChunkyPNG
       end
       
       def self.read(type, content)
-        fields = content.unpack('NNC*5')
+        fields = content.unpack('NNC5')
         self.new(:width => fields[0],  :height => fields[1], :depth => fields[2], :color => fields[3],
                        :compression => fields[4], :filtering => fields[5], :interlace => fields[6])
       end

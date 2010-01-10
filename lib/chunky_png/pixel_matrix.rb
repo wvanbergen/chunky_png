@@ -8,7 +8,7 @@ module ChunkyPNG
     FILTER_AVERAGE = 3
     FILTER_PAETH   = 4
     
-    attr_accessor :pixels, :palette, :width, :height
+    attr_reader :width, :height
     
     def self.load(header, content)
       matrix = self.new(header.width, header.height)
@@ -17,55 +17,45 @@ module ChunkyPNG
     end
     
     def [](x, y)
-      pixels[y * width + x]
+      @pixels[y * width + x]
     end
     
     def each_scanline(&block)
       height.times do |i|
-        scanline = @pixels[height * i, width]
+        scanline = @pixels[width * i, width]
         yield(scanline)
       end
     end
     
     def []=(x, y, color)
-      @palette[@pixels[y * width + x]] -= 1
-      @palette[color]  += 1
-      @pixels[y * width + x] = color
+      @pixels[y * width + x] = Pixel.new(color)
     end
     
     def initialize(width, height, background_color = ChunkyPNG::Color::WHITE)
       @width, @height = width, height
-      @pixels  = Array.new(width * height, background_color)
-      @palette = { background_color => width * height }
-      @palette.default = 0
+      @pixels = Array.new(width * height, Pixel.new(background_color))
     end
-    
-    def reset_pixels!
-      @pixels = []
-      @palette.clear
-    end
-    
+
     def decode_pixelstream(stream, header = nil)
       verify_length!(stream.length)
-      reset_pixels!
+      @pixels = []
       
       decoded_bytes = Array.new(header.width * 3, 0)
       height.times do |line_no|
-        position      = line_no * (width * 3 + 1)
-        line_length   = header.width * 3
-        bytes         = stream.unpack("@#{position}CC#{line_length}")
-        filter        = bytes.shift
-        decoded_bytes = decode_scanline(filter, bytes, decoded_bytes, header)
-        @pixels += decode_pixels(decoded_bytes, header)
+        position       = line_no * (width * 3 + 1)
+        line_length    = header.width * 3
+        bytes          = stream.unpack("@#{position}CC#{line_length}")
+        filter         = bytes.shift
+        decoded_bytes  = decode_scanline(filter, bytes, decoded_bytes, header)
+        decoded_colors = decode_colors(decoded_bytes, header)
+        @pixels += decoded_colors.map { |c| Pixel.new(c) }
       end
+      
+      raise "Invalid amount of pixels" if @pixels.size != width * height
     end
     
-    def decode_pixels(bytes, header)
-      (0...width).map do |i|
-        color = ChunkyPNG::Color.rgb(bytes[i*3+0], bytes[i*3+1], bytes[i*3+2])
-        @palette[color] += 1
-        color
-      end
+    def decode_colors(bytes, header)
+      (0...width).map { |i| ChunkyPNG::Color.rgb(bytes[i*3+0], bytes[i*3+1], bytes[i*3+2]) }
     end
     
     def decode_scanline(filter, bytes, previous_bytes, header = nil)
@@ -125,10 +115,26 @@ module ChunkyPNG
     def to_rgb_pixelstream
       stream = ""
       each_scanline do |line|
-        bytes = line.map(&:to_rgb_array).flatten
+        bytes = line.map(&:color).map(&:to_rgb_array).flatten
         stream << encode_scanline(FILTER_NONE, bytes, nil, nil).pack('C*')
       end
       return stream
+    end
+  end
+  
+  class Pixel
+    attr_accessor :color, :alpha
+    
+    def initialize(color, alpha = 255)
+      @color, @alpha = color, alpha
+    end
+    
+    def opaque?
+      alpha == 255
+    end
+    
+    def make_opaque!
+      alpha = 255
     end
   end
 end

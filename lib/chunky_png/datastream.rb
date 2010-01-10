@@ -56,6 +56,10 @@ module ChunkyPNG
       return [ ChunkyPNG::Chunk::ImageData.new('IDAT', streamdata) ]
     end
     
+    def pixel_matrix=(pixel_matrix)
+      @pixel_matrix = pixel_matrix
+    end
+    
     def pixel_matrix
       @pixel_matrix ||= begin
         data = data_chunks.map(&:content).join('')
