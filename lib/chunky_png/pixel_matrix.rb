@@ -8,7 +8,7 @@ module ChunkyPNG
     FILTER_AVERAGE = 3
     FILTER_PAETH   = 4
     
-    attr_reader :width, :height
+    attr_reader :width, :height, :pixels
     
     def self.load(header, content)
       matrix = self.new(header.width, header.height)
@@ -112,10 +112,27 @@ module ChunkyPNG
       [FILTER_UP] + encoded
     end
     
+    def palette
+      ChunkyPNG::Palette.from_pixels(@pixels)
+    end
+    
+    def indexable?
+      palette.indexable?
+    end
+    
+    def to_indexed_pixelstream(palette)
+      stream = ""
+      each_scanline do |line|
+        bytes  = line.map { |p| p.color.index(palette) }
+        stream << encode_scanline(FILTER_NONE, bytes, nil, nil).pack('C*')
+      end
+      return stream
+    end
+    
     def to_rgb_pixelstream
       stream = ""
       each_scanline do |line|
-        bytes = line.map(&:color).map(&:to_rgb_array).flatten
+        bytes = line.map { |p| p.color.to_rgb_array }.flatten
         stream << encode_scanline(FILTER_NONE, bytes, nil, nil).pack('C*')
       end
       return stream

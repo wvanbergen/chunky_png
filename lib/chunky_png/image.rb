@@ -17,9 +17,20 @@ module ChunkyPNG
     
     def write(io)
       datastream = ChunkyPNG::Datastream.new
-      datastream.header_chunk = ChunkyPNG::Chunk::Header.new(:width => width, :height => height)
-      datastream.data_chunks  = datastream.idat_chunks(pixels.to_rgb_pixelstream)
-      datastream.end_chunk    = ChunkyPNG::Chunk::End.new
+
+      palette = pixels.palette
+      if palette.indexable?
+        datastream.header_chunk = ChunkyPNG::Chunk::Header.new(:width => width, :height => height, :color => ChunkyPNG::Chunk::Header::COLOR_INDEXED)
+        datastream.palette_chunk = palette.to_plte_chunk
+        datastream.data_chunks  = datastream.idat_chunks(pixels.to_indexed_pixelstream(palette))
+        datastream.end_chunk    = ChunkyPNG::Chunk::End.new
+      else
+        raise 'd'
+        datastream.header_chunk = ChunkyPNG::Chunk::Header.new(:width => width, :height => height)
+        datastream.data_chunks  = datastream.idat_chunks(pixels.to_rgb_pixelstream)
+        datastream.end_chunk    = ChunkyPNG::Chunk::End.new
+      end
+      
       datastream.write(io)
     end
   end

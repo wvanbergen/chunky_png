@@ -4,24 +4,40 @@ module ChunkyPNG
   # PALETTE CLASS
   ###########################################
   
-  class Palette
+  class Palette < Set
     
-    attr_accessor :colors
-    
-    def initialize
-      @colors = {}
-      @colors.default = 0
+    def self.from_pixel_matrix(pixel_matrix)
+      from_pixels(pixel_matrix.pixels)
     end
     
-    def add_color(color, amount = 1)
-      @colors[color] ||= 0
-      @colors[color]  += amount
+    def self.from_pixels(pixels)
+      from_colors(pixels.map(&:color))
     end
     
-    alias :<< :add_color
+    def self.from_colors(colors)
+      palette = self.new
+      colors.each { |color| palette << color }
+      palette
+    end
     
-    def reset!
-      colors.clear
+    def indexable?
+      size < 256
+    end
+    
+    def index(color)
+      @color_map[color]
+    end
+    
+    def to_plte_chunk
+      @color_map = {}
+      colors     = []
+      
+      each_with_index do |color, index|
+        @color_map[color] = index
+        colors += color.to_rgb_array
+      end
+      
+      ChunkyPNG::Chunk::Generic.new('PLTE', colors.pack('C*'))
     end
   end
   
@@ -49,6 +65,10 @@ module ChunkyPNG
     WHITE = rgb(255, 255, 255)
 
     ### CONVERSION ###########################################
+
+    def index(palette)
+      palette.index(self)
+    end
 
     def to_rgb_array
       [r, g, b]

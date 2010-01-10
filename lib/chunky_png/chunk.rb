@@ -21,13 +21,13 @@ module ChunkyPNG
       end
       
       def write_with_crc(io, content)
-        message = type + content
-        io << [content.length].pack('N') << message << [Zlib.crc32(message)].pack('N')
+        io << [content.length].pack('N') << type << content
+        io << [Zlib.crc32(content, Zlib.crc32(type))].pack('N')
       end
       
       def write(io)
         write_with_crc(io, content || '')
-      end      
+      end
     end
     
     class Generic < Base
