@@ -36,7 +36,9 @@ module ChunkyPNG
           else raise "Cannot encode pixels for this mode: #{color_mode}!"
         end
         
-        raise "This palette is not suitable for encoding!" if palette && !palette.can_encode?
+        if color_mode == ChunkyPNG::Chunk::Header::COLOR_INDEXED && !palette.can_encode?
+          raise "This palette is not suitable for encoding!"
+        end
 
         pixelsize = Pixel.bytesize(color_mode)
 

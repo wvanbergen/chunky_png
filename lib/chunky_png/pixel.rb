@@ -48,6 +48,10 @@ module ChunkyPNG
       a == 0x000000ff
     end
     
+    def grayscale?
+      r == g && r == b
+    end
+    
     def inspect
       '#%08x' % @value
     end

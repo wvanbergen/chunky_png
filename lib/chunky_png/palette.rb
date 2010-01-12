@@ -75,6 +75,13 @@ module ChunkyPNG
     def opaque?
       all? { |pixel| pixel.opaque? }
     end
+    
+    # Check whether this pelette only contains grayscale colors.
+    # @return [true, false] True if all colors in this palette are grayscale teints.
+    # @see ChunkyPNG::Pixel#grayscale??
+    def grayscale?
+      all? { |pixel| pixel.grayscale? }
+    end
 
     # Checks whether this palette is suitable for decoding an image from a datastream.
     #
@@ -148,8 +155,13 @@ module ChunkyPNG
     # @return [Fixnum] The colormode which would create the smalles possible
     #    file for images that use this exact palette.
     def best_colormode
-      # TODO: add grayscale color mode.
-      if indexable?
+      if grayscale?
+        if opaque?
+          ChunkyPNG::Chunk::Header::COLOR_GRAYSCALE
+        else
+          ChunkyPNG::Chunk::Header::COLOR_GRAYSCALE_ALPHA
+        end
+      elsif indexable?
         ChunkyPNG::Chunk::Header::COLOR_INDEXED
       elsif opaque?
         ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR
