@@ -16,8 +16,8 @@ module ChunkyPNG
       new(r << 24 | g << 16 | b << 8 | a)
     end
     
-    def self.decode(stream, color_mode, palette = nil)
-      raise "NYI"
+    def self.grayscale(teint, a = 255)
+      rgba(teint, teint, teint, a)
     end
     
     def self.from_rgb_stream(stream)
@@ -53,8 +53,10 @@ module ChunkyPNG
     end
     
     def eql?(other)
-      other.kind_of?(self) && other.value == self.value
+      other.kind_of?(self.class) && other.value == self.value
     end
+    
+    alias :== :eql?
     
     def to_truecolor_alpha_bytes
       [r,g,b,a]

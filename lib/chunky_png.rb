@@ -5,6 +5,8 @@ require 'chunky_png/datastream'
 require 'chunky_png/chunk'
 require 'chunky_png/palette'
 require 'chunky_png/pixel'
+require 'chunky_png/pixel_matrix/encoding'
+require 'chunky_png/pixel_matrix/decoding'
 require 'chunky_png/pixel_matrix'
 require 'chunky_png/image'
 

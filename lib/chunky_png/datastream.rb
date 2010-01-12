@@ -65,11 +65,7 @@ module ChunkyPNG
     end
     
     def pixel_matrix
-      @pixel_matrix ||= begin
-        data = data_chunks.map(&:content).join('')
-        streamdata = Zlib::Inflate.inflate(data)
-        matrix     = ChunkyPNG::PixelMatrix.load(header, streamdata)
-      end
+      @pixel_matrix ||= ChunkyPNG::PixelMatrix.decode(self)
     end
   end
 end
