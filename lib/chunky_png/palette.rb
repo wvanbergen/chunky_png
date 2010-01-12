@@ -1,14 +1,10 @@
 module ChunkyPNG
-  
-  ###########################################
-  # PALETTE CLASS
-  ###########################################
-  
+
   class Palette < SortedSet
     
-    def initialize(enum)
+    def initialize(enum, decoding_map = nil)
       super(enum)
-      @decoding_map = enum if enum.kind_of?(Array)
+      @decoding_map = decoding_map if decoding_map
     end
     
     def self.from_chunks(palette_chunk, transparency_chunk = nil)
@@ -31,7 +27,7 @@ module ChunkyPNG
         index += 1
       end
       
-      self.new(decoding_map)
+      self.new(decoding_map, decoding_map)
     end
     
     def self.from_pixel_matrix(pixel_matrix)

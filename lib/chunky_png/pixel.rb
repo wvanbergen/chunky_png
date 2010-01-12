@@ -52,11 +52,19 @@ module ChunkyPNG
       '#%08x' % @value
     end
     
+    def hash
+      @value.hash
+    end
+    
     def eql?(other)
       other.kind_of?(self.class) && other.value == self.value
     end
     
     alias :== :eql?
+    
+    def <=>(other)
+      other.value <=> self.value
+    end
     
     def to_truecolor_alpha_bytes
       [r,g,b,a]
