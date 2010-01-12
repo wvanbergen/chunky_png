@@ -2,3 +2,5 @@
 spec/resources/testing.png
 /pkg
 /tmp
+/doc
+.yardoc

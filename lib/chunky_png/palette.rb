@@ -91,7 +91,7 @@ module ChunkyPNG
     # Checks whether this palette is suitable for decoding an image from a datastream.
     #
     # This requires that the positions of the colors in the original palette chunk is known,
-    # which is stored as an array in the `@decoding_map` instance variable.
+    # which is stored as an array in the +@decoding_map+ instance variable.
     #
     # @return [true, false] True if a decoding map was built when this palette was loaded.
     def can_decode?
@@ -101,7 +101,7 @@ module ChunkyPNG
     # Checks whether this palette is suitable for encoding an image from to datastream.
     #
     # This requires that the position of the color in the future palette chunk is known,
-    # which is stored as a hash in the `@encoding_map` instance variable.
+    # which is stored as a hash in the +@encoding_map+ instance variable.
     #
     # @return [true, false] True if a encoding map was built when this palette was loaded.
     def can_encode?

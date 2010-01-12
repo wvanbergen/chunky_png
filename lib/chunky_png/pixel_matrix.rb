@@ -26,18 +26,19 @@ module ChunkyPNG
     # @return [Integer] The number of rows in this pixel matrix
     attr_reader :height
 
-    # @return [Array<ChunkyPNG::Pixel>] The list opf pixels in this matrix.
-    #     This array always should have width * height elements.
+    # @return [Array<ChunkyPNG::Pixel>] The list of pixels in this matrix.
+    #     This array always should have +width * height+ elements.
     attr_reader :pixels
 
     # Initializes a new PixelMatrix instance
     # @param [Integer] width The width in pixels of this matrix
     # @param [Integer] width The height in pixels of this matrix
-    # @param [ChunkyPNG::Pixel, Array<ChunkyPNG::Pixel>] initial The initial 
-    #    value of te pixels. If a color is passed to this parameter, this
-    #    color will be used as background. If an array of pixels is provided,
-    #    these pixels will be used as initial value. Note that the amount of 
-    #    pixels in the array should equal width * height.
+    # @param [ChunkyPNG::Pixel, Array<ChunkyPNG::Pixel>] initial The initial value of te pixels:
+    #
+    #    * If a color is passed to this parameter, this color will be used as background color. 
+    #
+    #    * If an array of pixels is provided, these pixels will be used as initial value. Note 
+    #      that the amount of pixels in this array should equal +width * height+.
     def initialize(width, height, initial = ChunkyPNG::Pixel::TRANSPARENT)
       
       @width, @height = width, height
