@@ -17,10 +17,10 @@ Issue tracker:: http://github.com/wvanbergen/chunky_png/issues
 
 The main classes used within ChunkyPNG are:
 
-+ChunkyPNG::Image+ :: create PNG images from scratch or based on another PNG image.
-+ChunkyPNG::Datastream+ :: low-level read and write access to PNG images from or to a file or stream.
-+ChunkyPNG::PixelMatrix+ :: represents an images as a matrix of pixels.
-+ChunkyPNG::Pixel+ :: represents a single pixel or color value.
+<tt>ChunkyPNG::Image</tt> :: create PNG images from scratch or based on another PNG image.
+<tt>ChunkyPNG::Datastream</tt> :: low-level read and write access to PNG images from or to a file or stream.
+<tt>ChunkyPNG::PixelMatrix</tt> :: represents an images as a matrix of pixels.
+<tt>ChunkyPNG::Pixel</tt> :: represents a single pixel or color value.
 
 == Usage
 
