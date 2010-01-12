@@ -124,28 +124,18 @@ module ChunkyPNG
       palette.indexable?
     end
     
-    def to_indexed_pixelstream(palette)
-      stream = ""
-      each_scanline do |line|
-        bytes  = line.map { |pixel| pixel.index(palette) }
-        stream << encode_scanline(FILTER_NONE, bytes).pack('C*')
+    def to_pixelstream(color_mode = ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR, palette = nil)
+      
+      pixel_encoder = case color_mode
+        when ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR       then lambda { |pixel| pixel.to_rgb_bytes }
+        when ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR_ALPHA then lambda { |pixel| pixel.to_rgba_bytes }
+        when ChunkyPNG::Chunk::Header::COLOR_INDEXED         then lambda { |pixel| pixel.index(palette) }
+        else "Cannot encode pixels for this mode: #{color_mode}!"
       end
-      return stream
-    end
-    
-    def to_rgb_pixelstream
+      
       stream = ""
       each_scanline do |line|
-        bytes = line.map { |pixel| pixel.to_rgb_bytes }.flatten
-        stream << encode_scanline(FILTER_NONE, bytes).pack('C*')
-      end
-      return stream
-    end
-    
-    def to_rgba_pixelstream
-      stream = ""
-      each_scanline do |line|
-        bytes = line.map { |pixel| pixel.to_rgba_bytes }.flatten
+        bytes  = line.map(&pixel_encoder).flatten
         stream << encode_scanline(FILTER_NONE, bytes).pack('C*')
       end
       return stream

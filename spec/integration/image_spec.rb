@@ -8,10 +8,10 @@ describe ChunkyPNG::Image do
     File.open(filename, 'w') { |f| image.write(f) }
 
     png = ChunkyPNG.load(filename)
+
     png.header_chunk.width.should  == 10
     png.header_chunk.height.should == 20
     png.header_chunk.color.should  == ChunkyPNG::Chunk::Header::COLOR_INDEXED
-
     png.palette_chunk.should_not be_nil
     png.data_chunks.should_not be_empty
     # `open #{filename}`

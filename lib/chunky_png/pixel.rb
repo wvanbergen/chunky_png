@@ -69,9 +69,8 @@ module ChunkyPNG
     end
     
     def index(palette)
-      palette.index(self)
+      [palette.index(self)]
     end
-    
     
     BLACK = rgb(  0,   0,   0)
     WHITE = rgb(255, 255, 255)
