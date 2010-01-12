@@ -4,6 +4,11 @@ module ChunkyPNG
   #
   # A PNG image can contain an explicit palette which defines the colors of that image,
   # but can also use an implicit palette, e.g. all truecolor colors or all grayscale colors.
+  #
+  # This palette supports decoding colors from a palette if an explicit palette is provided 
+  # in a PNG datastream, and it supports encoding colors to an explicit matrix.
+  #
+  # @see ChunkyPNG::Pixel
   class Palette < SortedSet
     
     # Builds a new palette given a set (Enumerable instance) of colors.
@@ -17,7 +22,7 @@ module ChunkyPNG
       @decoding_map = decoding_map if decoding_map
     end
     
-    # Builds a pelette instance from a PLTE chunk and optionally a tRNS chunk 
+    # Builds a palette instance from a PLTE chunk and optionally a tRNS chunk 
     # from a PNG datastream.
     #
     # This method will cerate a palette that is suitable for decoding an image.
