@@ -16,6 +16,10 @@ module ChunkyPNG
       new(r << 24 | g << 16 | b << 8 | a)
     end
     
+    def self.decode(stream, color_mode, palette = nil)
+      raise "NYI"
+    end
+    
     def self.from_rgb_stream(stream)
       self.rgb(*stream.unpack('C3'))
     end
@@ -52,30 +56,34 @@ module ChunkyPNG
       other.kind_of?(self) && other.value == self.value
     end
     
-    def to_rgba_stream
-      [r,g,b,a].pack('C4')
-    end
-    
-    def to_rgba_bytes
+    def to_truecolor_alpha_bytes
       [r,g,b,a]
     end
-    
-    def to_rgb_stream
-      [r,g,b].pack('C3')
-    end
-    
-    def to_rgb_bytes
+
+    def to_truecolor_bytes
       [r,g,b]
     end
     
     def index(palette)
-      [palette.index(self)]
+      palette.index(self)
+    end
+    
+    def to_indexed_bytes(palette)
+      [index(palette)]
+    end
+    
+    def to_grayscale_bytes
+      [r] # Assumption: r == g == b
+    end
+
+    def to_grayscale_alpha_bytes
+      [r, a] # Assumption: r == g == b
     end
     
     BLACK = rgb(  0,   0,   0)
     WHITE = rgb(255, 255, 255)
     
-    TRANSPARENT = rgba(0 , 0, 0, 0)
+    TRANSPARENT = rgba(0, 0, 0, 0)
     
     def self.bytesize(color_mode)
       case color_mode

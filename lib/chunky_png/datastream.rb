@@ -7,6 +7,7 @@ module ChunkyPNG
     attr_accessor :header_chunk
     attr_accessor :other_chunks
     attr_accessor :palette_chunk
+    attr_accessor :transparency_chunk
     attr_accessor :data_chunks
     attr_accessor :end_chunk
 
@@ -17,10 +18,11 @@ module ChunkyPNG
       until io.eof?
         chunk = ChunkyPNG::Chunk.read(io)
         case chunk
-          when ChunkyPNG::Chunk::Header    then ds.header_chunk  = chunk
-          when ChunkyPNG::Chunk::Palette   then ds.palette_chunk = chunk
-          when ChunkyPNG::Chunk::ImageData then ds.data_chunks  << chunk
-          when ChunkyPNG::Chunk::End       then ds.end_chunk     = chunk
+          when ChunkyPNG::Chunk::Header       then ds.header_chunk        = chunk
+          when ChunkyPNG::Chunk::Palette      then ds.palette_chunk       = chunk
+          when ChunkyPNG::Chunk::Transparency then ds.transparency_chunk  = chunk
+          when ChunkyPNG::Chunk::ImageData    then ds.data_chunks        << chunk
+          when ChunkyPNG::Chunk::End          then ds.end_chunk           = chunk
           else ds.other_chunks << chunk
         end
       end
@@ -35,7 +37,8 @@ module ChunkyPNG
     def chunks
       cs = [header_chunk]
       cs += other_chunks
-      cs << palette_chunk if palette_chunk
+      cs << palette_chunk      if palette_chunk
+      cs << transparency_chunk if transparency_chunk
       cs += data_chunks
       cs << end_chunk
       return cs

@@ -90,6 +90,9 @@ module ChunkyPNG
 
     class Palette < Generic
     end
+    
+    class Transparency < Generic
+    end
 
     class ImageData < Generic
     end
@@ -97,7 +100,7 @@ module ChunkyPNG
     # Maps chunk types to classes.
     # If a chunk type is not given in this hash, a generic chunk type will be used.
     CHUNK_TYPES = {
-      'IHDR' => Header, 'IEND' => End, 'IDAT' => ImageData, 'PLTE' => Palette
+      'IHDR' => Header, 'IEND' => End, 'IDAT' => ImageData, 'PLTE' => Palette, 'tRNS' => Transparency
     }
     
   end

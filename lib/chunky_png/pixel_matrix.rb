@@ -126,21 +126,62 @@ module ChunkyPNG
       palette.indexable?
     end
     
+    def determine_encoding(constraints = {})
+      encoding = constraints
+      encoding[:palette]    ||= palette
+      encoding[:color_mode] ||= encoding[:palette].best_colormode
+      return encoding
+    end
+    
+    
+    def encode(constraints = {})
+      encoding = determine_encoding(constraints)
+      result = {}
+      result[:header] = { :width => width, :height => height, :color => encoding[:color_mode] }
+      
+      if encoding[:color_mode] == ChunkyPNG::Chunk::Header::COLOR_INDEXED
+        result[:palette_chunk]      = encoding[:palette].to_plte_chunk
+        result[:transparency_chunk] = encoding[:palette].to_trns_chunk unless encoding[:palette].opaque?
+      end
+      
+      result[:pixelstream] = to_pixelstream(encoding[:color_mode], encoding[:palette])
+      return result
+    end
+    
+    def to_datastream(constraints = {})
+      data = encode(constraints)
+      ds = Datastream.new
+      ds.header_chunk       = Chunk::Header.new(data[:header])
+      ds.palette_chunk      = data[:palette_chunk]      if data[:palette_chunk]
+      ds.transparency_chunk = data[:transparency_chunk] if data[:transparency_chunk]
+      ds.data_chunks        = ds.idat_chunks(data[:pixelstream])
+      ds.end_chunk          = Chunk::End.new
+      return ds
+    end
+    
     def to_pixelstream(color_mode = ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR, palette = nil)
       
       pixel_encoder = case color_mode
-        when ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR       then lambda { |pixel| pixel.to_rgb_bytes }
-        when ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR_ALPHA then lambda { |pixel| pixel.to_rgba_bytes }
-        when ChunkyPNG::Chunk::Header::COLOR_INDEXED         then lambda { |pixel| pixel.index(palette) }
-        else "Cannot encode pixels for this mode: #{color_mode}!"
+        when ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR       then lambda { |pixel| pixel.to_truecolor_bytes }
+        when ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR_ALPHA then lambda { |pixel| pixel.to_truecolor_alpha_bytes }
+        when ChunkyPNG::Chunk::Header::COLOR_INDEXED         then lambda { |pixel| pixel.to_indexed_bytes(palette) }
+        when ChunkyPNG::Chunk::Header::COLOR_GRAYSCALE       then lambda { |pixel| pixel.to_grayscale_bytes }
+        when ChunkyPNG::Chunk::Header::COLOR_GRAYSCALE_ALPHA then lambda { |pixel| pixel.to_grayscale_alpha_bytes }
+        else raise "Cannot encode pixels for this mode: #{color_mode}!"
       end
       
       pixelsize = Pixel.bytesize(color_mode)
       
-      stream = ""
+      stream   = ""
+      previous = nil
       each_scanline do |line|
         bytes  = line.map(&pixel_encoder).flatten
-        stream << encode_scanline(FILTER_NONE, bytes, nil, pixelsize).pack('C*')
+        if previous
+          stream << encode_scanline_up(bytes, previous, pixelsize).pack('C*')
+        else
+          stream << encode_scanline_sub(bytes, previous, pixelsize).pack('C*')
+        end
+        previous = bytes
       end
       return stream
     end

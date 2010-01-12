@@ -15,21 +15,8 @@ module ChunkyPNG
       pixels.height
     end
     
-    def write(io)
-      datastream = ChunkyPNG::Datastream.new
-
-      palette = pixels.palette
-      if palette.indexable?
-        datastream.header_chunk = ChunkyPNG::Chunk::Header.new(:width => width, :height => height, :color => ChunkyPNG::Chunk::Header::COLOR_INDEXED)
-        datastream.palette_chunk = palette.to_plte_chunk
-        datastream.data_chunks  = datastream.idat_chunks(pixels.to_pixelstream(ChunkyPNG::Chunk::Header::COLOR_INDEXED, palette))
-        datastream.end_chunk    = ChunkyPNG::Chunk::End.new
-      else
-        datastream.header_chunk = ChunkyPNG::Chunk::Header.new(:width => width, :height => height)
-        datastream.data_chunks  = datastream.idat_chunks(pixels.to_pixelstream(ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR))
-        datastream.end_chunk    = ChunkyPNG::Chunk::End.new
-      end
-      
+    def write(io, constraints = {})
+      datastream = pixels.to_datastream(constraints)
       datastream.write(io)
     end
   end

@@ -25,8 +25,8 @@ describe ChunkyPNG::Pixel do
   end
   
   it "should convert the individual color values back correctly" do
-    @opaque.to_rgb_bytes.should == [10, 100, 150]
-    @non_opaque.to_rgba_bytes.should == [10, 100, 150, 100]
+    @opaque.to_truecolor_bytes.should == [10, 100, 150]
+    @non_opaque.to_truecolor_alpha_bytes.should == [10, 100, 150, 100]
   end
 end
 

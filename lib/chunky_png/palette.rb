@@ -36,10 +36,20 @@ module ChunkyPNG
       
       each_with_index do |color, index|
         @color_map[color] = index
-        colors += color.to_rgb_bytes
+        colors += color.to_truecolor_bytes
       end
       
       ChunkyPNG::Chunk::Palette.new('PLTE', colors.pack('C*'))
+    end
+    
+    def best_colormode
+      if indexable?
+        ChunkyPNG::Chunk::Header::COLOR_INDEXED
+      elsif opaque?
+        ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR
+      else
+        ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR_ALPHA
+      end
     end
   end
 end
