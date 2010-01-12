@@ -1,7 +1,26 @@
 = Chunky PNG
 
 This library can read and write PNG files. It is written in pure Ruby for
-maximum portability. It requires the standard Zlib library.
+maximum portability. Let me rephrase: it does NOT require RMagick or any other
+memory leaking image library.
+
+This library supports both reading and writing images using all color modes:
+true color, grayscale and indexed colors, with and without transparency. When
+writing images, if will automatically determine the most efficient color mode.
+
+Source code:: http://github.com/wvanbergen/chunky_png/tree
+RDoc:: http://rdoc.info/projects/wvanbergen/chunky_png
+Wiki:: http://wiki.github.com/wvanbergen/chunky_png
+Issue tracker:: http://github.com/wvanbergen/chunky_png/issues
+
+== Classes
+
+The main classes used within ChunkyPNG are:
+
++ChunkyPNG::Image+ :: create PNG images from scratch or based on another PNG image.
++ChunkyPNG::Datastream+ :: low-level read and write access to PNG images from or to a file or stream.
++ChunkyPNG::PixelMatrix+ :: represents an images as a matrix of pixels.
++ChunkyPNG::Pixel+ :: represents a single pixel or color value.
 
 == Usage
 
@@ -22,3 +41,5 @@ maximum portability. It requires the standard Zlib library.
 The library is written by Willem van Bergen for Floorplanner.com, and released
 under the MIT license (see LICENSE). Please contact me for questions or
 remarks. Patches are greatly appreciated! :-)
+
+P.S.: _why is why this library is so chunky.
