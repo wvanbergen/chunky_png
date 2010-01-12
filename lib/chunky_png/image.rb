@@ -3,7 +3,7 @@ module ChunkyPNG
     
     attr_reader :pixels
     
-    def initialize(width, height, background_color = ChunkyPNG::Color::WHITE)
+    def initialize(width, height, background_color = ChunkyPNG::Pixel::WHITE)
       @pixels = ChunkyPNG::PixelMatrix.new(width, height, background_color)
     end
     

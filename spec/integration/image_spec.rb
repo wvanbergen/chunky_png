@@ -3,7 +3,7 @@ require File.expand_path('../spec_helper.rb', File.dirname(__FILE__))
 describe ChunkyPNG::Image do
 
   it "should write a valid PNG image using an indexed palette" do
-    image    = ChunkyPNG::Image.new(10, 20, ChunkyPNG::Color.rgb(10, 100, 255))
+    image    = ChunkyPNG::Image.new(10, 20, ChunkyPNG::Pixel.rgb(10, 30, 130))
     filename = resource_file('testing.png')
     File.open(filename, 'w') { |f| image.write(f) }
 

@@ -8,7 +8,7 @@ describe ChunkyPNG::PixelMatrix do
     end
     
     it "should decode a line without filtering as is" do
-      bytes = Array.new(@matrix.width * 3, ChunkyPNG::Color.rgb(10, 20, 30))
+      bytes = Array.new(@matrix.width * 3, ChunkyPNG::Pixel.rgb(10, 20, 30))
       @matrix.decode_scanline(ChunkyPNG::PixelMatrix::FILTER_NONE, bytes, nil).should == bytes
     end
     

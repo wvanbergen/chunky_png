@@ -27,13 +27,13 @@ module ChunkyPNG
       end
     end
     
-    def []=(x, y, color)
-      @pixels[y * width + x] = Pixel.new(color)
+    def []=(x, y, pixel)
+      @pixels[y * width + x] = pixel
     end
     
-    def initialize(width, height, background_color = ChunkyPNG::Color::WHITE)
+    def initialize(width, height, background_color = ChunkyPNG::Pixel::WHITE)
       @width, @height = width, height
-      @pixels = Array.new(width * height, Pixel.new(background_color))
+      @pixels = Array.new(width * height, background_color)
     end
 
     def decode_pixelstream(stream, header = nil)
@@ -55,7 +55,7 @@ module ChunkyPNG
     end
     
     def decode_colors(bytes, header)
-      (0...width).map { |i| ChunkyPNG::Color.rgb(bytes[i*3+0], bytes[i*3+1], bytes[i*3+2]) }
+      (0...width).map { |i| ChunkyPNG::Pixel.rgb(bytes[i*3+0], bytes[i*3+1], bytes[i*3+2]) }
     end
     
     def decode_scanline(filter, bytes, previous_bytes, header = nil)
@@ -87,7 +87,7 @@ module ChunkyPNG
       raise "Invalid stream length!" unless bytes_count == width * height * 3 + height
     end
     
-    def encode_scanline(filter, bytes, previous_bytes, header = nil)
+    def encode_scanline(filter, bytes, previous_bytes = nil, header = nil)
       case filter
       when FILTER_NONE    then encode_scanline_none( bytes, previous_bytes, header)
       when FILTER_SUB     then encode_scanline_sub(  bytes, previous_bytes, header)
@@ -98,11 +98,11 @@ module ChunkyPNG
       end
     end
     
-    def encode_scanline_none(bytes, previous_bytes, header = nil)
+    def encode_scanline_none(bytes, previous_bytes = nil, header = nil)
       [FILTER_NONE] + bytes
     end
     
-    def encode_scanline_sub(bytes, previous_bytes, header = nil)
+    def encode_scanline_sub(bytes, previous_bytes = nil, header = nil)
       encoded = (3...bytes.length).map { |n| (bytes[n-3] - bytes[n]) % 256 }
       [FILTER_SUB] + bytes[0...3] + encoded
     end
@@ -116,6 +116,10 @@ module ChunkyPNG
       ChunkyPNG::Palette.from_pixels(@pixels)
     end
     
+    def opaque?
+      pixels.all? { |pixel| pixel.opaque? }
+    end
+    
     def indexable?
       palette.indexable?
     end
@@ -123,8 +127,8 @@ module ChunkyPNG
     def to_indexed_pixelstream(palette)
       stream = ""
       each_scanline do |line|
-        bytes  = line.map { |p| p.color.index(palette) }
-        stream << encode_scanline(FILTER_NONE, bytes, nil, nil).pack('C*')
+        bytes  = line.map { |pixel| pixel.index(palette) }
+        stream << encode_scanline(FILTER_NONE, bytes).pack('C*')
       end
       return stream
     end
@@ -132,26 +136,19 @@ module ChunkyPNG
     def to_rgb_pixelstream
       stream = ""
       each_scanline do |line|
-        bytes = line.map { |p| p.color.to_rgb_array }.flatten
-        stream << encode_scanline(FILTER_NONE, bytes, nil, nil).pack('C*')
+        bytes = line.map { |pixel| pixel.to_rgb_bytes }.flatten
+        stream << encode_scanline(FILTER_NONE, bytes).pack('C*')
       end
       return stream
     end
-  end
-  
-  class Pixel
-    attr_accessor :color, :alpha
     
-    def initialize(color, alpha = 255)
-      @color, @alpha = color, alpha
-    end
-    
-    def opaque?
-      alpha == 255
-    end
-    
-    def make_opaque!
-      alpha = 255
+    def to_rgba_pixelstream
+      stream = ""
+      each_scanline do |line|
+        bytes = line.map { |pixel| pixel.to_rgba_bytes }.flatten
+        stream << encode_scanline(FILTER_NONE, bytes).pack('C*')
+      end
+      return stream
     end
   end
 end
