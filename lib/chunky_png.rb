@@ -46,7 +46,7 @@ module ChunkyPNG
   end
 
   def load_from_file(file)
-    File.open(file, 'r') { |f| load_from_io(f) }
+    File.open(file, 'rb') { |f| load_from_io(f) }
   end
 
   def load_from_memory(string)

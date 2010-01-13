@@ -121,7 +121,7 @@ module ChunkyPNG
     # @return [Fixnum] The 0-based position of the color in the palette.
     # @see ChunkyPNG::Palette#can_encode?
     def index(color)
-      @encoding_map[color]
+      @encoding_map[ChunkyPNG::Pixel.new(color)]
     end
     
     # Creates a tRNS chunk that corresponds with this palette to store the
