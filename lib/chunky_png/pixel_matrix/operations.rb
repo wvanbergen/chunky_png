@@ -1,12 +1,12 @@
 module ChunkyPNG
   class PixelMatrix
     module Operations
-      def compose(other, offset_x = 0, offset_y = 0)
-        check_size_constraints!(other, offset_x, offset_y)
+      def compose(other, dx = 0, dy = 0)
+        check_size_constraints!(other, dx, dy)
         
         other.height.times do |y|
           other.width.times do |x|
-            self[x + offset_x, y + offset_y] = other[x, y].compose_on(self[x + offset_x, y + offset_y])
+            self[x+dx, y+dy] = self[x+dx, y+dy] & other[x, y]
           end
         end
         self
