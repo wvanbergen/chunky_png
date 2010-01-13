@@ -1,12 +1,15 @@
 module ChunkyPNG
   
-  # The ChunkPNG::PixelMatrix class represents a matrix of pixels of which an i
-  # mage consists. This class supports loading a PixelMatrix from a PNG datastream,
+  # The ChunkPNG::PixelMatrix class represents a matrix of pixels of which an
+  # image consists. This class supports loading a PixelMatrix from a PNG datastream,
   # and creating a PNG datastream bse don this matrix.
   #
   # This class offers per-pixel access to the matrix by using x,y coordinates. It uses
   # a palette (see {ChunkyPNG::Palette}) to keep track of the different colors used in
   # this matrix.
+  #
+  # The pixels in the matrix are stored as 4-byte fixnums. When accessing these pixels,
+  # these Fixnums are wrapped in a {ChunkyPNG::Pixel} instance to simplify working with them.
   #
   # @see ChunkyPNG::Datastream
   class PixelMatrix
@@ -40,9 +43,9 @@ module ChunkyPNG
       @width, @height = width, height
       
       if initial.kind_of?(ChunkyPNG::Pixel)
-        @pixels = Array.new(width * height, initial)
+        @pixels = Array.new(width * height, initial.to_i)
       elsif initial.kind_of?(Array) && initial.size == width * height
-        @pixels = initial
+        @pixels = initial.map(&:to_i)
       else 
         raise "Cannot use this value as initial pixel matrix: #{initial.inspect}!"
       end
@@ -59,7 +62,7 @@ module ChunkyPNG
     # @param [Integer] y The y-coordinate of the pixel (row)
     # @param [ChunkyPNG::Pixel] pixel The new pixel for the provided coordinates.
     def []=(x, y, pixel)
-      @pixels[y * width + x] = pixel
+      @pixels[y * width + x] = pixel.to_i
     end
     
     # Returns a single pixel from this matrix.
@@ -67,14 +70,14 @@ module ChunkyPNG
     # @param [Integer] y The y-coordinate of the pixel (row)
     # @return [ChunkyPNG::Pixel] The current pixel at the provided coordinates.
     def [](x, y)
-      @pixels[y * width + x]
+      ChunkyPNG::Pixel.new(@pixels[y * width + x])
     end
     
     # Passes to this matrix of pixels line by line.
     # @yield [Array<ChunkyPNG::Pixel>] An line of pixels
     def each_scanline(&block)
       height.times do |i|
-        scanline = @pixels[width * i, width]
+        scanline = @pixels[width * i, width].map { |fn| ChunkyPNG::Pixel.new(fn) }
         yield(scanline)
       end
     end
@@ -83,7 +86,7 @@ module ChunkyPNG
     # @return [ChunkyPNG::Palette] A pallete which contains all the colors that are 
     #    being used for this image.
     def palette
-      ChunkyPNG::Palette.from_pixels(@pixels)
+      ChunkyPNG::Palette.from_pixel_matrix(self)
     end
     
     # Converts this PixelMatrix to a datastream, so that it can be saved as a PNG image.

@@ -61,7 +61,7 @@ describe ChunkyPNG::PixelMatrix do
       @matrix = ChunkyPNG.load(resource_file('operations.png')).pixel_matrix
     end
     
-    it "should replace the correct pixels" do
+    it "should compose pixels correctly" do
       submatrix = ChunkyPNG::PixelMatrix.new(4, 8, ChunkyPNG::Pixel.rgba(0, 0, 0, 75))
       @matrix.compose(submatrix, 8, 4)
       # display(@matrix)

@@ -1,21 +1,28 @@
 module ChunkyPNG
 
+  # The Pixel class represents a pixel, which has a single color. Within the
+  # ChunkyPNG library, the concepts of pixels and colors are both used, and
+  # they are both represented by the pixel class.
+  #
+  # Pixels/colors are represented in RGBA moduds. Each of the four components
+  # is stored with a depth of 8 biths (maximum value = 255). Together, these
+  # components are stored in a 4-bye Fixnum. 
   class Pixel
     
-    @@all_colors = {}
-
     # @return [Fixnum] The 4-byte fixnum representation of the pixel's
     #    color, where red compenent uses the most significant byte and the
     #    alpha component the least significant byte.
     attr_reader :value
     
+    alias :to_i :value
+
     # Initalizes a new pixel instance. Usually, it is more convenient to
     # use one of the constructors below.
     # @param [Fixnum] value The 4-byte fixnum representation of the pixel's
     #    color, where red compenent uses the most significant byte and the
     #    alpha component the least significant byte.
     def initialize(value)
-      @value = value
+      @value = value.to_i
     end
     
     ####################################################################

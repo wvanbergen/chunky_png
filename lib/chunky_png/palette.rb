@@ -58,7 +58,7 @@ module ChunkyPNG
     # @param [ChunkyPNG::PixelMatrix] pixel_matrix The pixel matrix to create a palette for.
     # @return [ChunkyPNG::Palette] The palette instance.
     def self.from_pixel_matrix(pixel_matrix)
-      self.new(pixel_matrix.pixels)
+      self.new(pixel_matrix.pixels.map { |fn| ChunkyPNG::Pixel.new(fn) })
     end
     
     # Builds a palette instance from a given set of pixels.
