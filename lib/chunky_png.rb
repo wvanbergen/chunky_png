@@ -10,22 +10,30 @@ require 'chunky_png/pixel_matrix/decoding'
 require 'chunky_png/pixel_matrix'
 require 'chunky_png/image'
 
+# ChunkyPNG
+#
+# The ChunkyPNG module defines some constants that are used in the
+# PNG specification.
 module ChunkyPNG
   extend self
+
+  ###################################################
+  # PNG international standard defined constants
+  ###################################################
 
   COLOR_GRAYSCALE       = 0
   COLOR_TRUECOLOR       = 2
   COLOR_INDEXED         = 3
   COLOR_GRAYSCALE_ALPHA = 4
   COLOR_TRUECOLOR_ALPHA = 6
-  
+
   FILTERING_DEFAULT     = 0
 
   COMPRESSION_DEFAULT   = 0
-  
+
   INTERLACING_NONE      = 0
   INTERLACING_ADAM7     = 1
-  
+
   FILTER_NONE           = 0
   FILTER_SUB            = 1
   FILTER_UP             = 2
