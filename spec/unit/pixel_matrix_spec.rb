@@ -17,6 +17,12 @@ describe ChunkyPNG::PixelMatrix do
       ds = ChunkyPNG.load(resource_file("transparent_gray_10x10.png"))
         ds.pixel_matrix.should == reference
     end
+    
+    it "should decode an interlaced image correctly" do
+      ds_i  = ChunkyPNG.load(resource_file("16x16_interlaced.png"))
+      ds_ni = ChunkyPNG.load(resource_file("16x16_non_interlaced.png"))
+      ds_i.pixel_matrix.should == ds_ni.pixel_matrix
+    end
   end
   
   describe '.encode' do

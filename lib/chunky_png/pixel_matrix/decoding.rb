@@ -15,11 +15,9 @@ module ChunkyPNG
       end
       
       def decode_pixelstream(stream, width, height, color_mode = ChunkyPNG::COLOR_TRUECOLOR, palette = nil, interlace = ChunkyPNG::INTERLACING_NONE)
-
-        pixel_size = Pixel.bytesize(color_mode)
-        
         raise "This palette is not suitable for decoding!" if palette && !palette.can_decode?
-
+        
+        pixel_size    = Pixel.bytesize(color_mode)
         pixel_decoder = case color_mode
           when ChunkyPNG::COLOR_TRUECOLOR       then lambda { |bytes| ChunkyPNG::Pixel.rgb(*bytes) }
           when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then lambda { |bytes| ChunkyPNG::Pixel.rgba(*bytes) }
@@ -29,43 +27,85 @@ module ChunkyPNG
           else raise "No suitable pixel decoder found for color mode #{color_mode}!"
         end
         
-        if interlace == ChunkyPNG::INTERLACING_NONE
-          pixels = decode_image_pass(stream, width, height, pixel_size, pixel_decoder)
-        elsif interlace == ChunkyPNG::INTERLACING_ADAM7
-          raise "NYI"
-        else
-          raise "Don't know how the handle interlacing method #{interlace}!"
+        pixels = case interlace
+          when ChunkyPNG::INTERLACING_NONE  then decode_interlacing_none(stream, width, height, pixel_size, pixel_decoder)
+          when ChunkyPNG::INTERLACING_ADAM7 then decode_interlacing_adam7(stream, width, height, pixel_size, pixel_decoder)
+          else raise "Don't know how the handle interlacing method #{interlace}!"
         end
+
         return ChunkyPNG::PixelMatrix.new(width, height, pixels)
       end
       
       protected
       
-      def decode_image_pass(stream, width, height, pixel_size, pixel_decoder)
-        
-        raise "Invalid stream length!" unless stream.length == width * height * pixel_size + height
-        
+      def decode_image_pass(stream, width, height, pixel_size, pixel_decoder, start_pos = 0)
         pixels = []
         decoded_bytes = Array.new(width * pixel_size, 0)
         height.times do |line_no|
+          
+          if width > 0
+            
+            # get bytes of scanline
+            position       = start_pos + line_no * (width * pixel_size + 1)
+            line_length    = width * pixel_size
+            bytes          = stream.unpack("@#{position}CC#{line_length}")
+            filter         = bytes.shift
+            decoded_bytes  = decode_scanline(filter, bytes, decoded_bytes, pixel_size)
         
-          # get bytes of scanline
-          position       = line_no * (width * pixel_size + 1)
-          line_length    = width * pixel_size
-          bytes          = stream.unpack("@#{position}CC#{line_length}")
-          filter         = bytes.shift
-          decoded_bytes  = decode_scanline(filter, bytes, decoded_bytes, pixel_size)
-        
-          # decode bytes into colors
-          decoded_bytes.each_slice(pixel_size) { |bytes| pixels << pixel_decoder.call(bytes) }
+            # decode bytes into colors
+            decoded_bytes.each_slice(pixel_size) { |bytes| pixels << pixel_decoder.call(bytes) }
+          end
         end
         pixels
       end
       
-      def decode_adam7_interlacing()
-        
+      def decode_interlacing_none(stream, width, height, pixel_size, pixel_decoder)
+        raise "Invalid stream length!" unless stream.length == width * height * pixel_size + height
+        decode_image_pass(stream, width, height, pixel_size, pixel_decoder)
       end
       
+      def decode_interlacing_adam7(stream, width, height, pixel_size, pixel_decoder)
+        start_pos = 0
+        sub_matrices = adam7_pass_sizes(width, height).map do |(pass_width, pass_height)|
+          pixels = decode_image_pass(stream, pass_width, pass_height, pixel_size, pixel_decoder, start_pos)
+          start_pos += (pass_width * pass_height * pixel_size) + pass_height
+          [pass_width, pass_height, pixels]
+        end
+
+        pixels = Array.new(width * height, ChunkyPNG::Pixel::TRANSPARENT)
+        0.upto(6) { |pass| adam7_merge_pass(pass, width, height, pixels, *sub_matrices[pass]) }
+        pixels
+      end
+
+      def adam7_multiplier_offset(pass)
+        {
+          :x_multiplier => 8 >> (pass >> 1),
+          :x_offset     => (pass & 1 == 0) ? 0 : 8 >> ((pass + 1) >> 1),
+          :y_multiplier => pass == 0 ? 8 : 8 >> ((pass - 1) >> 1),
+          :y_offset     => (pass == 0 || pass & 1 == 1) ? 0 : 8 >> (pass >> 1)
+        }
+      end
+      
+      def adam7_merge_pass(pass, width, height, pixels, sm_width, sm_height, sm_pixels)
+        m_o = adam7_multiplier_offset(pass)
+        0.upto(sm_height - 1) do |y|
+          0.upto(sm_width - 1) do |x|
+            new_x = x * m_o[:x_multiplier] + m_o[:x_offset]
+            new_y = y * m_o[:y_multiplier] + m_o[:y_offset]
+            pixels[width * new_y + new_x] = sm_pixels[sm_width * y + x]
+          end
+        end
+        pixels
+      end
+      
+      def adam7_pass_sizes(width, height)
+        (0...7).map do |pass|
+          m_o = adam7_multiplier_offset(pass)
+          [ ((width  - m_o[:x_offset] ) / m_o[:x_multiplier].to_f).ceil,
+            ((height - m_o[:y_offset] ) / m_o[:y_multiplier].to_f).ceil,]
+        end
+      end
+
       def decode_scanline(filter, bytes, previous_bytes, pixelsize = 3)
         case filter
         when ChunkyPNG::FILTER_NONE    then decode_scanline_none(    bytes, previous_bytes, pixelsize)
