@@ -2,6 +2,17 @@ require File.expand_path('../spec_helper.rb', File.dirname(__FILE__))
 
 describe ChunkyPNG::PixelMatrix do
   
+  describe '.from_rgb_stream' do
+    it "should load an image correctly from a datastrean" do
+      reference = ChunkyPNG.load(resource_file('pixelstream_reference.png')).pixel_matrix
+      
+      File.open(resource_file('pixelstream.rgb')) do |stream|
+        pm = ChunkyPNG::PixelMatrix.from_rgb_stream(240, 180, stream)
+        pm.should == reference
+      end
+    end
+  end
+  
   describe '.decode' do
     
     [:indexed, :grayscale, :grayscale_alpha, :truecolor, :truecolor_alpha].each do |color_mode|

@@ -112,5 +112,25 @@ module ChunkyPNG
     end
     
     alias :== :eql?
+    
+    #################################################################
+    # CONSTRUCTORS
+    #################################################################
+
+    def self.from_rgb_stream(width, height, stream)
+      pixels = []
+      while pixeldata = stream.read(3)
+        pixels << ChunkyPNG::Pixel.from_rgb_stream(pixeldata)
+      end
+      self.new(width, height, pixels)
+    end
+
+    def self.from_rgba_stream(width, height, stream)
+      pixels = []
+      while pixeldata = stream.read(4)
+        pixels << ChunkyPNG::Pixel.from_rgba_stream(pixeldata)
+      end
+      self.new(width, height, pixels)
+    end
   end
 end
