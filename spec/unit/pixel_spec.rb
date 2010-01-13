@@ -23,21 +23,21 @@ describe ChunkyPNG::Pixel do
     @non_opaque.should_not be_opaque
     @fully_transparent.should_not be_opaque
   end
-  
+
   it "should convert the individual color values back correctly" do
     @opaque.to_truecolor_bytes.should == [10, 100, 150]
     @non_opaque.to_truecolor_alpha_bytes.should == [10, 100, 150, 100]
   end
-  
+
   describe '#compose' do
     it "should use the foregorund pixel as is when an opaque pixel is given" do
       (@white & @opaque).should == @opaque
     end
-    
+
     it "should use the background pixel as is when a fully_transparent pixel is given" do
       (@white & @fully_transparent).should == @white
     end
-    
+
     it "should compose pixels correctly" do
       (@white.compose_quick(@non_opaque)).should   == ChunkyPNG::Pixel.new(0x9fc2d6ff)
       (@white.compose_precise(@non_opaque)).should == ChunkyPNG::Pixel.new(0x9fc2d6ff)

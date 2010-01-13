@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name    = 'chunky_png'
-  
+
   # Do not change the version and date fields by hand. This will be done
   # automatically by the gem release script.
   s.version = "0.0.5"

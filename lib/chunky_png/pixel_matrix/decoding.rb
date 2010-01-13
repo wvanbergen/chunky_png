@@ -1,10 +1,10 @@
 module ChunkyPNG
   class PixelMatrix
     module Decoding
-      
+
       def decode(ds)
         raise "Only 8-bit color depth is currently supported by ChunkyPNG!" unless ds.header_chunk.depth == 8
-        
+
         stream     = Zlib::Inflate.inflate(ds.data_chunks.map(&:content).join(''))
         width      = ds.header_chunk.width
         height     = ds.header_chunk.height
@@ -13,10 +13,10 @@ module ChunkyPNG
         palette    = ChunkyPNG::Palette.from_chunks(ds.palette_chunk, ds.transparency_chunk)
         decode_pixelstream(stream, width, height, color_mode, palette, interlace)
       end
-      
+
       def decode_pixelstream(stream, width, height, color_mode = ChunkyPNG::COLOR_TRUECOLOR, palette = nil, interlace = ChunkyPNG::INTERLACING_NONE)
         raise "This palette is not suitable for decoding!" if palette && !palette.can_decode?
-        
+
         pixel_size    = Pixel.bytesize(color_mode)
         pixel_decoder = case color_mode
           when ChunkyPNG::COLOR_TRUECOLOR       then lambda { |bytes| ChunkyPNG::Pixel.rgb(*bytes) }
@@ -26,7 +26,7 @@ module ChunkyPNG
           when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then lambda { |bytes| ChunkyPNG::Pixel.grayscale(*bytes) }
           else raise "No suitable pixel decoder found for color mode #{color_mode}!"
         end
-        
+
         pixels = case interlace
           when ChunkyPNG::INTERLACING_NONE  then decode_interlacing_none(stream, width, height, pixel_size, pixel_decoder)
           when ChunkyPNG::INTERLACING_ADAM7 then decode_interlacing_adam7(stream, width, height, pixel_size, pixel_decoder)
@@ -35,35 +35,35 @@ module ChunkyPNG
 
         return ChunkyPNG::PixelMatrix.new(width, height, pixels)
       end
-      
+
       protected
-      
+
       def decode_image_pass(stream, width, height, pixel_size, pixel_decoder, start_pos = 0)
         pixels = []
         decoded_bytes = Array.new(width * pixel_size, 0)
         height.times do |line_no|
-          
+
           if width > 0
-            
+
             # get bytes of scanline
             position       = start_pos + line_no * (width * pixel_size + 1)
             line_length    = width * pixel_size
             bytes          = stream.unpack("@#{position}CC#{line_length}")
             filter         = bytes.shift
             decoded_bytes  = decode_scanline(filter, bytes, decoded_bytes, pixel_size)
-        
+
             # decode bytes into colors
             decoded_bytes.each_slice(pixel_size) { |bytes| pixels << pixel_decoder.call(bytes) }
           end
         end
         pixels
       end
-      
+
       def decode_interlacing_none(stream, width, height, pixel_size, pixel_decoder)
         raise "Invalid stream length!" unless stream.length == width * height * pixel_size + height
         decode_image_pass(stream, width, height, pixel_size, pixel_decoder)
       end
-      
+
       def decode_interlacing_adam7(stream, width, height, pixel_size, pixel_decoder)
         start_pos = 0
         sub_matrices = adam7_pass_sizes(width, height).map do |(pass_width, pass_height)|
@@ -85,7 +85,7 @@ module ChunkyPNG
           :y_offset     => (pass == 0 || pass & 1 == 1) ? 0 : 8 >> (pass >> 1)
         }
       end
-      
+
       def adam7_merge_pass(pass, width, height, pixels, sm_width, sm_height, sm_pixels)
         m_o = adam7_multiplier_offset(pass)
         0.upto(sm_height - 1) do |y|
@@ -97,7 +97,7 @@ module ChunkyPNG
         end
         pixels
       end
-      
+
       def adam7_pass_sizes(width, height)
         (0...7).map do |pass|
           m_o = adam7_multiplier_offset(pass)

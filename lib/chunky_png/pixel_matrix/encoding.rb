@@ -15,16 +15,16 @@ module ChunkyPNG
         result[:pixelstream] = encode_pixelstream(encoding[:color_mode], encoding[:palette])
         return result
       end
-      
+
       protected
-      
+
       def determine_encoding(constraints = {})
         encoding = constraints
         encoding[:palette]    ||= palette
         encoding[:color_mode] ||= encoding[:palette].best_colormode
         return encoding
       end
-      
+
       def encode_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, palette = nil)
 
         pixel_encoder = case color_mode
@@ -35,7 +35,7 @@ module ChunkyPNG
           when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then lambda { |pixel| pixel.to_grayscale_alpha_bytes }
           else raise "Cannot encode pixels for this mode: #{color_mode}!"
         end
-        
+
         if color_mode == ChunkyPNG::COLOR_INDEXED && !palette.can_encode?
           raise "This palette is not suitable for encoding!"
         end

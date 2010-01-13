@@ -1,9 +1,9 @@
 module ChunkyPNG
-  
+
   class Datastream
-    
+
     SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10].pack('C8')
-    
+
     attr_accessor :header_chunk
     attr_accessor :other_chunks
     attr_accessor :palette_chunk
@@ -33,7 +33,7 @@ module ChunkyPNG
       signature = io.read(ChunkyPNG::Datastream::SIGNATURE.length)
       raise "PNG signature not found!" unless signature == ChunkyPNG::Datastream::SIGNATURE
     end
-    
+
     def chunks
       cs = [header_chunk]
       cs += other_chunks
@@ -43,27 +43,27 @@ module ChunkyPNG
       cs << end_chunk
       return cs
     end
-    
+
     def initialize
       @other_chunks = []
       @data_chunks  = []
     end
-    
+
     def write(io)
       io << SIGNATURE
       chunks.each { |c| c.write(io) }
     end
-    
+
     def idat_chunks(data)
       streamdata = Zlib::Deflate.deflate(data)
       # TODO: Split long streamdata over multiple chunks
       return [ ChunkyPNG::Chunk::ImageData.new('IDAT', streamdata) ]
     end
-    
+
     def pixel_matrix=(pixel_matrix)
       @pixel_matrix = pixel_matrix
     end
-    
+
     def pixel_matrix
       @pixel_matrix ||= ChunkyPNG::PixelMatrix.decode(self)
     end
