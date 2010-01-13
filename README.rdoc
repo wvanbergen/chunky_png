@@ -4,14 +4,21 @@ This library can read and write PNG files. It is written in pure Ruby for
 maximum portability. Let me rephrase: it does NOT require RMagick or any other
 memory leaking image library.
 
-This library supports both reading and writing images using all color modes:
-true color, grayscale and indexed colors, with and without transparency. When
-writing images, if will automatically determine the most efficient color mode.
-
 Source code:: http://github.com/wvanbergen/chunky_png/tree
 RDoc:: http://rdoc.info/projects/wvanbergen/chunky_png
 Wiki:: http://wiki.github.com/wvanbergen/chunky_png
 Issue tracker:: http://github.com/wvanbergen/chunky_png/issues
+
+== Features
+
+* Decodes almost any image that the PNG standard allows, except for images 
+  that use a different color depth than 8 bits. This includes all standard  
+  color modes and all transparency, interlacing and filtering options.
+* Encodes images supports all color modes (true color, grayscale and indexed)
+  and transparency for all these color modes. The best color mode will be
+  chosen automatically, based on the image's colors.
+* R/W access to the image's pixels.
+* R/W access to all image metadata that is stored in chunks.
 
 == Classes
 
@@ -26,13 +33,14 @@ The main classes used within ChunkyPNG are:
 
   require 'chunky_png'
   
-  png = ChunkyPNG.load('filename.png')
-  puts png.chunks.inspect
-  puts png.pixel_matrix.inspect
-  
-  # do something with the PNG file
-  
-  File.open('out.png', 'w') { |f| png.write(f) }
+  # Creating an image from scratch
+  png = ChunkyPNG::Image.new(16, 16, ChunkyPNG::Pixel::TRANSPARENT)
+  png[1,1] = ChunkyPNG::Pixel.rgba(255, 255, 255, 128)
+  png[2,1] = ChunkyPNG::Pixel.rgba(255, 255, 255, 128)
+  png.save('filename.png')
+
+  # Modify an image - TODO
+  # Inspecting metadata - TODO
 
 (Note: this is subject to change while work is in progress)
 

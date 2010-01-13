@@ -19,6 +19,18 @@ module ChunkyPNG
       pixel_matrix.height
     end
     
+    def [](x, y)
+      pixel_matrix[x,y]
+    end
+
+    def []=(x, y, pixel)
+      pixel_matrix[x,y] = pixel
+    end
+    
+    def pixels
+      pixel_matrix.pixels
+    end
+    
     def write(io, constraints = {})
       datastream = pixel_matrix.to_datastream(constraints)
       datastream.write(io)
