@@ -40,18 +40,14 @@ module ChunkyPNG
           raise "This palette is not suitable for encoding!"
         end
 
-        pixelsize = Pixel.bytesize(color_mode)
+        pixel_size = Pixel.bytesize(color_mode)
 
         stream   = ""
-        previous = nil
+        previous_bytes = Array.new(pixel_size * width, 0)
         each_scanline do |line|
-          bytes  = line.map(&pixel_encoder).flatten
-          if previous
-            stream << encode_scanline_up(bytes, previous, pixelsize).pack('C*')
-          else
-            stream << encode_scanline_sub(bytes, previous, pixelsize).pack('C*')
-          end
-          previous = bytes
+          unencoded_bytes = line.map(&pixel_encoder).flatten
+          stream << encode_scanline_up(unencoded_bytes, previous_bytes, pixel_size).pack('C*')
+          previous_bytes  = unencoded_bytes
         end
         return stream
       end
@@ -67,18 +63,26 @@ module ChunkyPNG
         end
       end
 
-      def encode_scanline_none(bytes, previous_bytes = nil, pixelsize = 3)
-        [ChunkyPNG::FILTER_NONE] + bytes
+      def encode_scanline_none(original_bytes, previous_bytes = nil, pixelsize = 3)
+        [ChunkyPNG::FILTER_NONE] + original_bytes
       end
 
-      def encode_scanline_sub(bytes, previous_bytes = nil, pixelsize = 3)
-        encoded = (pixelsize...bytes.length).map { |n| (bytes[n-pixelsize] - bytes[n]) % 256 }
-        [ChunkyPNG::FILTER_SUB] + bytes[0...pixelsize] + encoded
+      def encode_scanline_sub(original_bytes, previous_bytes = nil, pixelsize = 3)
+        encoded_bytes = []
+        original_bytes.length.times do |index|
+          a = (index >= pixelsize) ? original_bytes[index - pixelsize] : 0
+          encoded_bytes[index] = (original_bytes[index] - a) % 256
+        end
+        [ChunkyPNG::FILTER_SUB] + encoded_bytes
       end
 
-      def encode_scanline_up(bytes, previous_bytes, pixelsize = 3)
-        encoded = (0...bytes.length).map { |n| previous_bytes[n] - bytes[n] % 256 }
-        [ChunkyPNG::FILTER_UP] + encoded
+      def encode_scanline_up(original_bytes, previous_bytes, pixelsize = 3)
+        encoded_bytes = []
+        original_bytes.length.times do |index|
+          b = previous_bytes[index]
+          encoded_bytes[index] = (original_bytes[index] - b) % 256
+        end
+        [ChunkyPNG::FILTER_UP] + encoded_bytes
       end
     end
   end
