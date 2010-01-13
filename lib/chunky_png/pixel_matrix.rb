@@ -14,6 +14,8 @@ module ChunkyPNG
     include Encoding
     extend  Decoding
     
+    include Operations
+    
     # @return [Integer] The number of columns in this pixel matrix
     attr_reader :width
 
@@ -44,6 +46,12 @@ module ChunkyPNG
       else 
         raise "Cannot use this value as initial pixel matrix: #{initial.inspect}!"
       end
+    end
+    
+    # Returns the size ([width, height]) for this matrix.
+    # @return Array An array with the width and height of this matrix as elements.
+    def size
+      [@width, @height]
     end
     
     # Replaces a single pixel in this matrix.

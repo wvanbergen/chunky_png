@@ -60,6 +60,24 @@ module ChunkyPNG
       @value.hash
     end
     
+    def compose_on(other_pixel)
+      if a == 255
+        self
+      elsif a == 0
+        other_pixel
+      else
+        alpha       = a / 255.0
+        alpha_com   = 1.0 - alpha
+        other_alpha = other_pixel.a / 255.0
+
+        new_r = (alpha * r + alpha_com * other_alpha * other_pixel.r).round
+        new_g = (alpha * g + alpha_com * other_alpha * other_pixel.g).round
+        new_b = (alpha * b + alpha_com * other_alpha * other_pixel.b).round
+        new_a = ((alpha + alpha_com * other_alpha) * 255).round
+        ChunkyPNG::Pixel.rgba(new_r, new_g, new_b, new_a)
+      end
+    end
+    
     def eql?(other)
       other.kind_of?(self.class) && other.value == self.value
     end

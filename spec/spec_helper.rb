@@ -12,6 +12,16 @@ module ResourceFileHelper
 end
 
 
+module MatrixDisplayingHelper
+  def display(matrix)
+    image = ChunkyPNG::Image.from_pixel_matrix(matrix)
+    filename = resource_file('_tmp.png')
+    image.save(filename)
+    `open #{filename}`
+  end
+end
+
 Spec::Runner.configure do |config|
   config.include ResourceFileHelper
+  config.include MatrixDisplayingHelper
 end
