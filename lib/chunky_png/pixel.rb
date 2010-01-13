@@ -101,11 +101,11 @@ module ChunkyPNG
     
     def self.bytesize(color_mode)
       case color_mode
-        when ChunkyPNG::Chunk::Header::COLOR_INDEXED         then 1
-        when ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR       then 3
-        when ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR_ALPHA then 4
-        when ChunkyPNG::Chunk::Header::COLOR_GRAYSCALE       then 1
-        when ChunkyPNG::Chunk::Header::COLOR_GRAYSCALE_ALPHA then 2
+        when ChunkyPNG::COLOR_INDEXED         then 1
+        when ChunkyPNG::COLOR_TRUECOLOR       then 3
+        when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then 4
+        when ChunkyPNG::COLOR_GRAYSCALE       then 1
+        when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then 2
         else raise "Don't know the bytesize of pixels in this colormode: #{color_mode}!"
       end
     end

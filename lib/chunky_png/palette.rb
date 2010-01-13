@@ -162,16 +162,16 @@ module ChunkyPNG
     def best_colormode
       if grayscale?
         if opaque?
-          ChunkyPNG::Chunk::Header::COLOR_GRAYSCALE
+          ChunkyPNG::COLOR_GRAYSCALE
         else
-          ChunkyPNG::Chunk::Header::COLOR_GRAYSCALE_ALPHA
+          ChunkyPNG::COLOR_GRAYSCALE_ALPHA
         end
       elsif indexable?
-        ChunkyPNG::Chunk::Header::COLOR_INDEXED
+        ChunkyPNG::COLOR_INDEXED
       elsif opaque?
-        ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR
+        ChunkyPNG::COLOR_TRUECOLOR
       else
-        ChunkyPNG::Chunk::Header::COLOR_TRUECOLOR_ALPHA
+        ChunkyPNG::COLOR_TRUECOLOR_ALPHA
       end
     end
   end

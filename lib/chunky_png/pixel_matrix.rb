@@ -14,12 +14,6 @@ module ChunkyPNG
     include Encoding
     extend  Decoding
     
-    FILTER_NONE    = 0
-    FILTER_SUB     = 1
-    FILTER_UP      = 2
-    FILTER_AVERAGE = 3
-    FILTER_PAETH   = 4
-    
     # @return [Integer] The number of columns in this pixel matrix
     attr_reader :width
 

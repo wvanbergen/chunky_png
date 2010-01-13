@@ -45,21 +45,15 @@ module ChunkyPNG
     
     class Header < Base
       
-      COLOR_GRAYSCALE       = 0
-      COLOR_TRUECOLOR       = 2
-      COLOR_INDEXED         = 3
-      COLOR_GRAYSCALE_ALPHA = 4
-      COLOR_TRUECOLOR_ALPHA = 6
-      
       attr_accessor :width, :height, :depth, :color, :compression, :filtering, :interlace
       
       def initialize(attrs = {})
         super('IHDR', attrs)
         @depth       ||= 8
-        @color       ||= COLOR_TRUECOLOR
-        @compression ||= 0
-        @filtering   ||= 0
-        @interlace   ||= 0
+        @color       ||= ChunkyPNG::COLOR_TRUECOLOR
+        @compression ||= ChunkyPNG::COMPRESSION_DEFAULT
+        @filtering   ||= ChunkyPNG::FILTERING_DEFAULT
+        @interlace   ||= ChunkyPNG::INTERLACING_NONE
       end
       
       def self.read(type, content)

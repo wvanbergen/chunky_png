@@ -13,6 +13,25 @@ require 'chunky_png/image'
 module ChunkyPNG
   extend self
 
+  COLOR_GRAYSCALE       = 0
+  COLOR_TRUECOLOR       = 2
+  COLOR_INDEXED         = 3
+  COLOR_GRAYSCALE_ALPHA = 4
+  COLOR_TRUECOLOR_ALPHA = 6
+  
+  FILTERING_DEFAULT     = 0
+
+  COMPRESSION_DEFAULT   = 0
+  
+  INTERLACING_NONE      = 0
+  INTERLACING_ADAM7     = 1
+  
+  FILTER_NONE           = 0
+  FILTER_SUB            = 1
+  FILTER_UP             = 2
+  FILTER_AVERAGE        = 3
+  FILTER_PAETH          = 4
+
   def load_from_io(io)
     ChunkyPNG::Datastream.read(io)
   end
