@@ -68,11 +68,11 @@ module ChunkyPNG
       
       def decode_scanline(filter, bytes, previous_bytes, pixelsize = 3)
         case filter
-        when ChunkyPNG::FILTER_NONE    then decode_scanline_none( bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_SUB     then decode_scanline_sub(  bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_UP      then decode_scanline_up(   bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_AVERAGE then raise "Average filter are not yet supported!"
-        when ChunkyPNG::FILTER_PAETH   then raise "Paeth filter are not yet supported!"
+        when ChunkyPNG::FILTER_NONE    then decode_scanline_none(    bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_SUB     then decode_scanline_sub(     bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_UP      then decode_scanline_up(      bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_AVERAGE then decode_scanline_average( bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_PAETH   then decode_scanline_paeth(   bytes, previous_bytes, pixelsize)
         else raise "Unknown filter type"
         end
       end
@@ -88,6 +88,30 @@ module ChunkyPNG
 
       def decode_scanline_up(bytes, previous_bytes, pixelsize = 3)
         bytes.each_with_index { |b, i| bytes[i] = (b + previous_bytes[i]) % 256 }
+        bytes
+      end
+
+      def decode_scanline_average(bytes, previous_bytes, pixelsize = 3)
+        bytes.each_with_index do |byte, i|
+          a = (i >= pixelsize) ? bytes[i - pixelsize] : 0
+          b = previous_bytes[i]
+          bytes[i] = (byte + (a + b / 2).floor) % 256
+        end
+        bytes
+      end
+
+      def decode_scanline_paeth(bytes, previous_bytes, pixelsize = 3)
+        bytes.each_with_index do |byte, i|
+          a = (i >= pixelsize) ? bytes[i - pixelsize] : 0
+          b = previous_bytes[i]
+          c = (i >= pixelsize) ? previous_bytes[i - pixelsize] : 0
+          p = a + b - c
+          pa = (p - a).abs
+          pb = (p - b).abs
+          pc = (p - c).abs
+          pr = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c)
+          bytes[i] = (byte + pr) % 256
+        end
         bytes
       end
     end
