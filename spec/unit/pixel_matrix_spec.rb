@@ -4,11 +4,9 @@ describe ChunkyPNG::PixelMatrix do
 
   describe '.from_rgb_stream' do
     it "should load an image correctly from a datastrean" do
-      reference = ChunkyPNG.load(resource_file('pixelstream_reference.png')).pixel_matrix
-
       File.open(resource_file('pixelstream.rgb')) do |stream|
         pm = ChunkyPNG::PixelMatrix.from_rgb_stream(240, 180, stream)
-        pm.should == reference
+        pm.should == reference_matrix('pixelstream_reference')
       end
     end
   end
@@ -46,9 +44,7 @@ describe ChunkyPNG::PixelMatrix do
 
         filename = resource_file("_tmp_#{color_mode}.png")
         File.open(filename, 'w') { |f| @reference.to_datastream.write(f) }
-
         ChunkyPNG.load(filename).pixel_matrix.should == @reference
-
         File.unlink(filename)
       end
     end
@@ -60,10 +56,8 @@ describe ChunkyPNG::PixelMatrix do
     end
 
     it "should crop the right pixels from the original matrix" do
-      cropped = @matrix.crop(10, 5, 2, 3)
-      cropped.size.should == [2, 3]
-      ChunkyPNG::Color.r(cropped[0, 0]).should == 10 * 16
-      ChunkyPNG::Color.g(cropped[0, 0]).should ==  5 * 16
+      cropped = @matrix.crop(10, 5, 4, 8)
+      cropped.should == reference_matrix('cropped')
     end
   end
 
@@ -75,7 +69,7 @@ describe ChunkyPNG::PixelMatrix do
     it "should compose pixels correctly" do
       submatrix = ChunkyPNG::PixelMatrix.new(4, 8, ChunkyPNG::Color.rgba(0, 0, 0, 75))
       @matrix.compose(submatrix, 8, 4)
-      display(@matrix)
+      @matrix.should == reference_matrix('composited')
     end
   end
 
@@ -85,9 +79,9 @@ describe ChunkyPNG::PixelMatrix do
     end
 
     it "should replace the correct pixels" do
-      submatrix = ChunkyPNG::PixelMatrix.new(3, 2, ChunkyPNG::Color.rgb(255, 255, 0))
+      submatrix = ChunkyPNG::PixelMatrix.new(3, 2, ChunkyPNG::Color.rgb(200, 255, 0))
       @matrix.replace(submatrix, 5, 4)
-      # display(@matrix)
+      @matrix.should == reference_matrix('replaced')
     end
   end
 end
