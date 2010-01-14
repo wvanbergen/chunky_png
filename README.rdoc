@@ -27,16 +27,16 @@ The main classes used within ChunkyPNG are:
 <tt>ChunkyPNG::Image</tt> :: create PNG images from scratch or based on another PNG image.
 <tt>ChunkyPNG::Datastream</tt> :: low-level read and write access to PNG images from or to a file or stream.
 <tt>ChunkyPNG::PixelMatrix</tt> :: represents an images as a matrix of pixels.
-<tt>ChunkyPNG::Pixel</tt> :: represents a single pixel or color value.
+<tt>ChunkyPNG::Color</tt> :: represents a, RGBA color
 
 == Usage
 
   require 'chunky_png'
 
   # Creating an image from scratch
-  png = ChunkyPNG::Image.new(16, 16, ChunkyPNG::Pixel::TRANSPARENT)
-  png[1,1] = ChunkyPNG::Pixel.rgba(255, 255, 255, 128)
-  png[2,1] = ChunkyPNG::Pixel.rgba(255, 255, 255, 128)
+  png = ChunkyPNG::Image.new(16, 16, ChunkyPNG::Color::TRANSPARENT)
+  png[1,1] = ChunkyPNG::Color.rgba(255, 255, 255, 128)
+  png[2,1] = ChunkyPNG::Color.rgba(255, 255, 255, 128)
   png.save('filename.png')
 
   # Modify an image - TODO

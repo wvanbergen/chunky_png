@@ -25,25 +25,25 @@ module ChunkyPNG
     # @return [Integer] The number of rows in this pixel matrix
     attr_reader :height
 
-    # @return [Array<ChunkyPNG::Pixel>] The list of pixels in this matrix.
+    # @return [Array<ChunkyPNG::Color>] The list of pixels in this matrix.
     #     This array always should have +width * height+ elements.
     attr_reader :pixels
 
     # Initializes a new PixelMatrix instance
     # @param [Integer] width The width in pixels of this matrix
     # @param [Integer] width The height in pixels of this matrix
-    # @param [ChunkyPNG::Pixel, Array<ChunkyPNG::Pixel>] initial The initial value of te pixels:
+    # @param [ChunkyPNG::Pixel, Array<ChunkyPNG::Color>] initial The initial value of te pixels:
     #
     #    * If a color is passed to this parameter, this color will be used as background color.
     #
     #    * If an array of pixels is provided, these pixels will be used as initial value. Note
     #      that the amount of pixels in this array should equal +width * height+.
-    def initialize(width, height, initial = ChunkyPNG::Pixel::TRANSPARENT)
+    def initialize(width, height, initial = ChunkyPNG::Color::TRANSPARENT)
 
       @width, @height = width, height
 
-      if initial.kind_of?(ChunkyPNG::Pixel)
-        @pixels = Array.new(width * height, initial.to_i)
+      if initial.kind_of?(Fixnum)
+        @pixels = Array.new(width * height, initial)
       elsif initial.kind_of?(Array) && initial.size == width * height
         @pixels = initial.map(&:to_i)
       else
@@ -60,24 +60,33 @@ module ChunkyPNG
     # Replaces a single pixel in this matrix.
     # @param [Integer] x The x-coordinate of the pixel (column)
     # @param [Integer] y The y-coordinate of the pixel (row)
-    # @param [ChunkyPNG::Pixel] pixel The new pixel for the provided coordinates.
-    def []=(x, y, pixel)
-      @pixels[y * width + x] = pixel.to_i
+    # @param [ChunkyPNG::Color] pixel The new pixel for the provided coordinates.
+    def []=(x, y, color)
+      @pixels[y * width + x] = color
     end
 
     # Returns a single pixel from this matrix.
     # @param [Integer] x The x-coordinate of the pixel (column)
     # @param [Integer] y The y-coordinate of the pixel (row)
-    # @return [ChunkyPNG::Pixel] The current pixel at the provided coordinates.
+    # @return [ChunkyPNG::Color] The current pixel at the provided coordinates.
     def [](x, y)
-      ChunkyPNG::Pixel.new(@pixels[y * width + x])
+      @pixels[y * width + x]
     end
 
-    # Passes to this matrix of pixels line by line.
-    # @yield [Array<ChunkyPNG::Pixel>] An line of pixels
+    # Passes to this matrix of pixel values line by line.
+    # @yield [Array<Fixnum>] An line of fixnums reprsenting pixels
     def each_scanline(&block)
       height.times do |i|
-        scanline = @pixels[width * i, width].map { |fn| ChunkyPNG::Pixel.new(fn) }
+        scanline = @pixels[width * i, width]
+        yield(scanline)
+      end
+    end
+    
+    # Passes to this matrix of pixels line by line.
+    # @yield [Array<ChunkyPNG::Color>] An line of pixels
+    def each_row(&block)
+      height.times do |i|
+        scanline = @pixels[width * i, width].map { |fn| ChunkyPNG::Color.new(fn) }
         yield(scanline)
       end
     end
@@ -120,7 +129,7 @@ module ChunkyPNG
     def self.from_rgb_stream(width, height, stream)
       pixels = []
       while pixeldata = stream.read(3)
-        pixels << ChunkyPNG::Pixel.from_rgb_stream(pixeldata)
+        pixels << ChunkyPNG::Color.from_rgb_stream(pixeldata)
       end
       self.new(width, height, pixels)
     end
@@ -128,7 +137,7 @@ module ChunkyPNG
     def self.from_rgba_stream(width, height, stream)
       pixels = []
       while pixeldata = stream.read(4)
-        pixels << ChunkyPNG::Pixel.from_rgba_stream(pixeldata)
+        pixels << ChunkyPNG::Color.from_rgba_stream(pixeldata)
       end
       self.new(width, height, pixels)
     end

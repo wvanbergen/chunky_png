@@ -8,12 +8,12 @@ module ChunkyPNG
   # This palette supports decoding colors from a palette if an explicit palette is provided
   # in a PNG datastream, and it supports encoding colors to an explicit matrix.
   #
-  # @see ChunkyPNG::Pixel
+  # @see ChunkyPNG::Color
   class Palette < SortedSet
 
     # Builds a new palette given a set (Enumerable instance) of colors.
     #
-    # @param [Enumerbale<ChunkyPNG::Pixel>] enum The set of colors to include in this palette.
+    # @param [Enumerbale<CFixnum>] enum The set of colors to include in this palette.
     #   This Enumerbale can contains duplicates.
     # @param [Array] decoding_map An array of colors in the exact order at which
     #   they appeared in the palette chunk, so that this array can be used for decoding.
@@ -47,7 +47,7 @@ module ChunkyPNG
       index = 0
       palatte_bytes.each_slice(3) do |bytes|
         bytes << alpha_channel[index]
-        decoding_map << ChunkyPNG::Pixel.rgba(*bytes)
+        decoding_map << ChunkyPNG::Color.rgba(*bytes)
         index += 1
       end
 
@@ -58,11 +58,11 @@ module ChunkyPNG
     # @param [ChunkyPNG::PixelMatrix] pixel_matrix The pixel matrix to create a palette for.
     # @return [ChunkyPNG::Palette] The palette instance.
     def self.from_pixel_matrix(pixel_matrix)
-      self.new(pixel_matrix.pixels.map { |fn| ChunkyPNG::Pixel.new(fn) })
+      self.new(pixel_matrix.pixels)
     end
 
     # Builds a palette instance from a given set of pixels.
-    # @param [Enumerable<ChunkyPNG::Pixel>] pixels An enumeration of pixels to create a palette for
+    # @param [Enumerable<Fixnum>] pixels An enumeration of pixels to create a palette for
     # @return [ChunkyPNG::Palette] The palette instance.
     def self.from_pixels(pixels)
       self.new(pixels)
@@ -76,16 +76,16 @@ module ChunkyPNG
 
     # Check whether this pelette only contains opaque colors.
     # @return [true, false] True if all colors in this palette are opaque.
-    # @see ChunkyPNG::Pixel#opaque?
+    # @see ChunkyPNG::Color#opaque?
     def opaque?
-      all? { |pixel| pixel.opaque? }
+      all? { |color| Color.opaque?(color) }
     end
 
     # Check whether this pelette only contains grayscale colors.
     # @return [true, false] True if all colors in this palette are grayscale teints.
-    # @see ChunkyPNG::Pixel#grayscale??
+    # @see ChunkyPNG::Color#grayscale??
     def grayscale?
-      all? { |pixel| pixel.grayscale? }
+      all? { |color| Color.grayscale?(color) }
     end
 
     # Checks whether this palette is suitable for decoding an image from a datastream.
@@ -110,18 +110,18 @@ module ChunkyPNG
 
     # Returns a color, given the position in the original palette chunk.
     # @param [Fixnum] index The 0-based position of the color in the palette.
-    # @return [ChunkyPNG::Pixel] The color that is stored in the palette under the given index
+    # @return [ChunkyPNG::Color] The color that is stored in the palette under the given index
     # @see ChunkyPNG::Palette#can_decode?
     def [](index)
       @decoding_map[index]
     end
 
     # Returns the position of a color in the palette
-    # @param [ChunkyPNG::Pixel] color The color for which to look up the index.
+    # @param [ChunkyPNG::Color] color The color for which to look up the index.
     # @return [Fixnum] The 0-based position of the color in the palette.
     # @see ChunkyPNG::Palette#can_encode?
     def index(color)
-      @encoding_map[ChunkyPNG::Pixel.new(color)]
+      @encoding_map[color]
     end
 
     # Creates a tRNS chunk that corresponds with this palette to store the
@@ -132,7 +132,7 @@ module ChunkyPNG
     #
     # @return [ChunkyPNG::Chunk::Transparency] The tRNS chunk.
     def to_trns_chunk
-      ChunkyPNG::Chunk::Transparency.new('tRNS', map(&:a).pack('C*'))
+      ChunkyPNG::Chunk::Transparency.new('tRNS', map { |c| ChunkyPNG::Color.a(c) }.pack('C*'))
     end
 
     # Creates a PLTE chunk that corresponds with this palette to store the
@@ -150,7 +150,7 @@ module ChunkyPNG
 
       each_with_index do |color, index|
         @encoding_map[color] = index
-        colors += color.to_truecolor_bytes
+        colors += ChunkyPNG::Color.truecolor_bytes(color)
       end
 
       ChunkyPNG::Chunk::Palette.new('PLTE', colors.pack('C*'))

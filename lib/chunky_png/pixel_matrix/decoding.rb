@@ -17,13 +17,13 @@ module ChunkyPNG
       def decode_pixelstream(stream, width, height, color_mode = ChunkyPNG::COLOR_TRUECOLOR, palette = nil, interlace = ChunkyPNG::INTERLACING_NONE)
         raise "This palette is not suitable for decoding!" if palette && !palette.can_decode?
 
-        pixel_size    = Pixel.bytesize(color_mode)
+        pixel_size    = Color.bytesize(color_mode)
         pixel_decoder = case color_mode
-          when ChunkyPNG::COLOR_TRUECOLOR       then lambda { |bytes| ChunkyPNG::Pixel.rgb(*bytes) }
-          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then lambda { |bytes| ChunkyPNG::Pixel.rgba(*bytes) }
+          when ChunkyPNG::COLOR_TRUECOLOR       then lambda { |bytes| ChunkyPNG::Color.rgb(*bytes) }
+          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then lambda { |bytes| ChunkyPNG::Color.rgba(*bytes) }
           when ChunkyPNG::COLOR_INDEXED         then lambda { |bytes| palette[bytes.first] }
-          when ChunkyPNG::COLOR_GRAYSCALE       then lambda { |bytes| ChunkyPNG::Pixel.grayscale(*bytes) }
-          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then lambda { |bytes| ChunkyPNG::Pixel.grayscale(*bytes) }
+          when ChunkyPNG::COLOR_GRAYSCALE       then lambda { |bytes| ChunkyPNG::Color.grayscale(*bytes) }
+          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then lambda { |bytes| ChunkyPNG::Color.grayscale(*bytes) }
           else raise "No suitable pixel decoder found for color mode #{color_mode}!"
         end
 
@@ -72,7 +72,7 @@ module ChunkyPNG
           [pass_width, pass_height, pixels]
         end
 
-        pixels = Array.new(width * height, ChunkyPNG::Pixel::TRANSPARENT)
+        pixels = Array.new(width * height, ChunkyPNG::Color::TRANSPARENT)
         0.upto(6) { |pass| adam7_merge_pass(pass, width, height, pixels, *sub_matrices[pass]) }
         pixels
       end

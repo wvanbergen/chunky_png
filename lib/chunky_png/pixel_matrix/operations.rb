@@ -1,12 +1,12 @@
 module ChunkyPNG
   class PixelMatrix
     module Operations
-      def compose(other, dx = 0, dy = 0)
-        check_size_constraints!(other, dx, dy)
+      def compose(new_foreground, dx = 0, dy = 0)
+        check_size_constraints!(new_foreground, dx, dy)
 
-        other.height.times do |y|
-          other.width.times do |x|
-            self[x+dx, y+dy] = self[x+dx, y+dy] & other[x, y]
+        new_foreground.height.times do |y|
+          new_foreground.width.times do |x|
+            self[x+dx, y+dy] = ChunkyPNG::Color.compose(new_foreground[x, y], self[x+dx, y+dy])
           end
         end
         self

@@ -17,14 +17,14 @@ describe ChunkyPNG::PixelMatrix do
 
     [:indexed, :grayscale, :grayscale_alpha, :truecolor, :truecolor_alpha].each do |color_mode|
       it "should decode an image with color mode #{color_mode} correctly" do
-        reference = ChunkyPNG::PixelMatrix.new(10, 10, ChunkyPNG::Pixel.rgb(100, 100, 100))
+        reference = ChunkyPNG::PixelMatrix.new(10, 10, ChunkyPNG::Color.rgb(100, 100, 100))
         ds = ChunkyPNG.load(resource_file("gray_10x10_#{color_mode}.png"))
         ds.pixel_matrix.should == reference
       end
     end
 
     it "should decode a transparent image correctly" do
-      reference = ChunkyPNG::PixelMatrix.new(10, 10, ChunkyPNG::Pixel.rgba(100, 100, 100, 128))
+      reference = ChunkyPNG::PixelMatrix.new(10, 10, ChunkyPNG::Color.rgba(100, 100, 100, 128))
       ds = ChunkyPNG.load(resource_file("transparent_gray_10x10.png"))
       ds.pixel_matrix.should == reference
     end
@@ -38,7 +38,7 @@ describe ChunkyPNG::PixelMatrix do
 
   describe '.encode' do
     before(:each) do
-      @reference = ChunkyPNG::PixelMatrix.new(10, 10, ChunkyPNG::Pixel.rgb(100, 100, 100))
+      @reference = ChunkyPNG::PixelMatrix.new(10, 10, ChunkyPNG::Color.rgb(100, 100, 100))
     end
 
     [:indexed, :grayscale, :grayscale_alpha, :truecolor, :truecolor_alpha].each do |color_mode|
@@ -62,8 +62,8 @@ describe ChunkyPNG::PixelMatrix do
     it "should crop the right pixels from the original matrix" do
       cropped = @matrix.crop(10, 5, 2, 3)
       cropped.size.should == [2, 3]
-      cropped[0, 0].r.should == 10 * 16
-      cropped[0, 0].g.should ==  5 * 16
+      ChunkyPNG::Color.r(cropped[0, 0]).should == 10 * 16
+      ChunkyPNG::Color.g(cropped[0, 0]).should ==  5 * 16
     end
   end
 
@@ -73,9 +73,9 @@ describe ChunkyPNG::PixelMatrix do
     end
 
     it "should compose pixels correctly" do
-      submatrix = ChunkyPNG::PixelMatrix.new(4, 8, ChunkyPNG::Pixel.rgba(0, 0, 0, 75))
+      submatrix = ChunkyPNG::PixelMatrix.new(4, 8, ChunkyPNG::Color.rgba(0, 0, 0, 75))
       @matrix.compose(submatrix, 8, 4)
-      # display(@matrix)
+      display(@matrix)
     end
   end
 
@@ -85,7 +85,7 @@ describe ChunkyPNG::PixelMatrix do
     end
 
     it "should replace the correct pixels" do
-      submatrix = ChunkyPNG::PixelMatrix.new(3, 2, ChunkyPNG::Pixel.rgb(255, 255, 0))
+      submatrix = ChunkyPNG::PixelMatrix.new(3, 2, ChunkyPNG::Color.rgb(255, 255, 0))
       @matrix.replace(submatrix, 5, 4)
       # display(@matrix)
     end
