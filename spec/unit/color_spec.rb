@@ -44,5 +44,15 @@ describe ChunkyPNG::Color do
       compose_precise(@non_opaque, @white).should == 0x9fc2d6ff
     end
   end
+  
+  describe '#blend' do
+    it "should blend colors correctly" do
+      blend(@opaque, @black).should == 0x05324bff
+    end
+    
+    it "should not matter what color is used as foreground, and what as background" do
+      blend(@opaque, @black).should == blend(@black, @opaque)
+    end
+  end
 end
 

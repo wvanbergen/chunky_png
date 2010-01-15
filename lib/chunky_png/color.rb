@@ -126,7 +126,7 @@ module ChunkyPNG
     ####################################################################
       
     def hex(value)
-      '#%08x' % @value
+      '#%08x' % value
     end
     
     def truecolor_alpha_bytes(value)
@@ -208,6 +208,15 @@ module ChunkyPNG
     end
 
     alias :compose :compose_quick
+    
+    # Blends the foreground and background color by taking the average of 
+    # the components.
+    # @param [Fixnum] fg The foreground color.
+    # @param [Fixnum] bg The foreground color.
+    # @return [Fixnum] The blended color.
+    def blend(fg, bg)
+      (fg + bg) >> 1
+    end
     
     ####################################################################
     # STATIC UTILITY METHODS
