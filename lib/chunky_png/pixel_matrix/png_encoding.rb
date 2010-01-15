@@ -85,11 +85,11 @@ module ChunkyPNG
 
       def encode_png_scanline(filter, bytes, previous_bytes = nil, pixelsize = 3)
         case filter
-        when ChunkyPNG::FILTER_NONE    then encode_png_scanline_none( bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_SUB     then encode_png_scanline_sub(  bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_UP      then encode_png_scanline_up(   bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_AVERAGE then raise "Average filter are not yet supported!"
-        when ChunkyPNG::FILTER_PAETH   then raise "Paeth filter are not yet supported!"
+        when ChunkyPNG::FILTER_NONE    then encode_png_scanline_none(    bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_SUB     then encode_png_scanline_sub(     bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_UP      then encode_png_scanline_up(      bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_AVERAGE then encode_png_scanline_average( bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_PAETH   then encode_png_scanline_paeth(   bytes, previous_bytes, pixelsize)
         else raise "Unknown filter type"
         end
       end
@@ -114,6 +114,32 @@ module ChunkyPNG
           encoded_bytes[index] = (original_bytes[index] - b) % 256
         end
         [ChunkyPNG::FILTER_UP] + encoded_bytes
+      end
+      
+      def encode_png_scanline_average(original_bytes, previous_bytes, pixelsize = 3)
+        encoded_bytes = []
+        original_bytes.length.times do |index|
+          a = (index >= pixelsize) ? original_bytes[index - pixelsize] : 0
+          b = previous_bytes[index]
+          encoded_bytes[index] = (original_bytes[index] - (a + b / 2).floor) % 256
+        end
+        [ChunkyPNG::FILTER_AVERAGE] + encoded_bytes
+      end
+      
+      def encode_png_scanline_paeth(original_bytes, previous_bytes, pixelsize = 3)
+        encoded_bytes = []
+        original_bytes.length.times do |i|
+          a = (i >= pixelsize) ? original_bytes[i - pixelsize] : 0
+          b = previous_bytes[i]
+          c = (i >= pixelsize) ? previous_bytes[i - pixelsize] : 0
+          p = a + b - c
+          pa = (p - a).abs
+          pb = (p - b).abs
+          pc = (p - c).abs
+          pr = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c)
+          encoded_bytes[i] = (original_bytes[i] - pr) % 256
+        end
+        [ChunkyPNG::FILTER_PAETH] + encoded_bytes
       end
     end
   end
