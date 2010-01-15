@@ -35,12 +35,21 @@ The main classes used within ChunkyPNG are:
 
   # Creating an image from scratch
   png = ChunkyPNG::Image.new(16, 16, ChunkyPNG::Color::TRANSPARENT)
-  png[1,1] = ChunkyPNG::Color.rgba(255, 255, 255, 128)
-  png[2,1] = ChunkyPNG::Color.rgba(255, 255, 255, 128)
+  png[1,1] = ChunkyPNG::Color.rgba(10, 20, 30, 128)
+  png[2,1] = ChunkyPNG::Color.rgba(0, 0, 0, 128)
   png.save('filename.png')
 
-  # Modify an image - TODO
+  # Compose images using alpha blending
+  avatar = ChunkyPNG::Image.from_file('avatar.png')
+  badge  = ChunkyPNG::Image.from_file('no_ie_badge.png')
+  avatar.compose(badge, 10, 10)
+  avatar.save('composited.png', :color_mode => ChunkyPNG::COLOR_GRAYSCALE)
+  
   # Inspecting metadata - TODO
+  
+  # Low level access to PNG chunks
+  png_stream = ChunkyPNG::Datastream.from_file('filename.png')
+  png_stream.each_chunk { |chunk| p chunk.type }
 
 (Note: this is subject to change while work is in progress)
 

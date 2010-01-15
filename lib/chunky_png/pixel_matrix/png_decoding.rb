@@ -1,20 +1,37 @@
 module ChunkyPNG
   class PixelMatrix
-    module Decoding
+    
+    # The PNGDecoding contains methods for decoding PNG datastreams to create a PixelMatrix object.
+    # The datastream can be provided as filename, string or IO object.
+    module PNGDecoding
 
-      def decode(ds)
+      def from_blob(str)
+        from_datastream(ChunkyPNG::Datastream.from_blob(str))
+      end
+      
+      alias :from_string :from_blob
+
+      def from_file(filename)
+        from_datastream(ChunkyPNG::Datastream.from_file(filename))
+      end
+      
+      def from_io(io)
+        from_datastream(ChunkyPNG::Datastream.from_io(io))
+      end
+
+      def from_datastream(ds)
         raise "Only 8-bit color depth is currently supported by ChunkyPNG!" unless ds.header_chunk.depth == 8
 
-        stream     = Zlib::Inflate.inflate(ds.data_chunks.map(&:content).join(''))
         width      = ds.header_chunk.width
         height     = ds.header_chunk.height
         color_mode = ds.header_chunk.color
         interlace  = ds.header_chunk.interlace
         palette    = ChunkyPNG::Palette.from_chunks(ds.palette_chunk, ds.transparency_chunk)
-        decode_pixelstream(stream, width, height, color_mode, palette, interlace)
+        stream     = ChunkyPNG::Chunk::ImageData.combine_chunks(ds.data_chunks)
+        decode_png_pixelstream(stream, width, height, color_mode, palette, interlace)
       end
 
-      def decode_pixelstream(stream, width, height, color_mode = ChunkyPNG::COLOR_TRUECOLOR, palette = nil, interlace = ChunkyPNG::INTERLACING_NONE)
+      def decode_png_pixelstream(stream, width, height, color_mode = ChunkyPNG::COLOR_TRUECOLOR, palette = nil, interlace = ChunkyPNG::INTERLACING_NONE)
         raise "This palette is not suitable for decoding!" if palette && !palette.can_decode?
 
         pixel_size    = Color.bytesize(color_mode)
@@ -28,17 +45,17 @@ module ChunkyPNG
         end
 
         pixels = case interlace
-          when ChunkyPNG::INTERLACING_NONE  then decode_interlacing_none(stream, width, height, pixel_size, pixel_decoder)
-          when ChunkyPNG::INTERLACING_ADAM7 then decode_interlacing_adam7(stream, width, height, pixel_size, pixel_decoder)
+          when ChunkyPNG::INTERLACING_NONE  then decode_png_without_interlacing(stream, width, height, pixel_size, pixel_decoder)
+          when ChunkyPNG::INTERLACING_ADAM7 then decode_png_with_adam7_interlacing(stream, width, height, pixel_size, pixel_decoder)
           else raise "Don't know how the handle interlacing method #{interlace}!"
         end
 
-        return ChunkyPNG::PixelMatrix.new(width, height, pixels)
+        new(width, height, pixels)
       end
 
       protected
 
-      def decode_image_pass(stream, width, height, pixel_size, pixel_decoder, start_pos = 0)
+      def decode_png_image_pass(stream, width, height, pixel_size, pixel_decoder, start_pos = 0)
         pixels = []
         decoded_bytes = Array.new(width * pixel_size, 0)
         height.times do |line_no|
@@ -50,7 +67,7 @@ module ChunkyPNG
             line_length    = width * pixel_size
             bytes          = stream.unpack("@#{position}CC#{line_length}")
             filter         = bytes.shift
-            decoded_bytes  = decode_scanline(filter, bytes, decoded_bytes, pixel_size)
+            decoded_bytes  = decode_png_scanline(filter, bytes, decoded_bytes, pixel_size)
 
             # decode bytes into colors
             decoded_bytes.each_slice(pixel_size) { |bytes| pixels << pixel_decoder.call(bytes) }
@@ -59,15 +76,15 @@ module ChunkyPNG
         pixels
       end
 
-      def decode_interlacing_none(stream, width, height, pixel_size, pixel_decoder)
+      def decode_png_without_interlacing(stream, width, height, pixel_size, pixel_decoder)
         raise "Invalid stream length!" unless stream.length == width * height * pixel_size + height
-        decode_image_pass(stream, width, height, pixel_size, pixel_decoder)
+        decode_png_image_pass(stream, width, height, pixel_size, pixel_decoder)
       end
 
-      def decode_interlacing_adam7(stream, width, height, pixel_size, pixel_decoder)
+      def decode_png_with_adam7_interlacing(stream, width, height, pixel_size, pixel_decoder)
         start_pos = 0
         sub_matrices = adam7_pass_sizes(width, height).map do |(pass_width, pass_height)|
-          pixels = decode_image_pass(stream, pass_width, pass_height, pixel_size, pixel_decoder, start_pos)
+          pixels = decode_png_image_pass(stream, pass_width, pass_height, pixel_size, pixel_decoder, start_pos)
           start_pos += (pass_width * pass_height * pixel_size) + pass_height
           [pass_width, pass_height, pixels]
         end
@@ -106,32 +123,32 @@ module ChunkyPNG
         end
       end
 
-      def decode_scanline(filter, bytes, previous_bytes, pixelsize = 3)
+      def decode_png_scanline(filter, bytes, previous_bytes, pixelsize = 3)
         case filter
-        when ChunkyPNG::FILTER_NONE    then decode_scanline_none(    bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_SUB     then decode_scanline_sub(     bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_UP      then decode_scanline_up(      bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_AVERAGE then decode_scanline_average( bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_PAETH   then decode_scanline_paeth(   bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_NONE    then decode_png_scanline_none(    bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_SUB     then decode_png_scanline_sub(     bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_UP      then decode_png_scanline_up(      bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_AVERAGE then decode_png_scanline_average( bytes, previous_bytes, pixelsize)
+        when ChunkyPNG::FILTER_PAETH   then decode_png_scanline_paeth(   bytes, previous_bytes, pixelsize)
         else raise "Unknown filter type"
         end
       end
 
-      def decode_scanline_none(bytes, previous_bytes, pixelsize = 3)
+      def decode_png_scanline_none(bytes, previous_bytes, pixelsize = 3)
         bytes
       end
 
-      def decode_scanline_sub(bytes, previous_bytes, pixelsize = 3)
+      def decode_png_scanline_sub(bytes, previous_bytes, pixelsize = 3)
         bytes.each_with_index { |b, i| bytes[i] = (b + (i >= pixelsize ? bytes[i-pixelsize] : 0)) % 256 }
         bytes
       end
 
-      def decode_scanline_up(bytes, previous_bytes, pixelsize = 3)
+      def decode_png_scanline_up(bytes, previous_bytes, pixelsize = 3)
         bytes.each_with_index { |b, i| bytes[i] = (b + previous_bytes[i]) % 256 }
         bytes
       end
 
-      def decode_scanline_average(bytes, previous_bytes, pixelsize = 3)
+      def decode_png_scanline_average(bytes, previous_bytes, pixelsize = 3)
         bytes.each_with_index do |byte, i|
           a = (i >= pixelsize) ? bytes[i - pixelsize] : 0
           b = previous_bytes[i]
@@ -140,7 +157,7 @@ module ChunkyPNG
         bytes
       end
 
-      def decode_scanline_paeth(bytes, previous_bytes, pixelsize = 3)
+      def decode_png_scanline_paeth(bytes, previous_bytes, pixelsize = 3)
         bytes.each_with_index do |byte, i|
           a = (i >= pixelsize) ? bytes[i - pixelsize] : 0
           b = previous_bytes[i]

@@ -14,16 +14,13 @@ end
 
 module MatrixSpecHelper
   def display(matrix)
-    image = ChunkyPNG::Image.from_pixel_matrix(matrix)
     filename = resource_file('_tmp.png')
-    image.save(filename)
+    matrix.to_datastream.save(filename)
     `open #{filename}`
   end
   
   def reference_matrix(name)
-    filename = resource_file("#{name}.png")
-    ds = ChunkyPNG.load(filename)
-    ds.pixel_matrix
+    ChunkyPNG::PixelMatrix.from_file(resource_file("#{name}.png"))
   end
 end
 

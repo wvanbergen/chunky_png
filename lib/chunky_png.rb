@@ -5,9 +5,10 @@ require 'chunky_png/datastream'
 require 'chunky_png/chunk'
 require 'chunky_png/palette'
 require 'chunky_png/color'
-require 'chunky_png/pixel_matrix/encoding'
-require 'chunky_png/pixel_matrix/decoding'
+require 'chunky_png/pixel_matrix/png_encoding'
+require 'chunky_png/pixel_matrix/png_decoding'
 require 'chunky_png/pixel_matrix/operations'
+require 'chunky_png/pixel_matrix/drawing'
 require 'chunky_png/pixel_matrix'
 require 'chunky_png/image'
 
@@ -16,7 +17,6 @@ require 'chunky_png/image'
 # The ChunkyPNG module defines some constants that are used in the
 # PNG specification.
 module ChunkyPNG
-  extend self
 
   ###################################################
   # PNG international standard defined constants
@@ -40,26 +40,4 @@ module ChunkyPNG
   FILTER_UP             = 2
   FILTER_AVERAGE        = 3
   FILTER_PAETH          = 4
-
-  def load_from_io(io)
-    ChunkyPNG::Datastream.read(io)
-  end
-
-  def load_from_file(file)
-    File.open(file, 'rb') { |f| load_from_io(f) }
-  end
-
-  def load_from_memory(string)
-    load_from_io(StringIO.new(string))
-  end
-
-  def load(arg)
-    if arg.respond_to?(:read)
-      load_from_io(arg)
-    elsif File.exists?(arg)
-      load_from_file(arg)
-    else
-      load_from_memory(arg)
-    end
-  end
 end

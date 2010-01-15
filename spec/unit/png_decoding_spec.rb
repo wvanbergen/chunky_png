@@ -1,29 +1,29 @@
 require File.expand_path('../spec_helper.rb', File.dirname(__FILE__))
 
-describe ChunkyPNG::PixelMatrix::Decoding do
-  include ChunkyPNG::PixelMatrix::Decoding
+describe ChunkyPNG::PixelMatrix::PNGDecoding do
+  include ChunkyPNG::PixelMatrix::PNGDecoding
 
-  describe '#decode_scanline' do
+  describe '#decode_png_scanline' do
 
     it "should decode a line without filtering as is" do
       bytes = [255, 255, 255, 255, 255, 255, 255, 255, 255]
-      decode_scanline(ChunkyPNG::FILTER_NONE, bytes, nil).should == bytes
+      decode_png_scanline(ChunkyPNG::FILTER_NONE, bytes, nil).should == bytes
     end
 
     it "should decode a line with sub filtering correctly" do
       # all white pixels
       bytes = [255, 255, 255, 0, 0, 0, 0, 0, 0]
-      decoded_bytes = decode_scanline(ChunkyPNG::FILTER_SUB, bytes, nil)
+      decoded_bytes = decode_png_scanline(ChunkyPNG::FILTER_SUB, bytes, nil)
       decoded_bytes.should == [255, 255, 255, 255, 255, 255, 255, 255, 255]
 
       # all black pixels
       bytes = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-      decoded_bytes = decode_scanline(ChunkyPNG::FILTER_SUB, bytes, nil)
+      decoded_bytes = decode_png_scanline(ChunkyPNG::FILTER_SUB, bytes, nil)
       decoded_bytes.should == [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
       # various colors
       bytes = [255, 0, 45, 0, 255, 0, 112, 200, 178]
-      decoded_bytes = decode_scanline(ChunkyPNG::FILTER_SUB, bytes, nil)
+      decoded_bytes = decode_png_scanline(ChunkyPNG::FILTER_SUB, bytes, nil)
       decoded_bytes.should == [255, 0, 45, 255, 255, 45, 111, 199, 223]
     end
 
@@ -31,15 +31,17 @@ describe ChunkyPNG::PixelMatrix::Decoding do
       # previous line is all black
       previous_bytes = [0, 0, 0, 0, 0, 0, 0, 0, 0]
       bytes          = [255, 255, 255, 127, 127, 127, 0, 0, 0]
-      decoded_bytes  = decode_scanline(ChunkyPNG::FILTER_UP, bytes, previous_bytes)
+      decoded_bytes  = decode_png_scanline(ChunkyPNG::FILTER_UP, bytes, previous_bytes)
       decoded_bytes.should == [255, 255, 255, 127, 127, 127, 0, 0, 0]
 
       # previous line has various pixels
       previous_bytes = [255, 255, 255, 127, 127, 127, 0, 0, 0]
       bytes          = [0, 127, 255, 0, 127, 255, 0, 127, 255]
-      decoded_bytes  = decode_scanline(ChunkyPNG::FILTER_UP, bytes, previous_bytes)
+      decoded_bytes  = decode_png_scanline(ChunkyPNG::FILTER_UP, bytes, previous_bytes)
       decoded_bytes.should == [255, 126, 254, 127, 254, 126, 0, 127, 255]
     end
+    
+    # TODO: average, paeth filtering
   end
 
   describe '#adam7_pass_sizes' do
@@ -78,6 +80,29 @@ describe ChunkyPNG::PixelMatrix::Decoding do
         pass_sizes = adam7_pass_sizes(width, height)
         pass_sizes.inject(0) { |sum, (w, h)| sum + (w*h) }.should == width * height
       end
+    end
+  end
+  
+  describe '.from_datastream' do
+
+    [:indexed, :grayscale, :grayscale_alpha, :truecolor, :truecolor_alpha].each do |color_mode|
+      it "should decode an image with color mode #{color_mode} correctly" do
+        reference = ChunkyPNG::PixelMatrix.new(10, 10, ChunkyPNG::Color.rgb(100, 100, 100))
+        matrix = ChunkyPNG::PixelMatrix.from_file(resource_file("gray_10x10_#{color_mode}.png"))
+        matrix.should == reference
+      end
+    end
+
+    it "should decode a transparent image correctly" do
+      reference = ChunkyPNG::PixelMatrix.new(10, 10, ChunkyPNG::Color.rgba(100, 100, 100, 128))
+      matrix    = ChunkyPNG::PixelMatrix.from_file(resource_file("transparent_gray_10x10.png"))
+      matrix.should == reference
+    end
+
+    it "should decode an interlaced image correctly" do
+      matrix_i  = ChunkyPNG::PixelMatrix.from_file(resource_file("16x16_interlaced.png"))
+      matrix_ni = ChunkyPNG::PixelMatrix.from_file(resource_file("16x16_non_interlaced.png"))
+      matrix_i.should == matrix_ni
     end
   end
 end

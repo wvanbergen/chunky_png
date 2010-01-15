@@ -89,6 +89,16 @@ module ChunkyPNG
     end
 
     class ImageData < Generic
+      
+      def self.combine_chunks(data_chunks)
+        Zlib::Inflate.inflate(data_chunks.map(&:content).join(''))
+      end
+      
+      def self.split_in_chunks(data, chunk_size = 2147483647)
+        streamdata = Zlib::Deflate.deflate(data)
+        # TODO: Split long streamdata over multiple chunks
+        [ ChunkyPNG::Chunk::ImageData.new('IDAT', streamdata) ]
+      end
     end
 
     # Maps chunk types to classes.
@@ -96,6 +106,5 @@ module ChunkyPNG
     CHUNK_TYPES = {
       'IHDR' => Header, 'IEND' => End, 'IDAT' => ImageData, 'PLTE' => Palette, 'tRNS' => Transparency
     }
-
   end
 end

@@ -14,10 +14,11 @@ module ChunkyPNG
   # @see ChunkyPNG::Datastream
   class PixelMatrix
 
-    include Encoding
-    extend  Decoding
+    include PNGEncoding
+    extend  PNGDecoding
 
     include Operations
+    include Drawing
 
     # @return [Integer] The number of columns in this pixel matrix
     attr_reader :width
@@ -50,6 +51,11 @@ module ChunkyPNG
         raise "Cannot use this value as initial pixel matrix: #{initial.inspect}!"
       end
     end
+    
+    def initialize_copy(other)
+      @width, @height = other.width, other.height
+      @pixels = other.pixels.dup
+    end
 
     # Returns the size ([width, height]) for this matrix.
     # @return Array An array with the width and height of this matrix as elements.
@@ -81,34 +87,12 @@ module ChunkyPNG
         yield(scanline)
       end
     end
-    
-    # Passes to this matrix of pixels line by line.
-    # @yield [Array<ChunkyPNG::Color>] An line of pixels
-    def each_row(&block)
-      height.times do |i|
-        scanline = @pixels[width * i, width].map { |fn| ChunkyPNG::Color.new(fn) }
-        yield(scanline)
-      end
-    end
 
     # Returns the palette used for this pixel matrix.
     # @return [ChunkyPNG::Palette] A pallete which contains all the colors that are
     #    being used for this image.
     def palette
       ChunkyPNG::Palette.from_pixel_matrix(self)
-    end
-
-    # Converts this PixelMatrix to a datastream, so that it can be saved as a PNG image.
-    # @param [Hash] constraints The constraints to use when encoding the matrix.
-    def to_datastream(constraints = {})
-      data = encode(constraints)
-      ds = Datastream.new
-      ds.header_chunk       = Chunk::Header.new(data[:header])
-      ds.palette_chunk      = data[:palette_chunk]      if data[:palette_chunk]
-      ds.transparency_chunk = data[:transparency_chunk] if data[:transparency_chunk]
-      ds.data_chunks        = ds.idat_chunks(data[:pixelstream])
-      ds.end_chunk          = Chunk::End.new
-      return ds
     end
 
     # Equality check to compare this pixel matrix with other matrices.
@@ -122,9 +106,18 @@ module ChunkyPNG
 
     alias :== :eql?
 
+    # Creates an ChunkyPNG::Image object from this pixel matrix
+    def to_image
+      ChunkyPNG::Image.from_pixel_matrix(self)
+    end
+
     #################################################################
     # CONSTRUCTORS
     #################################################################
+
+    def self.from_pixel_matrix(matrix)
+      self.new(matrix.width, matrix.height, matrix.pixels.dup)
+    end
 
     def self.from_rgb_stream(width, height, stream)
       pixels = []
