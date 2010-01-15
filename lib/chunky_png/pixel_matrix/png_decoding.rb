@@ -44,13 +44,11 @@ module ChunkyPNG
           else raise "No suitable pixel decoder found for color mode #{color_mode}!"
         end
 
-        pixels = case interlace
+        return case interlace
           when ChunkyPNG::INTERLACING_NONE  then decode_png_without_interlacing(stream, width, height, pixel_size, pixel_decoder)
           when ChunkyPNG::INTERLACING_ADAM7 then decode_png_with_adam7_interlacing(stream, width, height, pixel_size, pixel_decoder)
           else raise "Don't know how the handle interlacing method #{interlace}!"
         end
-
-        new(width, height, pixels)
       end
 
       protected
@@ -73,7 +71,8 @@ module ChunkyPNG
             decoded_bytes.each_slice(pixel_size) { |bytes| pixels << pixel_decoder.call(bytes) }
           end
         end
-        pixels
+        
+        new(width, height, pixels)
       end
 
       def decode_png_without_interlacing(stream, width, height, pixel_size, pixel_decoder)
@@ -83,44 +82,14 @@ module ChunkyPNG
 
       def decode_png_with_adam7_interlacing(stream, width, height, pixel_size, pixel_decoder)
         start_pos = 0
-        sub_matrices = adam7_pass_sizes(width, height).map do |(pass_width, pass_height)|
-          pixels = decode_png_image_pass(stream, pass_width, pass_height, pixel_size, pixel_decoder, start_pos)
-          start_pos += (pass_width * pass_height * pixel_size) + pass_height
-          [pass_width, pass_height, pixels]
+        matrix = ChunkyPNG::PixelMatrix.new(width, height)
+        0.upto(6) do |pass|
+          sm_width, sm_height = adam7_pass_size(pass, width, height)
+          sm = decode_png_image_pass(stream, sm_width, sm_height, pixel_size, pixel_decoder, start_pos)
+          adam7_merge_pass(pass, matrix, sm)
+          start_pos += (sm_width * sm_height * pixel_size) + sm_height
         end
-
-        pixels = Array.new(width * height, ChunkyPNG::Color::TRANSPARENT)
-        0.upto(6) { |pass| adam7_merge_pass(pass, width, height, pixels, *sub_matrices[pass]) }
-        pixels
-      end
-
-      def adam7_multiplier_offset(pass)
-        {
-          :x_multiplier => 8 >> (pass >> 1),
-          :x_offset     => (pass & 1 == 0) ? 0 : 8 >> ((pass + 1) >> 1),
-          :y_multiplier => pass == 0 ? 8 : 8 >> ((pass - 1) >> 1),
-          :y_offset     => (pass == 0 || pass & 1 == 1) ? 0 : 8 >> (pass >> 1)
-        }
-      end
-
-      def adam7_merge_pass(pass, width, height, pixels, sm_width, sm_height, sm_pixels)
-        m_o = adam7_multiplier_offset(pass)
-        0.upto(sm_height - 1) do |y|
-          0.upto(sm_width - 1) do |x|
-            new_x = x * m_o[:x_multiplier] + m_o[:x_offset]
-            new_y = y * m_o[:y_multiplier] + m_o[:y_offset]
-            pixels[width * new_y + new_x] = sm_pixels[sm_width * y + x]
-          end
-        end
-        pixels
-      end
-
-      def adam7_pass_sizes(width, height)
-        (0...7).map do |pass|
-          m_o = adam7_multiplier_offset(pass)
-          [ ((width  - m_o[:x_offset] ) / m_o[:x_multiplier].to_f).ceil,
-            ((height - m_o[:y_offset] ) / m_o[:y_multiplier].to_f).ceil,]
-        end
+        matrix
       end
 
       def decode_png_scanline(filter, bytes, previous_bytes, pixelsize = 3)

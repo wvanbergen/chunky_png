@@ -38,14 +38,14 @@ module ChunkyPNG
       def encode_png(constraints = {})
         encoding = determine_png_encoding(constraints)
         result = {}
-        result[:header] = { :width => width, :height => height, :color => encoding[:color_mode] }
+        result[:header] = { :width => width, :height => height, :color => encoding[:color_mode], :interlace => encoding[:interlace] }
 
         if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
           result[:palette_chunk]      = encoding[:palette].to_plte_chunk
           result[:transparency_chunk] = encoding[:palette].to_trns_chunk unless encoding[:palette].opaque?
         end
 
-        result[:pixelstream] = encode_png_pixelstream(encoding[:color_mode], encoding[:palette])
+        result[:pixelstream] = encode_png_pixelstream(encoding[:color_mode], encoding[:palette], encoding[:interlace])
         return result
       end
 
@@ -53,11 +53,23 @@ module ChunkyPNG
         encoding = constraints
         encoding[:palette]    ||= palette
         encoding[:color_mode] ||= encoding[:palette].best_colormode
+        
+        encoding[:interlace] = case encoding[:interlace]
+          when nil, false, ChunkyPNG::INTERLACING_NONE then ChunkyPNG::INTERLACING_NONE
+          when true, ChunkyPNG::INTERLACING_ADAM7      then ChunkyPNG::INTERLACING_ADAM7
+          else encoding[:interlace]
+        end
+
         return encoding
       end
+      
+      def encode_png_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, palette = nil, interlace = ChunkyPNG::INTERLACING_NONE)
 
-      def encode_png_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, palette = nil)
+        if color_mode == ChunkyPNG::COLOR_INDEXED && !palette.can_encode?
+          raise "This palette is not suitable for encoding!"
+        end
 
+        pixel_size = Color.bytesize(color_mode)
         pixel_encoder = case color_mode
           when ChunkyPNG::COLOR_TRUECOLOR       then lambda { |color| Color.truecolor_bytes(color) }
           when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then lambda { |color| Color.truecolor_alpha_bytes(color) }
@@ -67,20 +79,44 @@ module ChunkyPNG
           else raise "Cannot encode pixels for this mode: #{color_mode}!"
         end
 
-        if color_mode == ChunkyPNG::COLOR_INDEXED && !palette.can_encode?
-          raise "This palette is not suitable for encoding!"
+        case interlace
+          when ChunkyPNG::INTERLACING_NONE  then encode_png_image_without_interlacing(pixel_size, pixel_encoder)
+          when ChunkyPNG::INTERLACING_ADAM7 then encode_png_image_with_interlacing(pixel_size, pixel_encoder)
+          else raise "Unknown interlacing method!"
         end
+      end
 
-        pixel_size = Color.bytesize(color_mode)
-
-        stream   = ""
+      def encode_png_image_without_interlacing(pixel_size, pixel_encoder)
+        stream = ""
+        encode_png_image_pass_to_stream(stream, pixel_size, pixel_encoder)
+        stream
+      end
+      
+      def encode_png_image_with_interlacing(pixel_size, pixel_encoder)
+        stream = ""
+        0.upto(6) do |pass|
+          submatrix = self.class.adam7_extract_pass(pass, self)
+          submatrix.encode_png_image_pass_to_stream(stream, pixel_size, pixel_encoder)
+        end
+        stream
+      end
+      
+      def encode_png_image_pass_to_stream(stream, pixel_size, pixel_encoder)
         previous_bytes = Array.new(pixel_size * width, 0)
         each_scanline do |line|
           unencoded_bytes = line.map(&pixel_encoder).flatten
           stream << encode_png_scanline_up(unencoded_bytes, previous_bytes, pixel_size).pack('C*')
-          previous_bytes  = unencoded_bytes
+          previous_bytes = unencoded_bytes
         end
-        return stream
+      end
+
+      # Passes to this matrix of pixel values line by line.
+      # @yield [Array<Fixnum>] An line of fixnums reprsenting pixels
+      def each_scanline(&block)
+        height.times do |i|
+          scanline = pixels[width * i, width]
+          yield(scanline)
+        end
       end
 
       def encode_png_scanline(filter, bytes, previous_bytes = nil, pixelsize = 3)

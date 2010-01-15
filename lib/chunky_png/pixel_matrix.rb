@@ -16,6 +16,7 @@ module ChunkyPNG
 
     include PNGEncoding
     extend  PNGDecoding
+    extend  Adam7Interlacing
 
     include Operations
     include Drawing
@@ -77,15 +78,6 @@ module ChunkyPNG
     # @return [ChunkyPNG::Color] The current pixel at the provided coordinates.
     def [](x, y)
       @pixels[y * width + x]
-    end
-
-    # Passes to this matrix of pixel values line by line.
-    # @yield [Array<Fixnum>] An line of fixnums reprsenting pixels
-    def each_scanline(&block)
-      height.times do |i|
-        scanline = @pixels[width * i, width]
-        yield(scanline)
-      end
     end
 
     # Returns the palette used for this pixel matrix.

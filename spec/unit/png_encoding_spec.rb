@@ -3,18 +3,32 @@ require File.expand_path('../spec_helper.rb', File.dirname(__FILE__))
 describe ChunkyPNG::PixelMatrix::PNGEncoding do
   include ChunkyPNG::PixelMatrix::PNGEncoding
 
-  describe '.encode' do
-    before(:each) do
-      @matrix = ChunkyPNG::PixelMatrix.new(10, 10, ChunkyPNG::Color.rgb(100, 100, 100))
-    end
-
-    [:indexed, :grayscale, :grayscale_alpha, :truecolor, :truecolor_alpha].each do |color_mode|
-      it "should encode an image with color mode #{color_mode} correctly" do
-        filename = resource_file("_tmp_#{color_mode}.png")        
-        @matrix.save(filename, :color_mode => ChunkyPNG.const_get("COLOR_#{color_mode.to_s.upcase}"))
-        ChunkyPNG::PixelMatrix.from_file(filename).should == @matrix
+  describe '.encode_png' do
+    [:indexed, :grayscale, :grayscale_alpha, :truecolor, :truecolor_alpha].each do |color_mode_name|
+      it "should encode an image with color mode #{color_mode_name} correctly" do
+        filename = resource_file("_tmp_#{color_mode_name}.png")
+        matrix = ChunkyPNG::PixelMatrix.new(10, 10, ChunkyPNG::Color.rgb(100, 100, 100))
+        color_mode = ChunkyPNG.const_get("COLOR_#{color_mode_name.to_s.upcase}")
+        matrix.save(filename, :color_mode => color_mode)
+        
+        ds = ChunkyPNG::Datastream.from_file(filename)
+        ds.header_chunk.color.should == color_mode
+        ChunkyPNG::PixelMatrix.from_datastream(ds).should == reference_matrix('gray_10x10')
+        
         File.unlink(filename)
       end
+    end
+    
+    it "should encode an image with interlacing correctly" do
+      input_matrix = ChunkyPNG::PixelMatrix.from_file(resource_file('16x16_non_interlaced.png'))
+      filename = resource_file("_tmp_interlaced.png")
+      input_matrix.save(filename, :interlace => true)
+      
+      ds = ChunkyPNG::Datastream.from_file(filename)
+      ds.header_chunk.interlace.should == ChunkyPNG::INTERLACING_ADAM7
+      ChunkyPNG::PixelMatrix.from_datastream(ds).should == input_matrix
+
+      File.unlink(filename)
     end
   end
 
