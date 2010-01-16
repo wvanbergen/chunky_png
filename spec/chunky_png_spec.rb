@@ -27,5 +27,11 @@ describe ChunkyPNG do
   #   image.save(filename)
   #   # `open #{filename}`
   # end
+  
+  # it "should create damaged CRC values" do
+  #   Zlib.stub!(:crc32).and_return(12345)
+  #   image = ChunkyPNG::Image.new(10, 10, ChunkyPNG::Color::BLACK)
+  #   image.save(resource_file('damaged_chunk.png'))
+  # end
 end
 
