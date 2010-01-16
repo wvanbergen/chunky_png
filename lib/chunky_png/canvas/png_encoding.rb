@@ -5,11 +5,8 @@ module ChunkyPNG
     #
     module PNGEncoding
 
-      TRUECOLOR_ENCODER       = lambda { |color| Color.to_truecolor_bytes(color) }
-      TRUECOLOR_ALPHA_ENCODER = lambda { |color| Color.to_truecolor_alpha_bytes(color) }
-      GRAYSCALE_ENCODER       = lambda { |color| Color.to_grayscale_bytes(color) }
-      GRAYSCALE_ALPHA_ENCODER = lambda { |color| Color.to_grayscale_alpha_bytes(color) }
-      
+      attr_accessor :encoding_palette
+
       def write(io, constraints = {})
         to_datastream(constraints).write(io)
       end
@@ -46,11 +43,11 @@ module ChunkyPNG
         result[:header] = { :width => width, :height => height, :color => encoding[:color_mode], :interlace => encoding[:interlace] }
 
         if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
-          result[:palette_chunk]      = encoding[:palette].to_plte_chunk
-          result[:transparency_chunk] = encoding[:palette].to_trns_chunk unless encoding[:palette].opaque?
+          result[:palette_chunk]      = encoding_palette.to_plte_chunk
+          result[:transparency_chunk] = encoding_palette.to_trns_chunk unless encoding_palette.opaque?
         end
 
-        result[:pixelstream] = encode_png_pixelstream(encoding[:color_mode], encoding[:palette], encoding[:interlace])
+        result[:pixelstream] = encode_png_pixelstream(encoding[:color_mode], encoding[:interlace])
         return result
       end
 
@@ -66,10 +63,12 @@ module ChunkyPNG
         
         # Do not create a pallete when the encoding is given and does not require a palette.
         if encoding[:color_mode]
-          encoding[:palette]    ||= palette if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
+          if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
+            self.encoding_palette = self.palette 
+          end
         else
-          encoding[:palette]    ||= palette
-          encoding[:color_mode] ||= encoding[:palette].best_colormode
+          self.encoding_palette = self.palette
+          encoding[:color_mode] ||= encoding_palette.best_colormode
         end
         
         encoding[:interlace] = case encoding[:interlace]
@@ -81,52 +80,57 @@ module ChunkyPNG
         return encoding
       end
       
-      def encode_png_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, palette = nil, interlace = ChunkyPNG::INTERLACING_NONE)
+      def encode_png_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, interlace = ChunkyPNG::INTERLACING_NONE)
 
-        if color_mode == ChunkyPNG::COLOR_INDEXED && !palette.can_encode?
+        if color_mode == ChunkyPNG::COLOR_INDEXED && (encoding_palette.nil? || !encoding_palette.can_encode?)
           raise "This palette is not suitable for encoding!"
         end
 
-        pixel_size = Color.bytesize(color_mode)
-        pixel_encoder = case color_mode
-          when ChunkyPNG::COLOR_TRUECOLOR       then TRUECOLOR_ENCODER
-          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then TRUECOLOR_ALPHA_ENCODER
-          when ChunkyPNG::COLOR_GRAYSCALE       then GRAYSCALE_ENCODER
-          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then GRAYSCALE_ALPHA_ENCODER
-          when ChunkyPNG::COLOR_INDEXED         then lambda { |color| [palette.index(color)] }
-          else raise "Cannot encode pixels for this mode: #{color_mode}!"
-        end
-
         case interlace
-          when ChunkyPNG::INTERLACING_NONE  then encode_png_image_without_interlacing(pixel_size, pixel_encoder)
-          when ChunkyPNG::INTERLACING_ADAM7 then encode_png_image_with_interlacing(pixel_size, pixel_encoder)
+          when ChunkyPNG::INTERLACING_NONE  then encode_png_image_without_interlacing(color_mode)
+          when ChunkyPNG::INTERLACING_ADAM7 then encode_png_image_with_interlacing(color_mode)
           else raise "Unknown interlacing method!"
         end
       end
 
-      def encode_png_image_without_interlacing(pixel_size, pixel_encoder)
+      def encode_png_image_without_interlacing(color_mode)
         stream = ""
-        encode_png_image_pass_to_stream(stream, pixel_size, pixel_encoder)
+        encode_png_image_pass_to_stream(stream, color_mode)
         stream
       end
       
-      def encode_png_image_with_interlacing(pixel_size, pixel_encoder)
+      def encode_png_image_with_interlacing(color_mode)
         stream = ""
         0.upto(6) do |pass|
           subcanvas = self.class.adam7_extract_pass(pass, self)
-          subcanvas.encode_png_image_pass_to_stream(stream, pixel_size, pixel_encoder)
+          subcanvas.encoding_palette = encoding_palette
+          subcanvas.encode_png_image_pass_to_stream(stream, color_mode)
         end
         stream
       end
       
-      def encode_png_image_pass_to_stream(stream, pixel_size, pixel_encoder)
-        case pixel_encoder
-          when TRUECOLOR_ALPHA_ENCODER
+      def encode_png_image_pass_to_stream(stream, color_mode)
+
+        case color_mode
+          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA
             stream << pixels.pack("xN#{width}" * height)
-          when TRUECOLOR_ENCODER 
+            
+          when ChunkyPNG::COLOR_TRUECOLOR 
             line_packer = 'x' + ('NX' * width)
             stream << pixels.pack(line_packer * height)
+            
           else
+            
+            pixel_size = Color.bytesize(color_mode)
+            pixel_encoder = case color_mode
+              when ChunkyPNG::COLOR_TRUECOLOR       then lambda { |color| Color.to_truecolor_bytes(color) }
+              when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then lambda { |color| Color.to_truecolor_alpha_bytes(color) }
+              when ChunkyPNG::COLOR_INDEXED         then lambda { |color| [encoding_palette.index(color)] }
+              when ChunkyPNG::COLOR_GRAYSCALE       then lambda { |color| Color.to_grayscale_bytes(color) }
+              when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then lambda { |color| Color.to_grayscale_alpha_bytes(color) }
+              else raise "Cannot encode pixels for this mode: #{color_mode}!"
+            end
+
             previous_bytes = Array.new(pixel_size * width, 0)
             each_scanline do |line|
               unencoded_bytes = line.map(&pixel_encoder).flatten

@@ -13,9 +13,7 @@ describe ChunkyPNG::RMagick do
   it "should export an image to RMagick correctly" do
     canvas = reference_canvas('16x16_non_interlaced')
     image  = ChunkyPNG::RMagick.export(canvas)
-  
-    filename = resource_file('_rmagick.png')
-    image.write("png:#{filename}") { |info| info.depth = 8 }
-    canvas.should == ChunkyPNG::Canvas.from_file(filename)
+    image.format = 'PNG32'
+    canvas.should == ChunkyPNG::Canvas.from_blob(image.to_blob)
   end
 end
