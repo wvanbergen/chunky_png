@@ -128,6 +128,15 @@ module ChunkyPNG
     def chunks
       enum_for(:each_chunk)
     end
+    
+    # Returns all the textual metadata key/value pairs as hash.
+    def metadata
+      metadata = {}
+      other_chunks.select do |chunk|
+        metadata[chunk.keyword] = chunk.value if chunk.respond_to?(:keyword)
+      end
+      metadata
+    end
 
     #############################################
     # WRITING DATASTREAMS

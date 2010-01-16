@@ -126,10 +126,54 @@ module ChunkyPNG
       end
     end
 
+    class Text < Base
+
+      attr_accessor :keyword, :value
+
+      def initialize(keyword, value)
+        super('tEXt')
+        @keyword, @value = keyword, value
+      end
+
+      def self.read(type, content)
+        keyword, value = content.unpack('Z*a*')
+        new(keyword, value)
+      end
+
+      def content
+        [keyword, value].pack('Z*a*')
+      end
+    end
+
+    class CompressedText < Base
+
+      attr_accessor :keyword, :value
+
+      def initialize(keyword, value)
+        super('tEXt')
+        @keyword, @value = keyword, value
+      end
+
+      def self.read(type, content)
+        keyword, compression, value = content.unpack('Z*Ca*')
+        raise "Compression method #{compression.inspect} not supported!" unless compression == ChunkyPNG::COMPRESSION_DEFAULT
+        new(keyword, Zlib::Inflate.inflate(value))
+      end
+
+      def content
+        [keyword, ChunkyPNG::COMPRESSION_DEFAULT, Zlib::Deflate.deflate(value)].pack('Z*Ca*')
+      end
+    end
+
+    class InternationalText < Generic
+      # TODO
+    end
+
     # Maps chunk types to classes.
     # If a chunk type is not given in this hash, a generic chunk type will be used.
     CHUNK_TYPES = {
-      'IHDR' => Header, 'IEND' => End, 'IDAT' => ImageData, 'PLTE' => Palette, 'tRNS' => Transparency
+      'IHDR' => Header, 'IEND' => End, 'IDAT' => ImageData, 'PLTE' => Palette, 'tRNS' => Transparency,
+      'tEXt' => Text, 'zTXt' => CompressedText, 'iTXt' => InternationalText
     }
   end
 end
