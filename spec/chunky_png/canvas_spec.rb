@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ChunkyPNG::Canvas do
 
   describe '.from_rgb_stream' do
-    it "should load an image correctly from a datastrean" do
+    it "should load an image correctly from a datastream" do
       File.open(resource_file('pixelstream.rgb')) do |stream|
         matrix = ChunkyPNG::Canvas.from_rgb_stream(240, 180, stream)
         matrix.should == reference_canvas('pixelstream_reference')
@@ -12,7 +12,7 @@ describe ChunkyPNG::Canvas do
   end
 
   describe '.from_rgba_stream' do
-    it "should load an image correctly from a datastrean" do
+    it "should load an image correctly from a datastream" do
       File.open(resource_file('pixelstream.rgba')) do |stream|
         matrix = ChunkyPNG::Canvas.from_rgba_stream(240, 180, stream)
         matrix.should == reference_canvas('pixelstream_reference')
@@ -25,7 +25,7 @@ describe ChunkyPNG::Canvas do
       File.open(resource_file('pixelstream.rgba'), 'rb') { |f| @reference_data = f.read }
     end
     
-    it "should load an image correctly from a datastrean" do
+    it "should load an image correctly from a datastream" do
       canvas = reference_canvas('pixelstream_reference')
       canvas.to_rgba_stream.should == @reference_data
     end
@@ -36,7 +36,7 @@ describe ChunkyPNG::Canvas do
       File.open(resource_file('pixelstream.rgb'), 'rb') { |f| @reference_data = f.read }
     end
     
-    it "should load an image correctly from a datastrean" do
+    it "should load an image correctly from a datastream" do
       canvas = reference_canvas('pixelstream_reference')
       canvas.to_rgb_stream.should == @reference_data
     end
