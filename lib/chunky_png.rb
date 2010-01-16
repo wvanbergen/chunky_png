@@ -1,5 +1,6 @@
 require 'set'
 require 'zlib'
+require 'stringio'
 
 require 'chunky_png/datastream'
 require 'chunky_png/chunk'

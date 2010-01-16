@@ -4,8 +4,8 @@ module ChunkyPNG
       def compose(new_foreground, dx = 0, dy = 0)
         check_size_constraints!(new_foreground, dx, dy)
 
-        new_foreground.height.times do |y|
-          new_foreground.width.times do |x|
+        for y in 0...new_foreground.height do
+          for x in 0...new_foreground.width do
             self[x+dx, y+dy] = ChunkyPNG::Color.compose(new_foreground[x, y], self[x+dx, y+dy])
           end
         end
@@ -15,7 +15,7 @@ module ChunkyPNG
       def replace(other, offset_x = 0, offset_y = 0)
         check_size_constraints!(other, offset_x, offset_y)
 
-        other.height.times do |y|
+        for y in 0...other.height do
           pixels[(y + offset_y) * width + offset_x, other.width] = other.pixels[y * other.width, other.width]
         end
         self
@@ -23,7 +23,7 @@ module ChunkyPNG
 
       def crop(x, y, crop_width, crop_height)
         new_pixels = []
-        crop_height.times do |cy|
+        for cy in 0...crop_height do
           new_pixels += pixels.slice((cy + y) * width + x, crop_width)
         end
         ChunkyPNG::Canvas.new(crop_width, crop_height, new_pixels)

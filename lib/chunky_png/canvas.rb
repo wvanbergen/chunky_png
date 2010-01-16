@@ -54,7 +54,7 @@ module ChunkyPNG
       if initial.kind_of?(Fixnum)
         @pixels = Array.new(width * height, initial)
       elsif initial.kind_of?(Array) && initial.size == width * height
-        @pixels = initial.map(&:to_i)
+        @pixels = initial
       else
         raise "Cannot use this value as initial canvas: #{initial.inspect}!"
       end

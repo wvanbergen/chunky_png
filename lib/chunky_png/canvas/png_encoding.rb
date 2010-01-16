@@ -5,6 +5,11 @@ module ChunkyPNG
     #
     module PNGEncoding
 
+      TRUECOLOR_ENCODER       = lambda { |color| Color.to_truecolor_bytes(color) }
+      TRUECOLOR_ALPHA_ENCODER = lambda { |color| Color.to_truecolor_alpha_bytes(color) }
+      GRAYSCALE_ENCODER       = lambda { |color| Color.to_grayscale_bytes(color) }
+      GRAYSCALE_ALPHA_ENCODER = lambda { |color| Color.to_grayscale_alpha_bytes(color) }
+      
       def write(io, constraints = {})
         to_datastream(constraints).write(io)
       end
@@ -50,9 +55,22 @@ module ChunkyPNG
       end
 
       def determine_png_encoding(constraints = {})
-        encoding = constraints
-        encoding[:palette]    ||= palette
-        encoding[:color_mode] ||= encoding[:palette].best_colormode
+        
+        if constraints == :fast_rgb
+          encoding = { :color_mode => ChunkyPNG::COLOR_TRUECOLOR }
+        elsif constraints == :fast_rgba
+          encoding = { :color_mode => ChunkyPNG::COLOR_TRUECOLOR_ALPHA }
+        else
+          encoding = constraints
+        end
+        
+        # Do not create a pallete when the encoding is given and does not require a palette.
+        if encoding[:color_mode]
+          encoding[:palette]    ||= palette if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
+        else
+          encoding[:palette]    ||= palette
+          encoding[:color_mode] ||= encoding[:palette].best_colormode
+        end
         
         encoding[:interlace] = case encoding[:interlace]
           when nil, false, ChunkyPNG::INTERLACING_NONE then ChunkyPNG::INTERLACING_NONE
@@ -71,11 +89,11 @@ module ChunkyPNG
 
         pixel_size = Color.bytesize(color_mode)
         pixel_encoder = case color_mode
-          when ChunkyPNG::COLOR_TRUECOLOR       then lambda { |color| Color.to_truecolor_bytes(color) }
-          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then lambda { |color| Color.to_truecolor_alpha_bytes(color) }
+          when ChunkyPNG::COLOR_TRUECOLOR       then TRUECOLOR_ENCODER
+          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then TRUECOLOR_ALPHA_ENCODER
+          when ChunkyPNG::COLOR_GRAYSCALE       then GRAYSCALE_ENCODER
+          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then GRAYSCALE_ALPHA_ENCODER
           when ChunkyPNG::COLOR_INDEXED         then lambda { |color| [palette.index(color)] }
-          when ChunkyPNG::COLOR_GRAYSCALE       then lambda { |color| Color.to_grayscale_bytes(color) }
-          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then lambda { |color| Color.to_grayscale_alpha_bytes(color) }
           else raise "Cannot encode pixels for this mode: #{color_mode}!"
         end
 
@@ -102,19 +120,27 @@ module ChunkyPNG
       end
       
       def encode_png_image_pass_to_stream(stream, pixel_size, pixel_encoder)
-        previous_bytes = Array.new(pixel_size * width, 0)
-        each_scanline do |line|
-          unencoded_bytes = line.map(&pixel_encoder).flatten
-          stream << encode_png_scanline_up(unencoded_bytes, previous_bytes, pixel_size).pack('C*')
-          previous_bytes = unencoded_bytes
-        end
+        case pixel_encoder
+          when TRUECOLOR_ALPHA_ENCODER
+            stream << pixels.pack("xN#{width}" * height)
+          when TRUECOLOR_ENCODER 
+            line_packer = 'x' + ('NX' * width)
+            stream << pixels.pack(line_packer * height)
+          else
+            previous_bytes = Array.new(pixel_size * width, 0)
+            each_scanline do |line|
+              unencoded_bytes = line.map(&pixel_encoder).flatten
+              stream << encode_png_scanline_up(unencoded_bytes, previous_bytes, pixel_size).pack('C*')
+              previous_bytes = unencoded_bytes
+            end
+          end
       end
 
       # Passes to this canvas of pixel values line by line.
       # @yield [Array<Fixnum>] An line of fixnums reprsenting pixels
       def each_scanline(&block)
-        height.times do |i|
-          scanline = pixels[width * i, width]
+        for line_no in 0...height do
+          scanline = pixels[width * line_no, width]
           yield(scanline)
         end
       end
@@ -136,7 +162,7 @@ module ChunkyPNG
 
       def encode_png_scanline_sub(original_bytes, previous_bytes = nil, pixelsize = 3)
         encoded_bytes = []
-        original_bytes.length.times do |index|
+        for index in 0...original_bytes.length do
           a = (index >= pixelsize) ? original_bytes[index - pixelsize] : 0
           encoded_bytes[index] = (original_bytes[index] - a) % 256
         end
@@ -145,7 +171,7 @@ module ChunkyPNG
 
       def encode_png_scanline_up(original_bytes, previous_bytes, pixelsize = 3)
         encoded_bytes = []
-        original_bytes.length.times do |index|
+        for index in 0...original_bytes.length do
           b = previous_bytes[index]
           encoded_bytes[index] = (original_bytes[index] - b) % 256
         end
@@ -154,7 +180,7 @@ module ChunkyPNG
       
       def encode_png_scanline_average(original_bytes, previous_bytes, pixelsize = 3)
         encoded_bytes = []
-        original_bytes.length.times do |index|
+        for index in 0...original_bytes.length do
           a = (index >= pixelsize) ? original_bytes[index - pixelsize] : 0
           b = previous_bytes[index]
           encoded_bytes[index] = (original_bytes[index] - (a + b / 2).floor) % 256
@@ -164,7 +190,7 @@ module ChunkyPNG
       
       def encode_png_scanline_paeth(original_bytes, previous_bytes, pixelsize = 3)
         encoded_bytes = []
-        original_bytes.length.times do |i|
+        for i in 0...original_bytes.length do
           a = (i >= pixelsize) ? original_bytes[i - pixelsize] : 0
           b = previous_bytes[i]
           c = (i >= pixelsize) ? previous_bytes[i - pixelsize] : 0

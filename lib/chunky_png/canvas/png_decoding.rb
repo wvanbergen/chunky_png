@@ -58,7 +58,7 @@ module ChunkyPNG
 
         if width > 0
           decoded_bytes = Array.new(width * pixel_size, 0)
-          height.times do |line_no|
+          for line_no in 0...height do
 
             # get bytes of scanline
             position       = start_pos + line_no * (width * pixel_size + 1)
