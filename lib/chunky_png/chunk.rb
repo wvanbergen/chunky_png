@@ -1,15 +1,40 @@
 module ChunkyPNG
-  class Chunk
+  
+  # A PNG datastream consists of multiple chunks. This module, and the classes
+  # contained within, help with handling these chunks. It supports both
+  # reading and writing chunks.
+  #
+  # All chunck types are instances of the {ChunkyPNG::Chunk::Base} class. For
+  # some chunk types a specialized class is available, e.g. the IHDR chunk is
+  # represented by the {ChunkyPNG::Chunk::Header} class. These specialized
+  # classes help accessing the content of the chunk. All other chunks are
+  # represented by the {ChunkyPNG::Chunk::Generic} class.
+  module Chunk
 
+    # Reads a chunk from an IO stream.
+    #
+    # @param [IO, #read] io The IO stream to read from.
+    # @return [ChunkyPNG::Chung::Base] The loaded chunk instance.
     def self.read(io)
 
       length, type = io.read(8).unpack('Na4')
       content      = io.read(length)
       crc          = io.read(4).unpack('N').first
 
-      # verify_crc!(type, content, crc)
+      verify_crc!(type, content, crc)
 
       CHUNK_TYPES.fetch(type, Generic).read(type, content)
+    end
+    
+    # Verifies the CRC of a chunk.
+    # @param [String] type The chunk's type.
+    # @param [String] content The chunk's content.
+    # @param [Fixnum] content The chunk's content.
+    # @raise [RuntimeError] An exception is raised if the found CRC value
+    #    is not equal to the expected CRC value.
+    def self.verify_crc!(type, content, found_crc)
+      expected_crc = Zlib.crc32(content, Zlib.crc32(type))
+      raise "Chuck CRC mismatch!" if found_crc != expected_crc
     end
 
     class Base

@@ -111,7 +111,7 @@ module ChunkyPNG
     # This will iterate over the chunks using the order in which the chunks
     # should appear in the PNG file.
     #
-    # @yield [ChunkyPNG::Chunk] The chunks in this datastrean, one by one.
+    # @yield [ChunkyPNG::Chunk::Base] The chunks in this datastrean, one by one.
     # @see ChunkyPNG::Datastream#chunks
     def each_chunk
       yield(header_chunk)
