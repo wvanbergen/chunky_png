@@ -148,11 +148,11 @@ module ChunkyPNG
     # @see ChunkyPNG::Palette#can_encode?
     def to_plte_chunk
       @encoding_map = {}
-      colors     = []
+      colors        = []
 
       each_with_index do |color, index|
         @encoding_map[color] = index
-        colors += ChunkyPNG::Color.truecolor_bytes(color)
+        colors += ChunkyPNG::Color.to_truecolor_bytes(color)
       end
 
       ChunkyPNG::Chunk::Palette.new('PLTE', colors.pack('C*'))

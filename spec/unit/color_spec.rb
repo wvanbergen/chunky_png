@@ -4,32 +4,78 @@ describe ChunkyPNG::Color do
   include ChunkyPNG::Color
 
   before(:each) do
-    @white             = rgba(255, 255, 255, 255)
-    @black             = rgba(  0,   0,   0, 255)
-    @opaque            = rgba( 10, 100, 150, 255)
-    @non_opaque        = rgba( 10, 100, 150, 100)
-    @fully_transparent = rgba( 10, 100, 150,   0)
+    @white             = 0xffffffff
+    @black             = 0x000000ff
+    @opaque            = 0x0a6496ff
+    @non_opaque        = 0x0a649664
+    @fully_transparent = 0x0a649600
   end
 
-  it "should represent pixels as the correct number" do
-    @white.should  == 0xffffffff
-    @black.should  == 0x000000ff
-    @opaque.should == 0x0a6496ff
+  describe '#rgba' do
+    it "should represent pixels as the correct number" do
+      rgba(255, 255, 255, 255).should == @white
+      rgba(  0,   0,   0, 255).should == @black
+      rgba( 10, 100, 150, 255).should == @opaque
+      rgba( 10, 100, 150, 100).should == @non_opaque
+      rgba( 10, 100, 150,   0).should == @fully_transparent
+    end
+  end
+  
+  describe '#from_hex' do
+    it "should load colors correctlt from hex notation" do
+      from_hex('0a649664').should   == @non_opaque
+      from_hex('#0a649664').should  == @non_opaque
+      from_hex('0x0a649664').should == @non_opaque
+      from_hex('0a6496').should     == @opaque
+      from_hex('#0a6496').should    == @opaque
+      from_hex('0x0a6496').should   == @opaque
+    end
+  end
+  
+  describe '#opaque?' do
+    it "should correctly check for opaqueness" do
+      opaque?(@white).should be_true
+      opaque?(@black).should be_true
+      opaque?(@opaque).should be_true
+      opaque?(@non_opaque).should be_false
+      opaque?(@fully_transparent).should be_false
+    end
+  end
+  
+  describe 'extractiion of separate color channels' do
+    it "should extract components from a color correctly" do
+      r(@opaque).should == 10
+      g(@opaque).should == 100
+      b(@opaque).should == 150
+      a(@opaque).should == 255
+    end
+  end
+  
+  describe '#to_hex' do
+    it "should represent colors correcly using hex notation" do
+      to_hex(@white).should == '#ffffffff'
+      to_hex(@black).should == '#000000ff'
+      to_hex(@opaque).should == '#0a6496ff'
+      to_hex(@non_opaque).should == '#0a649664'
+      to_hex(@fully_transparent).should == '#0a649600'
+    end
+    
+    it "should represent colors correcly using hex notation without alpha channel" do
+      to_hex(@white, false).should == '#ffffff'
+      to_hex(@black, false).should == '#000000'
+      to_hex(@opaque, false).should == '#0a6496'
+      to_hex(@non_opaque, false).should == '#0a6496'
+      to_hex(@fully_transparent, false).should == '#0a6496'
+    end
   end
 
-  it "should correctly check for opaqueness" do
-    opaque?(@white).should be_true
-    opaque?(@black).should be_true
-    opaque?(@opaque).should be_true
-    opaque?(@non_opaque).should be_false
-    opaque?(@fully_transparent).should be_false
+  describe 'conversion to other formats' do
+    it "should convert the individual color values back correctly" do
+      to_truecolor_bytes(@opaque).should == [10, 100, 150]
+      to_truecolor_alpha_bytes(@non_opaque).should == [10, 100, 150, 100]
+    end
   end
-
-  it "should convert the individual color values back correctly" do
-    truecolor_bytes(@opaque).should == [10, 100, 150]
-    truecolor_alpha_bytes(@non_opaque).should == [10, 100, 150, 100]
-  end
-
+  
   describe '#compose' do
     it "should use the foregorund color as is when an opaque color is given as foreground color" do
       compose(@opaque, @white).should == @opaque

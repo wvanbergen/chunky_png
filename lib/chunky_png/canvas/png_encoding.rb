@@ -71,11 +71,11 @@ module ChunkyPNG
 
         pixel_size = Color.bytesize(color_mode)
         pixel_encoder = case color_mode
-          when ChunkyPNG::COLOR_TRUECOLOR       then lambda { |color| Color.truecolor_bytes(color) }
-          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then lambda { |color| Color.truecolor_alpha_bytes(color) }
+          when ChunkyPNG::COLOR_TRUECOLOR       then lambda { |color| Color.to_truecolor_bytes(color) }
+          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then lambda { |color| Color.to_truecolor_alpha_bytes(color) }
           when ChunkyPNG::COLOR_INDEXED         then lambda { |color| [palette.index(color)] }
-          when ChunkyPNG::COLOR_GRAYSCALE       then lambda { |color| Color.grayscale_bytes(color) }
-          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then lambda { |color| Color.grayscale_alpha_bytes(color) }
+          when ChunkyPNG::COLOR_GRAYSCALE       then lambda { |color| Color.to_grayscale_bytes(color) }
+          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then lambda { |color| Color.to_grayscale_alpha_bytes(color) }
           else raise "Cannot encode pixels for this mode: #{color_mode}!"
         end
 
