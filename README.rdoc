@@ -43,7 +43,7 @@ The main classes used within ChunkyPNG are:
   avatar = ChunkyPNG::Image.from_file('avatar.png')
   badge  = ChunkyPNG::Image.from_file('no_ie_badge.png')
   avatar.compose(badge, 10, 10)
-  avatar.save('composited.png', :color_mode => ChunkyPNG::COLOR_GRAYSCALE)
+  avatar.save('composited.png', :color_mode => ChunkyPNG::COLOR_GRAYSCALE, :interlace => true)
   
   # Inspecting metadata - TODO
   

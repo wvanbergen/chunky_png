@@ -1,4 +1,4 @@
-require File.expand_path('../spec_helper.rb', File.dirname(__FILE__))
+require 'spec_helper'
 
 describe ChunkyPNG::Canvas::PNGEncoding do
   include ChunkyPNG::Canvas::PNGEncoding
