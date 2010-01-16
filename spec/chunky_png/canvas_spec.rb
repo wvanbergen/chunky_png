@@ -19,6 +19,20 @@ describe ChunkyPNG::Canvas do
       end
     end
   end
+  
+  describe '#to_rgba_stream' do
+    it "should load an image correctly from a datastrean" do
+      canvas = reference_canvas('pixelstream_reference')
+      canvas.to_rgba_stream.should == File.read(resource_file('pixelstream.rgba'))
+    end
+  end
+
+  describe '#to_rgb_stream' do
+    it "should load an image correctly from a datastrean" do
+      canvas = reference_canvas('pixelstream_reference')
+      canvas.to_rgb_stream.should == File.read(resource_file('pixelstream.rgb'))
+    end
+  end
 
   describe '#crop' do
     before(:each) do

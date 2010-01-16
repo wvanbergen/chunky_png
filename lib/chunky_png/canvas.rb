@@ -155,5 +155,32 @@ module ChunkyPNG
       string = stream.respond_to?(:read) ? stream.read(4 * width * height) : stream.to_s[0, 4 * width * height]
       self.new(width, height, string.unpack("N*"))
     end
+    
+    #################################################################
+    # EXPORTING
+    #################################################################
+    
+    # Creates an RGB-formatted pixelstream with the pixel data from this canvas.
+    #
+    # Note that this format is fast but bloated, because no compression is used
+    # and the internal representation is left intact. However, to reconstruct the
+    # canvas, the width and height should be known.
+    #
+    # @return [String] The RGBA-formatted pixel data.
+    def to_rgba_stream
+      pixels.pack('N*')
+    end
+
+    # Creates an RGB-formatted pixelstream with the pixel data from this canvas.
+    #
+    # Note that this format is fast but bloated, because no compression is used
+    # and the internal representation is almost left intact. However, to reconstruct 
+    # the canvas, the width and height should be known.
+    #
+    # @return [String] The RGB-formatted pixel data.
+    def to_rgb_stream
+      packer = 'NX' * (width * height)
+      pixels.pack(packer)
+    end
   end
 end
