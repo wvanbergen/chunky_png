@@ -1,7 +1,7 @@
 module ChunkyPNG
-  class PixelMatrix
+  class Canvas
     
-    # The PNGDecoding contains methods for decoding PNG datastreams to create a PixelMatrix object.
+    # The PNGDecoding contains methods for decoding PNG datastreams to create a Canvas object.
     # The datastream can be provided as filename, string or IO object.
     module PNGDecoding
 
@@ -82,14 +82,14 @@ module ChunkyPNG
 
       def decode_png_with_adam7_interlacing(stream, width, height, pixel_size, pixel_decoder)
         start_pos = 0
-        matrix = ChunkyPNG::PixelMatrix.new(width, height)
+        canvas = ChunkyPNG::Canvas.new(width, height)
         0.upto(6) do |pass|
           sm_width, sm_height = adam7_pass_size(pass, width, height)
           sm = decode_png_image_pass(stream, sm_width, sm_height, pixel_size, pixel_decoder, start_pos)
-          adam7_merge_pass(pass, matrix, sm)
+          adam7_merge_pass(pass, canvas, sm)
           start_pos += (sm_width * sm_height * pixel_size) + sm_height
         end
-        matrix
+        canvas
       end
 
       def decode_png_scanline(filter, bytes, previous_bytes, pixelsize = 3)

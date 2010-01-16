@@ -1,5 +1,5 @@
 module ChunkyPNG
-  class PixelMatrix
+  class Canvas
     
     # Methods for decoding and encoding adam7 interlacing
     #
@@ -24,29 +24,29 @@ module ChunkyPNG
         (0...7).map { |pass| adam7_pass_size(pass, original_width, original_height) }
       end
 
-      def adam7_merge_pass(pass, matrix, submatrix)
+      def adam7_merge_pass(pass, canvas, subcanvas)
         m_o = adam7_multiplier_offset(pass)
-        0.upto(submatrix.height - 1) do |y|
-          0.upto(submatrix.width - 1) do |x|
+        0.upto(subcanvas.height - 1) do |y|
+          0.upto(subcanvas.width - 1) do |x|
             new_x = x * m_o[:x_multiplier] + m_o[:x_offset]
             new_y = y * m_o[:y_multiplier] + m_o[:y_offset]
-            matrix[new_x, new_y] = submatrix[x, y]
+            canvas[new_x, new_y] = subcanvas[x, y]
           end
         end
-        matrix
+        canvas
       end
       
-      def adam7_extract_pass(pass, matrix)
+      def adam7_extract_pass(pass, canvas)
         m_o = adam7_multiplier_offset(pass)
         sm_pixels = []
-        m_o[:y_offset].step(matrix.height - 1, m_o[:y_multiplier]) do |y|
-          m_o[:x_offset].step(matrix.width - 1, m_o[:x_multiplier]) do |x|
-            sm_pixels << matrix[x, y]
+        m_o[:y_offset].step(canvas.height - 1, m_o[:y_multiplier]) do |y|
+          m_o[:x_offset].step(canvas.width - 1, m_o[:x_multiplier]) do |x|
+            sm_pixels << canvas[x, y]
           end
         end
         
-        new_matrix_args = adam7_pass_size(pass, matrix.width, matrix.height) + [sm_pixels]
-        ChunkyPNG::PixelMatrix.new(*new_matrix_args)
+        new_canvas_args = adam7_pass_size(pass, canvas.width, canvas.height) + [sm_pixels]
+        ChunkyPNG::Canvas.new(*new_canvas_args)
       end
     end
   end

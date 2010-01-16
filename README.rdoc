@@ -26,7 +26,7 @@ The main classes used within ChunkyPNG are:
 
 <tt>ChunkyPNG::Image</tt> :: create PNG images from scratch or based on another PNG image.
 <tt>ChunkyPNG::Datastream</tt> :: low-level read and write access to PNG images from or to a file or stream.
-<tt>ChunkyPNG::PixelMatrix</tt> :: represents an images as a matrix of pixels.
+<tt>ChunkyPNG::Canvas</tt> :: represents an image canvas as a matrix of pixels.
 <tt>ChunkyPNG::Color</tt> :: represents a, RGBA color
 
 == Usage

@@ -2,7 +2,7 @@ module ChunkyPNG
 
   # Image class
   #
-  class Image < PixelMatrix
+  class Image < Canvas
     
     attr_reader :metadata
     

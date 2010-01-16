@@ -1,7 +1,7 @@
 require File.expand_path('../spec_helper.rb', File.dirname(__FILE__))
 
-describe ChunkyPNG::PixelMatrix::Adam7Interlacing do
-  include ChunkyPNG::PixelMatrix::Adam7Interlacing
+describe ChunkyPNG::Canvas::Adam7Interlacing do
+  include ChunkyPNG::Canvas::Adam7Interlacing
 
   describe '#adam7_pass_sizes' do
     it "should get the pass sizes for a 8x8 image correctly" do
@@ -73,31 +73,31 @@ describe ChunkyPNG::PixelMatrix::Adam7Interlacing do
   end
 
   describe '#adam7_merge_pass' do
-    before(:each) { @reference = reference_matrix('adam7') } 
+    before(:each) { @reference = reference_canvas('adam7') } 
     
     it "should merge the submatrices correctly" do
       submatrices = [
-        ChunkyPNG::PixelMatrix.new(1, 1,  168430335), # r = 10
-        ChunkyPNG::PixelMatrix.new(1, 1,  336860415), # r = 20
-        ChunkyPNG::PixelMatrix.new(2, 1,  505290495), # r = 30
-        ChunkyPNG::PixelMatrix.new(2, 2,  677668095), # r = 40
-        ChunkyPNG::PixelMatrix.new(4, 2,  838912255), # r = 50
-        ChunkyPNG::PixelMatrix.new(4, 4, 1023344895), # r = 60
-        ChunkyPNG::PixelMatrix.new(8, 4, 1175063295), # r = 70
+        ChunkyPNG::Canvas.new(1, 1,  168430335), # r = 10
+        ChunkyPNG::Canvas.new(1, 1,  336860415), # r = 20
+        ChunkyPNG::Canvas.new(2, 1,  505290495), # r = 30
+        ChunkyPNG::Canvas.new(2, 2,  677668095), # r = 40
+        ChunkyPNG::Canvas.new(4, 2,  838912255), # r = 50
+        ChunkyPNG::Canvas.new(4, 4, 1023344895), # r = 60
+        ChunkyPNG::Canvas.new(8, 4, 1175063295), # r = 70
       ]
       
-      matrix = ChunkyPNG::PixelMatrix.new(8,8)
-      submatrices.each_with_index { |m, pass| adam7_merge_pass(pass, matrix, m) }
-      matrix.should == @reference
+      canvas = ChunkyPNG::Canvas.new(8,8)
+      submatrices.each_with_index { |m, pass| adam7_merge_pass(pass, canvas, m) }
+      canvas.should == @reference
     end
   end
 
   describe '#adam7_extract_pass' do
-    before(:each) { @matrix = reference_matrix('adam7') }
+    before(:each) { @canvas = reference_canvas('adam7') }
 
     1.upto(7) do |pass|
       it "should extract pass #{pass} correctly" do
-        sm = adam7_extract_pass(pass - 1, @matrix)
+        sm = adam7_extract_pass(pass - 1, @canvas)
         sm.pixels.length.should == sm.width * sm.height
         sm.pixels.uniq.length.should == 1
         (ChunkyPNG::Color.r(sm[0,0]) / 10).should == pass

@@ -1,7 +1,7 @@
 require File.expand_path('../spec_helper.rb', File.dirname(__FILE__))
 
-describe ChunkyPNG::PixelMatrix::PNGDecoding do
-  include ChunkyPNG::PixelMatrix::PNGDecoding
+describe ChunkyPNG::Canvas::PNGDecoding do
+  include ChunkyPNG::Canvas::PNGDecoding
 
   describe '#decode_png_scanline' do
 
@@ -60,22 +60,22 @@ describe ChunkyPNG::PixelMatrix::PNGDecoding do
 
     [:indexed, :grayscale, :grayscale_alpha, :truecolor, :truecolor_alpha].each do |color_mode|
       it "should decode an image with color mode #{color_mode} correctly" do
-        reference = ChunkyPNG::PixelMatrix.new(10, 10, ChunkyPNG::Color.rgb(100, 100, 100))
-        matrix = ChunkyPNG::PixelMatrix.from_file(resource_file("gray_10x10_#{color_mode}.png"))
-        matrix.should == reference
+        reference = ChunkyPNG::Canvas.new(10, 10, ChunkyPNG::Color.rgb(100, 100, 100))
+        canvas = ChunkyPNG::Canvas.from_file(resource_file("gray_10x10_#{color_mode}.png"))
+        canvas.should == reference
       end
     end
 
     it "should decode a transparent image correctly" do
-      reference = ChunkyPNG::PixelMatrix.new(10, 10, ChunkyPNG::Color.rgba(100, 100, 100, 128))
-      matrix    = ChunkyPNG::PixelMatrix.from_file(resource_file("transparent_gray_10x10.png"))
-      matrix.should == reference
+      reference = ChunkyPNG::Canvas.new(10, 10, ChunkyPNG::Color.rgba(100, 100, 100, 128))
+      canvas    = ChunkyPNG::Canvas.from_file(resource_file("transparent_gray_10x10.png"))
+      canvas.should == reference
     end
 
     it "should decode an interlaced image correctly" do
-      matrix_i  = ChunkyPNG::PixelMatrix.from_file(resource_file("16x16_interlaced.png"))
-      matrix_ni = ChunkyPNG::PixelMatrix.from_file(resource_file("16x16_non_interlaced.png"))
-      matrix_i.should == matrix_ni
+      canvas_i  = ChunkyPNG::Canvas.from_file(resource_file("16x16_interlaced.png"))
+      canvas_ni = ChunkyPNG::Canvas.from_file(resource_file("16x16_non_interlaced.png"))
+      canvas_i.should == canvas_ni
     end
   end
 end

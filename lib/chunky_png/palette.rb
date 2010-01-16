@@ -2,11 +2,13 @@ module ChunkyPNG
 
   # A palette describes the set of colors that is being used for an image.
   #
-  # A PNG image can contain an explicit palette which defines the colors of that image,
-  # but can also use an implicit palette, e.g. all truecolor colors or all grayscale colors.
+  # A PNG image can contain an explicit palette which defines the colors of
+  # that image, but can also use an implicit palette, e.g. all truecolor
+  # colors or all grayscale colors.
   #
-  # This palette supports decoding colors from a palette if an explicit palette is provided
-  # in a PNG datastream, and it supports encoding colors to an explicit matrix.
+  # This palette supports decoding colors from a palette if an explicit
+  # palette is provided in a PNG datastream, and it supports encoding colors
+  # to an explicit palette (stores as PLTE & tRNS chunks in a PNG file).
   #
   # @see ChunkyPNG::Color
   class Palette < SortedSet
@@ -54,11 +56,11 @@ module ChunkyPNG
       self.new(decoding_map, decoding_map)
     end
 
-    # Builds a palette instance from a given pixel matrix.
-    # @param [ChunkyPNG::PixelMatrix] pixel_matrix The pixel matrix to create a palette for.
+    # Builds a palette instance from a given canvas.
+    # @param [ChunkyPNG::Canvas] canvas The canvas to create a palette for.
     # @return [ChunkyPNG::Palette] The palette instance.
-    def self.from_pixel_matrix(pixel_matrix)
-      self.new(pixel_matrix.pixels)
+    def self.from_canvas(canvas)
+      self.new(canvas.pixels)
     end
 
     # Builds a palette instance from a given set of pixels.

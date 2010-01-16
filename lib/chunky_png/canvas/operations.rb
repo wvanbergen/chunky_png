@@ -1,5 +1,5 @@
 module ChunkyPNG
-  class PixelMatrix
+  class Canvas
     module Operations
       def compose(new_foreground, dx = 0, dy = 0)
         check_size_constraints!(new_foreground, dx, dy)
@@ -26,7 +26,7 @@ module ChunkyPNG
         crop_height.times do |cy|
           new_pixels += pixels.slice((cy + y) * width + x, crop_width)
         end
-        ChunkyPNG::PixelMatrix.new(crop_width, crop_height, new_pixels)
+        ChunkyPNG::Canvas.new(crop_width, crop_height, new_pixels)
       end
 
       protected

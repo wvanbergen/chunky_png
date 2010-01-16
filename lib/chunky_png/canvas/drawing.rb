@@ -1,5 +1,5 @@
 module ChunkyPNG
-  class PixelMatrix
+  class Canvas
     
     module Drawing
       

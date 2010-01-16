@@ -1,7 +1,7 @@
 module ChunkyPNG
-  class PixelMatrix
+  class Canvas
     
-    # Methods for encoding a PixelMatrix into a PNG datastream
+    # Methods for encoding a Canvas into a PNG datastream
     #
     module PNGEncoding
 
@@ -20,8 +20,8 @@ module ChunkyPNG
       alias :to_string :to_blob
       alias :to_s :to_blob
 
-      # Converts this PixelMatrix to a datastream, so that it can be saved as a PNG image.
-      # @param [Hash] constraints The constraints to use when encoding the matrix.
+      # Converts this Canvas to a datastream, so that it can be saved as a PNG image.
+      # @param [Hash] constraints The constraints to use when encoding the canvas.
       def to_datastream(constraints = {})
         data = encode_png(constraints)
         ds = Datastream.new
@@ -95,8 +95,8 @@ module ChunkyPNG
       def encode_png_image_with_interlacing(pixel_size, pixel_encoder)
         stream = ""
         0.upto(6) do |pass|
-          submatrix = self.class.adam7_extract_pass(pass, self)
-          submatrix.encode_png_image_pass_to_stream(stream, pixel_size, pixel_encoder)
+          subcanvas = self.class.adam7_extract_pass(pass, self)
+          subcanvas.encode_png_image_pass_to_stream(stream, pixel_size, pixel_encoder)
         end
         stream
       end
@@ -110,7 +110,7 @@ module ChunkyPNG
         end
       end
 
-      # Passes to this matrix of pixel values line by line.
+      # Passes to this canvas of pixel values line by line.
       # @yield [Array<Fixnum>] An line of fixnums reprsenting pixels
       def each_scanline(&block)
         height.times do |i|
