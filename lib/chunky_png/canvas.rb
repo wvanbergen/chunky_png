@@ -119,19 +119,15 @@ module ChunkyPNG
     end
 
     def self.from_rgb_stream(width, height, stream)
+      string = stream.respond_to?(:read) ? stream.read(3 * width * height) : stream.to_s[0, 3 * width * height]
       pixels = []
-      while pixeldata = stream.read(3)
-        pixels << ChunkyPNG::Color.from_rgb_stream(pixeldata)
-      end
+      string.unpack("C*").each_slice(3) { |(r,g,b)| pixels << ChunkyPNG::Color.rgb(r,g,b) }
       self.new(width, height, pixels)
     end
 
     def self.from_rgba_stream(width, height, stream)
-      pixels = []
-      while pixeldata = stream.read(4)
-        pixels << ChunkyPNG::Color.from_rgba_stream(pixeldata)
-      end
-      self.new(width, height, pixels)
+      string = stream.respond_to?(:read) ? stream.read(4 * width * height) : stream.to_s[0, 4 * width * height]
+      self.new(width, height, string.unpack("N*"))
     end
   end
 end
