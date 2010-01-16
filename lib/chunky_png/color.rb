@@ -5,8 +5,9 @@ module ChunkyPNG
   # both represented by a Fixnum.
   #
   # Pixels/colors are represented in RGBA componetns. Each of the four
-  # components is stored with a depth of 8 bits (maximum value = 255).
-  # Together, these components are stored in a 4-byte Fixnum.
+  # components is stored with a depth of 8 bits (maximum value = 255 =
+  # {ChunkyPNG::Color::MAX}). Together, these components are stored in a 4-byte
+  # Fixnum.
   #
   # A color will always be represented using these 4 components in memory.
   # When the image is encoded, a more suitable representation can be used
@@ -14,6 +15,9 @@ module ChunkyPNG
   # are provided in this module.
   module Color
     extend self
+
+    # The maximum value of each color component.
+    MAX = 0xff
 
     ####################################################################
     # CONSTRUCTING COLOR VALUES
@@ -27,13 +31,13 @@ module ChunkyPNG
 
     # Creates a new color using an r, g, b triple.
     # @return [Fixnum] The newly constructed color value.
-    def rgb(r, g, b, a = 255)
+    def rgb(r, g, b, a = MAX)
       rgba(r, g, b, a)
     end
 
     # Creates a new color using a grayscale teint.
     # @return [ChunkyPNG::Color] The newly constructed color value.
-    def grayscale(teint, a = 255)
+    def grayscale(teint, a = MAX)
       rgba(teint, teint, teint, a)
     end
 
@@ -89,7 +93,7 @@ module ChunkyPNG
     # Returns the red-component from the color value.
     #
     # @param [Fixnum] value The color value.
-    # @return [Fixnum] A value between 0 and 255.
+    # @return [Fixnum] A value between 0 and MAX.
     def r(value)
       (value & 0xff000000) >> 24
     end
@@ -97,7 +101,7 @@ module ChunkyPNG
     # Returns the green-component from the color value.
     #
     # @param [Fixnum] value The color value.
-    # @return [Fixnum] A value between 0 and 255.
+    # @return [Fixnum] A value between 0 and MAX.
     def g(value)
       (value & 0x00ff0000) >> 16
     end
@@ -105,7 +109,7 @@ module ChunkyPNG
     # Returns the blue-component from the color value.
     #
     # @param [Fixnum] value The color value.
-    # @return [Fixnum] A value between 0 and 255.
+    # @return [Fixnum] A value between 0 and MAX.
     def b(value)
       (value & 0x0000ff00) >> 8
     end
@@ -113,7 +117,7 @@ module ChunkyPNG
     # Returns the alpha channel value for the color value.
     #
     # @param [Fixnum] value The color value.
-    # @return [Fixnum] A value between 0 and 255.
+    # @return [Fixnum] A value between 0 and MAX.
     def a(value)
       value & 0x000000ff
     end
@@ -121,7 +125,7 @@ module ChunkyPNG
     # Returns true if this color is fully opaque.
     #
     # @param [Fixnum] value The color to test.
-    # @return [true, false] True if the alpha channel equals 255.
+    # @return [true, false] True if the alpha channel equals MAX.
     def opaque?(value)
       a(value) == 0x000000ff
     end
@@ -195,14 +199,14 @@ module ChunkyPNG
       return fg if opaque?(fg)
       return bg if fully_transparent?(fg)
       
-      fg_a  = a(fg) / 255.0
-      bg_a  = a(bg) / 255.0
+      fg_a  = a(fg).to_f / MAX
+      bg_a  = a(bg).to_f / MAX
       a_com = (1.0 - fg_a) * bg_a
 
       new_r = (fg_a * r(fg) + a_com * r(bg)).round
       new_g = (fg_a * g(fg) + a_com * g(bg)).round
       new_b = (fg_a * b(fg) + a_com * b(bg)).round
-      new_a = ((fg_a + a_com) * 255).round
+      new_a = ((fg_a + a_com) * MAX).round
       rgba(new_r, new_g, new_b, new_a)
     end
 

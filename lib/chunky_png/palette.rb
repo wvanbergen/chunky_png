@@ -43,7 +43,7 @@ module ChunkyPNG
       if transparency_chunk
         alpha_channel = transparency_chunk.content.unpack('C*')
       else
-        alpha_channel = Array.new(palatte_bytes.size / 3, 255)
+        alpha_channel = Array.new(palatte_bytes.size / 3, ChunkyPNG::Color::MAX)
       end
 
       index = 0
