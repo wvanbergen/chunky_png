@@ -31,20 +31,20 @@ module ChunkyPNG
 
     # Creates a new color using an r, g, b triple.
     # @return [Fixnum] The newly constructed color value.
-    def rgb(r, g, b, a = MAX)
-      rgba(r, g, b, a)
+    def rgb(r, g, b)
+      r << 24 | g << 16 | b << 8 | 0xff
     end
 
     # Creates a new color using a grayscale teint.
     # @return [ChunkyPNG::Color] The newly constructed color value.
-    def grayscale(teint, a = MAX)
-      rgba(teint, teint, teint, a)
+    def grayscale(teint)
+      teint << 24 | teint << 16 | teint << 8 | 0xff
     end
 
     # Creates a new color using a grayscale teint and alpha value.
     # @return [Fixnum] The newly constructed color value.
     def grayscale_alpha(teint, a)
-      rgba(teint, teint, teint, a)
+      teint << 24 | teint << 16 | teint << 8 | a
     end
     
     ####################################################################

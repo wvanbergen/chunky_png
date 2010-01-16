@@ -26,8 +26,8 @@ module ChunkyPNG
 
       def adam7_merge_pass(pass, canvas, subcanvas)
         m_o = adam7_multiplier_offset(pass)
-        0.upto(subcanvas.height - 1) do |y|
-          0.upto(subcanvas.width - 1) do |x|
+        for y in 0...subcanvas.height do
+          for x in 0...subcanvas.width do
             new_x = x * m_o[:x_multiplier] + m_o[:x_offset]
             new_y = y * m_o[:y_multiplier] + m_o[:y_offset]
             canvas[new_x, new_y] = subcanvas[x, y]

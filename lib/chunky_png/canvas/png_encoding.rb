@@ -187,7 +187,7 @@ module ChunkyPNG
         for index in 0...original_bytes.length do
           a = (index >= pixelsize) ? original_bytes[index - pixelsize] : 0
           b = previous_bytes[index]
-          encoded_bytes[index] = (original_bytes[index] - (a + b / 2).floor) % 256
+          encoded_bytes[index] = (original_bytes[index] - ((a + b) >> 1)) % 256
         end
         [ChunkyPNG::FILTER_AVERAGE] + encoded_bytes
       end

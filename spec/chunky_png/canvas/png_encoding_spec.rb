@@ -57,7 +57,7 @@ describe ChunkyPNG::Canvas::PNGEncoding do
       previous = [10, 20, 30, 40, 50, 60, 70, 80,   80, 100, 110, 120]
       current  = [ 5, 10, 25, 45, 45, 55, 80, 125, 105, 150, 114, 165]
       encoded  = encode_png_scanline(ChunkyPNG::FILTER_AVERAGE, current, previous)
-      encoded.should == [3, 0,  0, 10, 20, 10,  0,  0, 40, 10,  20, 190,   0]
+      encoded.should == [3, 0, 0, 10, 23, 15, 13, 23, 63, 38, 60, 253, 53]
     end
     
     it "should encode a scanline with paeth filtering correctly" do
