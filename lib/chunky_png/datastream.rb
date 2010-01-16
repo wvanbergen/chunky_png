@@ -85,7 +85,7 @@ module ChunkyPNG
     end
     
     def save(filename)
-      File.open(filename, 'w') { |f| write(f) }
+      File.open(filename, 'wb') { |f| write(f) }
     end
     
     def to_blob

@@ -10,7 +10,7 @@ module ChunkyPNG
       end
 
       def save(filename, constraints = {})
-        File.open(filename, 'w') { |io| write(io, constraints) }
+        File.open(filename, 'wb') { |io| write(io, constraints) }
       end
       
       def to_blob(constraints = {})
