@@ -66,7 +66,7 @@ module ChunkyPNG
     WHITE = rgb(255, 255, 255)
 
     # Fully transparent pixel/color
-    TRANSPARENT = rgba(0, 0, 0, 0)
+    TRANSPARENT = rgba(255, 255, 255, 0)
 
     ####################################################################
     # PROPERTIES
