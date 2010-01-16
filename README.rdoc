@@ -59,4 +59,5 @@ The library is written by Willem van Bergen for Floorplanner.com, and released
 under the MIT license (see LICENSE). Please contact me for questions or
 remarks. Patches are greatly appreciated! :-)
 
-P.S.: _why is why this library is so chunky.
+P.S.: The name of this library is intentionally similar to Chunky Bacon and 
+Chunky GIF. Use Google if you want to know _why.
