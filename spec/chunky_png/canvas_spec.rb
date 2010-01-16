@@ -1,12 +1,21 @@
 require 'spec_helper'
 
 describe ChunkyPNG::Canvas do
-  
+
   describe '.from_rgb_stream' do
     it "should load an image correctly from a datastrean" do
       File.open(resource_file('pixelstream.rgb')) do |stream|
-        pm = ChunkyPNG::Canvas.from_rgb_stream(240, 180, stream)
-        pm.should == reference_canvas('pixelstream_reference')
+        matrix = ChunkyPNG::Canvas.from_rgb_stream(240, 180, stream)
+        matrix.should == reference_canvas('pixelstream_reference')
+      end
+    end
+  end
+
+  describe '.from_rgba_stream' do
+    it "should load an image correctly from a datastrean" do
+      File.open(resource_file('pixelstream.rgba')) do |stream|
+        matrix = ChunkyPNG::Canvas.from_rgba_stream(240, 180, stream)
+        matrix.should == reference_canvas('pixelstream_reference')
       end
     end
   end
