@@ -1,19 +1,24 @@
 require 'spec_helper'
 
 describe ChunkyPNG::Datastream do
-  
+
   describe '.from_io'do
     it "should raise an error when loading a file with a bad signature" do
       filename = resource_file('damaged_signature.png')
       lambda { ChunkyPNG::Datastream.from_file(filename) }.should raise_error
     end
-  
+
     it "should raise an error if the CRC of a chunk is incorrect" do
       filename = resource_file('damaged_chunk.png')
       lambda { ChunkyPNG::Datastream.from_file(filename) }.should raise_error
     end
+
+    it "should not raise an error for an unsupported color depth when only reading the datastream" do
+      filename = resource_file('indexed_4bit.png')
+      lambda { ChunkyPNG::Datastream.from_file(filename) }.should_not raise_error
+    end
   end
-  
+
   describe '#metadata' do
     it "should load uncompressed tXTt chunks correctly" do
       filename = resource_file('text_chunk.png')
@@ -21,7 +26,7 @@ describe ChunkyPNG::Datastream do
       ds.metadata['Title'].should  == 'My amazing icon!'
       ds.metadata['Author'].should == "Willem van Bergen"
     end
-  
+
     it "should load compressed zTXt chunks correctly" do
       filename = resource_file('ztxt_chunk.png')
       ds = ChunkyPNG::Datastream.from_file(filename)

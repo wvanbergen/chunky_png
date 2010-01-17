@@ -77,5 +77,10 @@ describe ChunkyPNG::Canvas::PNGDecoding do
       canvas_ni = ChunkyPNG::Canvas.from_file(resource_file("16x16_non_interlaced.png"))
       canvas_i.should == canvas_ni
     end
+
+    it "should raise an error if the color depth is not supported" do
+      filename = resource_file('indexed_4bit.png')
+      lambda { ChunkyPNG::Canvas.from_file(filename) }.should raise_error
+    end
   end
 end
