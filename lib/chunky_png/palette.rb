@@ -43,12 +43,12 @@ module ChunkyPNG
       if transparency_chunk
         alpha_channel = transparency_chunk.content.unpack('C*')
       else
-        alpha_channel = Array.new(palatte_bytes.size / 3, ChunkyPNG::Color::MAX)
+        alpha_channel = []
       end
 
       index = 0
       palatte_bytes.each_slice(3) do |bytes|
-        bytes << alpha_channel[index]
+        bytes << alpha_channel.fetch(index, ChunkyPNG::Color::MAX)
         decoding_map << ChunkyPNG::Color.rgba(*bytes)
         index += 1
       end

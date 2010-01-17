@@ -100,7 +100,7 @@ describe ChunkyPNG::Canvas::Adam7Interlacing do
         sm = adam7_extract_pass(pass - 1, @canvas)
         sm.pixels.length.should == sm.width * sm.height
         sm.pixels.uniq.length.should == 1
-        (ChunkyPNG::Color.r(sm[0,0]) / 10).should == pass
+        ChunkyPNG::Color.r(sm[0,0]).should == pass * 10
       end
     end
   end
