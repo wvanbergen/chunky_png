@@ -1,7 +1,7 @@
 module ChunkyPNG
 
   # The ChunkPNG::Canvas class represents a raster image as a matrix of
-  # pixels. 
+  # pixels.
   #
   # This class supports loading a Canvas from a PNG datastream, and creating a
   # {ChunkyPNG::Datastream PNG datastream} based on this matrix. ChunkyPNG
@@ -25,6 +25,9 @@ module ChunkyPNG
     extend  PNGDecoding
     extend  Adam7Interlacing
 
+    include StreamExporting
+    extend  StreamImporting
+
     include Operations
     include Drawing
 
@@ -37,6 +40,11 @@ module ChunkyPNG
     # @return [Array<ChunkyPNG::Color>] The list of pixels in this canvas.
     #     This array always should have +width * height+ elements.
     attr_reader :pixels
+
+
+    #################################################################
+    # CONSTRUCTORS
+    #################################################################
 
     # Initializes a new Canvas instance
     # @param [Integer] width The width in pixels of this canvas
@@ -60,10 +68,24 @@ module ChunkyPNG
       end
     end
     
+    # Initializes a new Canvas instances when being cloned.
+    # @param [ChunkyPNG::Canvas] other The canvas to duplicate
     def initialize_copy(other)
       @width, @height = other.width, other.height
       @pixels = other.pixels.dup
     end
+
+    # Creates a new canvas instance by duplicating another instance.
+    # @param [ChunkyPNG::Canvas] canvas The canvas to duplicate
+    # @return [ChunkyPNG::Canvas] The newly constructed canvas instance.
+    def self.from_canvas(canvas)
+      self.new(canvas.width, canvas.height, canvas.pixels.dup)
+    end
+
+
+    #################################################################
+    # PROPERTIES
+    #################################################################
 
     # Returns the size ([width, height]) for this canvas.
     # @return Array An array with the width and height of this canvas as elements.
@@ -105,82 +127,13 @@ module ChunkyPNG
 
     alias :== :eql?
 
-    # Creates an ChunkyPNG::Image object from this canvas
-    def to_image
-      ChunkyPNG::Image.from_canvas(self)
-    end
-
-    #################################################################
-    # CONSTRUCTORS
-    #################################################################
-
-    # Creates a new canvas instance by duplicating another instance.
-    # @param [ChunkyPNG::Canvas] canvas The canvas to duplicate
-    # @return [ChunkyPNG::Canvas] The newly constructed canvas instance.
-    def self.from_canvas(canvas)
-      self.new(canvas.width, canvas.height, canvas.pixels.dup)
-    end
-
-    # Creates a canvas by reading pixels from an RGB formatted stream with a
-    # provided with and height. 
-    #
-    # Every pixel should be represented by 3 bytes in the stream, in the correct
-    # RGB order. This format closely resembles the internal representation of a
-    # canvas object, so this kind of stream can be read extremely quickly.
-    #
-    # @param [Integer] width The width of the new canvas.
-    # @param [Integer] height The height of the new canvas.
-    # @param [#read, String] stream The stream to read the pixel data from.
-    # @return [ChunkyPNG::Canvas] The newly constructed canvas instance.
-    def self.from_rgb_stream(width, height, stream)
-      string = stream.respond_to?(:read) ? stream.read(3 * width * height) : stream.to_s[0, 3 * width * height]
-      string << "\255" # Add a fourth byte to the last RGB triple.
-      unpacker = 'NX' * (width * height)
-      pixels = string.unpack(unpacker).map { |color| color | 0x000000ff }
-      self.new(width, height, pixels)
-    end
-
-    # Creates a canvas by reading pixels from an RGBA formatted stream with a
-    # provided with and height. 
-    #
-    # Every pixel should be represented by 4 bytes in the stream, in the correct
-    # RGBA order. This format is exactly like the internal representation of a
-    # canvas object, so this kind of stream can be read extremely quickly.
-    #
-    # @param [Integer] width The width of the new canvas. 
-    # @param [Integer] height The height of the new canvas. 
-    # @param [#read, String] stream The stream to read the pixel data from. 
-    # @return [ChunkyPNG::Canvas] The newly constructed canvas instance.
-    def self.from_rgba_stream(width, height, stream)
-      string = stream.respond_to?(:read) ? stream.read(4 * width * height) : stream.to_s[0, 4 * width * height]
-      self.new(width, height, string.unpack("N*"))
-    end
-    
     #################################################################
     # EXPORTING
     #################################################################
-    
-    # Creates an RGB-formatted pixelstream with the pixel data from this canvas.
-    #
-    # Note that this format is fast but bloated, because no compression is used
-    # and the internal representation is left intact. However, to reconstruct the
-    # canvas, the width and height should be known.
-    #
-    # @return [String] The RGBA-formatted pixel data.
-    def to_rgba_stream
-      pixels.pack('N*')
-    end
 
-    # Creates an RGB-formatted pixelstream with the pixel data from this canvas.
-    #
-    # Note that this format is fast but bloated, because no compression is used
-    # and the internal representation is almost left intact. However, to reconstruct 
-    # the canvas, the width and height should be known.
-    #
-    # @return [String] The RGB-formatted pixel data.
-    def to_rgb_stream
-      packer = 'NX' * (width * height)
-      pixels.pack(packer)
+    # Creates an ChunkyPNG::Image object from this canvas
+    def to_image
+      ChunkyPNG::Image.from_canvas(self)
     end
   end
 end
