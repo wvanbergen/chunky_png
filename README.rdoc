@@ -22,6 +22,7 @@ Issue tracker:: http://github.com/wvanbergen/chunky_png/issues
 * Memory efficient (uses a Fixnum, i.e. 4 bytes of memory, per pixel)
 * Reasonably fast for Ruby standards, by only using integer math and a highly
   optimized saving routine.
+* Interoperability with RMagick.
 
 == Classes
 
