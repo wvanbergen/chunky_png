@@ -16,7 +16,7 @@ Issue tracker:: http://github.com/wvanbergen/chunky_png/issues
   color modes and all transparency, interlacing and filtering options.
 * Encodes images supports all color modes (true color, grayscale and indexed)
   and transparency for all these color modes. The best color mode will be
-  chosen automatically, based on the image's colors.
+  chosen automatically, based on the amount of used colors.
 * R/W access to the image's pixels.
 * R/W access to all image metadata that is stored in chunks.
 * Memory efficient (uses a Fixnum, i.e. 4 bytes of memory, per pixel)
@@ -26,12 +26,12 @@ Issue tracker:: http://github.com/wvanbergen/chunky_png/issues
 
 == Classes
 
-The main classes used within ChunkyPNG are:
+The main classes and modules used within ChunkyPNG are:
 
 <tt>ChunkyPNG::Image</tt> :: create PNG images from scratch or based on another PNG image.
 <tt>ChunkyPNG::Datastream</tt> :: low-level read and write access to PNG images from or to a file or stream.
 <tt>ChunkyPNG::Canvas</tt> :: represents an image canvas as a matrix of pixels.
-<tt>ChunkyPNG::Color</tt> :: represents a, RGBA color
+<tt>ChunkyPNG::Color</tt> :: to handle Fixnums as color values.
 
 == Usage
 
@@ -53,19 +53,17 @@ The main classes used within ChunkyPNG are:
   image = ChunkyPNG::Image.from_file('with_metadata.png')
   puts image.metadata['Title']
   image.metadata['Author'] = 'Willem van Bergen'
-  image.save('with_metadata.png') # Overwrite
+  image.save('with_metadata.png') # Overwrite file
   
   # Low level access to PNG chunks
   png_stream = ChunkyPNG::Datastream.from_file('filename.png')
   png_stream.each_chunk { |chunk| p chunk.type }
 
-(Note: this is subject to change while work is in progress)
-
 == About
 
 The library is written by Willem van Bergen for Floorplanner.com, and released
 under the MIT license (see LICENSE). Please contact me for questions or
-remarks. Patches are greatly appreciated! :-)
+remarks. Patches are greatly appreciated!
 
 P.S.: The name of this library is intentionally similar to Chunky Bacon and 
-Chunky GIF. Use Google if you want to know _why.
+Chunky GIF. Use Google if you want to know _why. :-)
