@@ -46,7 +46,7 @@ module ChunkyPNG
     def grayscale_alpha(teint, a)
       teint << 24 | teint << 16 | teint << 8 | a
     end
-    
+
     ####################################################################
     # COLOR IMPORTING
     ####################################################################
@@ -220,6 +220,15 @@ module ChunkyPNG
     # @return [Fixnum] The blended color.
     def blend(fg, bg)
       (fg + bg) >> 1
+    end
+
+    # Lowers the intensity of a color, by lowering its alpha by a given factor.
+    # @param [Fixnum] color The color to adjust.
+    # @param [Fixnum] factor Fade factor as an integer between 0 and 255.
+    # @return [Fixnum] The faded color.
+    def fade(color, factor)
+      new_alpha = int8_mult(a(color), factor)
+      (color & 0xffffff00) | new_alpha
     end
 
     ####################################################################

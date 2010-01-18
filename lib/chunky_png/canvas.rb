@@ -108,6 +108,15 @@ module ChunkyPNG
     def [](x, y)
       @pixels[y * width + x]
     end
+    
+    # Checks whether the given coordinates are in the range of the canvas
+    # @param [Integer] x The x-coordinate of the pixel (column)
+    # @param [Integer] y The y-coordinate of the pixel (row)
+    # @return [true, false] True if the x and y coordinate are in the range 
+    #    of this canvas.
+    def include?(x, y)
+      (0...width).include?(x) && (0...height).include?(y)
+    end
 
     # Returns the palette used for this canvas.
     # @return [ChunkyPNG::Palette] A pallete which contains all the colors that are
