@@ -141,7 +141,8 @@ module ChunkyPNG
       end
 
       # Passes to this canvas of pixel values line by line.
-      # @yield [Array<Fixnum>] An line of fixnums reprsenting pixels
+      # @yield [line] Yields the scanlines of this image one by one.
+      # @yieldparam [Array<Fixnum>] line An line of fixnums representing pixels
       def each_scanline(&block)
         for line_no in 0...height do
           scanline = pixels[width * line_no, width]

@@ -44,9 +44,9 @@ module ChunkyPNG
       @data_chunks  = []
     end
 
-    #############################################
+    ##############################################################################
     # LOADING DATASTREAMS
-    #############################################
+    ##############################################################################
 
     class << self
 
@@ -102,16 +102,17 @@ module ChunkyPNG
       end
     end
 
-    #############################################
+    ##################################################################################
     # CHUNKS
-    #############################################
+    ##################################################################################
 
     # Enumerates the chunks in this datastream.
     #
     # This will iterate over the chunks using the order in which the chunks
     # should appear in the PNG file.
     #
-    # @yield [ChunkyPNG::Chunk::Base] The chunks in this datastrean, one by one.
+    # @yield [chunk] Yields the chunks in this datastrean, one by one in the correct order.
+    # @yieldparam [ChunkyPNG::Chunk::Base] chunk A chunk in this datastream.
     # @see ChunkyPNG::Datastream#chunks
     def each_chunk
       yield(header_chunk)
@@ -138,9 +139,9 @@ module ChunkyPNG
       metadata
     end
 
-    #############################################
+    ##################################################################################
     # WRITING DATASTREAMS
-    #############################################
+    ##################################################################################
 
     # Writes the datastream to the given output stream.
     # @param [IO] io The output stream to write to.

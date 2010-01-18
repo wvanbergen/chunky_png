@@ -131,7 +131,8 @@ module ChunkyPNG
     # EXPORTING
     #################################################################
 
-    # Creates an ChunkyPNG::Image object from this canvas
+    # Creates an ChunkyPNG::Image object from this canvas.
+    # @return [ChunkyPNG::Image] This canvas wrapped in an Image instance.
     def to_image
       ChunkyPNG::Image.from_canvas(self)
     end

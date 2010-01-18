@@ -9,7 +9,7 @@ module ChunkyPNG
   #
   # @example
   #
-  #    require 'rmagick
+  #    require 'rmagick'
   #    require 'chunky_png/rmagick'
   #    
   #    canvas = ChunkyPNG::Canvas.from_file('filename.png')
