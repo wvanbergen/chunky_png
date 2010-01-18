@@ -44,6 +44,8 @@ module ChunkyPNG
     #
     # A subclass should implement the +content+ method, which gets called when
     # the chunk gets written to a PNG datastream
+    #
+    # @abstract
     class Base
       
       # The four-character type indicator for the chunk. This field is used to

@@ -16,10 +16,12 @@ require 'chunky_png/canvas/drawing'
 require 'chunky_png/canvas'
 require 'chunky_png/image'
 
-# ChunkyPNG
+# ChunkyPNG - the pury ruby library to access PNG files.
 #
 # The ChunkyPNG module defines some constants that are used in the
 # PNG specification.
+#
+# @author Willem van Bergen
 module ChunkyPNG
 
   # The current version of ChunkyPNG. This value will be updated automatically
