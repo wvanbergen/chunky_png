@@ -18,6 +18,7 @@ module ChunkyPNG
     # These images get encoded exectly as above, and the result gets combined 
     # before the compression step.
     #
+    # @see ChunkyPNG::Canvas::PNGDecoding
     # @see http://www.w3.org/TR/PNG/ The W3C PNG format specification
     module PNGEncoding
 

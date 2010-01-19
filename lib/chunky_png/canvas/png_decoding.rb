@@ -1,9 +1,31 @@
 module ChunkyPNG
   class Canvas
 
-    # The PNGDecoding contains methods for decoding PNG datastreams to create a Canvas object.
-    # The datastream can be provided as filename, string or IO stream.
+    # The PNGDecoding contains methods for decoding PNG datastreams to create a 
+    # Canvas object. The datastream can be provided as filename, string or IO 
+    # stream.
     #
+    # Overview of the decoding process:
+    #
+    # * The optional PLTE and tRNS chunk are decoded for the color palette of
+    #   the original image.
+    # * The contents of the IDAT chunks is combined, and uncompressed using
+    #   Inflate decompression to the image pixelstream.
+    # * Based on the color mode, width and height of the original image, which
+    #   is read from the PNG header (IHDR chunk), the amount of bytes
+    #   per line is determined.
+    # * For every line of pixels in the original image, the determined amount
+    #   of bytes is read from the pixel stream.
+    # * The read bytes are unfiltered given by the filter function specified by
+    #   the first byte of the line.
+    # * The unfiltered bytes are converted into colored pixels, using the color mode.
+    # * All lines combined form the original image.
+    #
+    # For interlaced images, the original image was split into 7 subimages.
+    # These images get decoded just like the process above (from step 3), and get 
+    # combined to form the original images.
+    #
+    # @see ChunkyPNG::Canvas::PNGEncoding
     # @see http://www.w3.org/TR/PNG/ The W3C PNG format specification
     module PNGDecoding
 
