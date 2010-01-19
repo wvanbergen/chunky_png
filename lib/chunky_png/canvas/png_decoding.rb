@@ -1,26 +1,43 @@
 module ChunkyPNG
   class Canvas
-    
+
     # The PNGDecoding contains methods for decoding PNG datastreams to create a Canvas object.
-    # The datastream can be provided as filename, string or IO object.
+    # The datastream can be provided as filename, string or IO stream.
+    #
+    # @see http://www.w3.org/TR/PNG/ The W3C PNG format specification
     module PNGDecoding
 
+      # The palette that is used to decode the image, loading from the PLTE and
+      # tRNS chunk from the PNG stream. For RGB(A) images, no palette is required.
+      # @return [ChunkyPNG::Palette]
       attr_accessor :decoding_palette
 
+      # Decodes a Canvas from a PNG encoded string.
+      # @param [String] str The string to read from.
+      # @return [ChunkyPNG::Canvas] The canvas decoded from the PNG encoded string.
       def from_blob(str)
         from_datastream(ChunkyPNG::Datastream.from_blob(str))
       end
-      
+
       alias :from_string :from_blob
 
+      # Decodes a Canvas from a PNG encoded file.
+      # @param [String] filename The file to read from.
+      # @return [ChunkyPNG::Canvas] The canvas decoded from the PNG file.
       def from_file(filename)
         from_datastream(ChunkyPNG::Datastream.from_file(filename))
       end
-      
+
+      # Decodes a Canvas from a PNG encoded stream.
+      # @param [IO, #read] io The stream to read from.
+      # @return [ChunkyPNG::Canvas] The canvas decoded from the PNG stream.
       def from_io(io)
         from_datastream(ChunkyPNG::Datastream.from_io(io))
       end
 
+      # Decodes the Canvas from a PNG datastream instance.
+      # @param [ChunkyPNG::Datastream] ds The datastream to decode.
+      # @return [ChunkyPNG::Canvas] The canvas decoded from the PNG datastream.
       def from_datastream(ds)
         raise "Only 8-bit color depth is currently supported by ChunkyPNG!" unless ds.header_chunk.depth == 8
 
@@ -28,13 +45,21 @@ module ChunkyPNG
         height     = ds.header_chunk.height
         color_mode = ds.header_chunk.color
         interlace  = ds.header_chunk.interlace
-        
+
         self.decoding_palette = ChunkyPNG::Palette.from_chunks(ds.palette_chunk, ds.transparency_chunk)
         pixelstream           = ChunkyPNG::Chunk::ImageData.combine_chunks(ds.data_chunks)
-        
+
         decode_png_pixelstream(pixelstream, width, height, color_mode, interlace)
       end
 
+      # Decodes a canvas from a PNG encoded pixelstream, using a given width, height, 
+      # color mode and interlacing mode.
+      # @param [String] stream The pixelstream to read from.
+      # @param [Integer] width The width of the image.
+      # @param [Integer] width The height of the image.
+      # @param [Integer] color_mode The color mode of the encoded pixelstream.
+      # @param [Integer] interlace The interlace method of the encoded pixelstream.
+      # @return [ChunkyPNG::Canvas] The decoded Canvas instance.
       def decode_png_pixelstream(stream, width, height, color_mode = ChunkyPNG::COLOR_TRUECOLOR, interlace = ChunkyPNG::INTERLACING_NONE)
         raise "This palette is not suitable for decoding!" if decoding_palette && !decoding_palette.can_decode?
 
@@ -47,10 +72,24 @@ module ChunkyPNG
 
       protected
 
+      # Decodes a canvas from a non-interlaced PNG encoded pixelstream, using a 
+      # given width, height and color mode.
+      # @param stream (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @param width (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @param height (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @param color_mode (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       def decode_png_without_interlacing(stream, width, height, color_mode)
         decode_png_image_pass(stream, width, height, color_mode)
       end
 
+      # Decodes a canvas from a Adam 7 interlaced PNG encoded pixelstream, using a 
+      # given width, height and color mode.
+      # @param stream (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @param width (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @param height (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @param color_mode (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       def decode_png_with_adam7_interlacing(stream, width, height, color_mode)
         canvas     = ChunkyPNG::Canvas.new(width, height)
         pixel_size = Color.bytesize(color_mode)
@@ -64,6 +103,18 @@ module ChunkyPNG
         canvas
       end
 
+      # Decodes a single PNG image pass width a given width, height and color 
+      # mode, to a Canvas, starting at the given position in the stream.
+      #
+      # A non-interlaced image only consists of one pass, while an Adam7
+      # image consists of 7 passes that must be combined after decoding.
+      #
+      # @param stream (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @param width (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @param height (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @param color_mode (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @param [Integer] start_pos The position in the pixel stream to start reading.
+      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       def decode_png_image_pass(stream, width, height, color_mode, start_pos = 0)
         
         pixel_size    = Color.bytesize(color_mode)
@@ -99,8 +150,20 @@ module ChunkyPNG
         new(width, height, pixels)
       end
 
-
-
+      # Decodes filtered bytes from a scanline from a PNG pixelstream,
+      # to return the original bytes of the image.
+      #
+      # The decoded bytes should be used to get the original pixels of the 
+      # scanline, combining them using a color mode dependent color decoder.
+      #
+      # @param [Integer] filter The filter used to encode the bytes.
+      # @param [Array<Fixnum>] bytes The filtered bytes to decode.
+      # @param [Array<Fixnum>] previous_bytes The decoded bytes of the 
+      #      previous scanline.
+      # @param [Integer] pixelsize The amount of bytes used for every pixel.
+      #      This depends on the used color mode and color depth.
+      # @return [Array<Fixnum>] The array of original bytes for the scanline,
+      #      before they were encoded.
       def decode_png_scanline(filter, bytes, previous_bytes, pixelsize = 3)
         case filter
         when ChunkyPNG::FILTER_NONE    then decode_png_scanline_none(    bytes, previous_bytes, pixelsize)
@@ -112,20 +175,44 @@ module ChunkyPNG
         end
       end
 
+      # Decoded filtered scanline bytes that were not filtered.
+      # @param bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @param previous_bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @param pixelsize (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline
       def decode_png_scanline_none(bytes, previous_bytes, pixelsize = 3)
         bytes
       end
 
+      # Decoded filtered scanline bytes that were filtered using SUB filtering.
+      # @param bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @param previous_bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @param pixelsize (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline
       def decode_png_scanline_sub(bytes, previous_bytes, pixelsize = 3)
         bytes.each_with_index { |b, i| bytes[i] = (b + (i >= pixelsize ? bytes[i-pixelsize] : 0)) % 256 }
         bytes
       end
 
+      # Decoded filtered scanline bytes that were filtered using UP filtering.
+      # @param bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @param previous_bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @param pixelsize (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline
       def decode_png_scanline_up(bytes, previous_bytes, pixelsize = 3)
         bytes.each_with_index { |b, i| bytes[i] = (b + previous_bytes[i]) % 256 }
         bytes
       end
 
+      # Decoded filtered scanline bytes that were filtered using AVERAGE filtering.
+      # @param bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @param previous_bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @param pixelsize (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline
       def decode_png_scanline_average(bytes, previous_bytes, pixelsize = 3)
         bytes.each_with_index do |byte, i|
           a = (i >= pixelsize) ? bytes[i - pixelsize] : 0
@@ -135,6 +222,12 @@ module ChunkyPNG
         bytes
       end
 
+      # Decoded filtered scanline bytes that were filtered using PAETH filtering.
+      # @param bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @param previous_bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @param pixelsize (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
+      # @see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline
       def decode_png_scanline_paeth(bytes, previous_bytes, pixelsize = 3)
         bytes.each_with_index do |byte, i|
           a = (i >= pixelsize) ? bytes[i - pixelsize] : 0
