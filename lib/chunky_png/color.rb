@@ -130,6 +130,13 @@ module ChunkyPNG
       a(value) == 0x000000ff
     end
     
+    # Returns the opaque value of this color by removing the alpha channel.
+    # @param [Fixnum] value The color to transform.
+    # @return [Fixnum] The opauq color
+    def opaque!(value)
+      value | 0x000000ff
+    end
+    
     # Returns true if this color is fully transparent.
     #
     # @param [Fixnum] value The color to test.
@@ -229,6 +236,25 @@ module ChunkyPNG
     def fade(color, factor)
       new_alpha = int8_mult(a(color), factor)
       (color & 0xffffff00) | new_alpha
+    end
+    
+    def alpha_decomposable?(color, mask, bg, tolerance = 1)
+      components = decompose_alpha_components(color, mask, bg)
+      sum = components.inject(0) { |a,b| a + b } 
+      max = components.max * 3
+      return (sum + tolerance * 3) >= max
+    end
+    
+    def decompose_alpha(color, mask, bg)
+      components = decompose_alpha_components(color, mask, bg)
+      (components.inject(0) { |a,b| a + b } / 3.0).round
+    end
+    
+    def decompose_alpha_components(color, mask, bg)
+      a_r = ((r(bg) - r(color)).to_f / (r(bg) - r(mask)).to_f * MAX).round
+      a_g = ((g(bg) - g(color)).to_f / (g(bg) - g(mask)).to_f * MAX).round
+      a_b = ((b(bg) - b(color)).to_f / (b(bg) - b(mask)).to_f * MAX).round
+      [a_r, a_g, a_b]
     end
 
     ####################################################################
