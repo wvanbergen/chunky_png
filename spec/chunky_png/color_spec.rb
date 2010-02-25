@@ -91,6 +91,12 @@ describe ChunkyPNG::Color do
     end
   end
   
+  describe '#decompose_alpha' do
+    it "should decompose the alpha channel correctly" do
+      decompose_alpha(0x9fc2d6ff, @opaque, @white).should == 0x00000064
+    end
+  end
+  
   describe '#blend' do
     it "should blend colors correctly" do
       blend(@opaque, @black).should == 0x05324bff

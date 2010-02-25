@@ -130,6 +130,13 @@ module ChunkyPNG
       a(value) == 0x000000ff
     end
     
+    # Returns the opaque value of this color by removing the alpha channel.
+    # @param [Fixnum] value The color to transform.
+    # @return [Fixnum] The opauq color
+    def opaque!(value)
+      value | 0x000000ff
+    end
+    
     # Returns true if this color is fully transparent.
     #
     # @param [Fixnum] value The color to test.
@@ -229,6 +236,86 @@ module ChunkyPNG
     def fade(color, factor)
       new_alpha = int8_mult(a(color), factor)
       (color & 0xffffff00) | new_alpha
+    end
+    
+    # Decomposes a color, given a color, a mask color and a background color.
+    # The returned color will be a variant of the mask color, with the alpha
+    # channel set to the best fitting value. This basically is the reverse 
+    # operation if alpha composition.
+    #
+    # If the color cannot be decomposed, this method will return the fully
+    # transparentvariant of the mask color.
+    #
+    # @param [Fixnum] color The color that was the result of compositing.
+    # @param [Fixnum] mask The opaque variant of the color that was being composed
+    # @param [Fixnum] bg The background color on which the color was composed.
+    # @param [Fixnum] tolerance The decomposition tolerance level, a value between 0 and 255.
+    # @return [Fixnum] The decomposed color,a variant of the masked color with the 
+    #    alpha channel set to an appropriate value.
+    def decompose_color(color, mask, bg, tolerance = 1)
+      if alpha_decomposable?(color, mask, bg, tolerance)
+        mask & 0xffffff00 | decompose_alpha(color, mask, bg)
+      else
+        mask & 0xffffff00
+      end
+    end
+    
+    # Checks whether an alpha channel value can successfully be composed
+    # given the resulting color, the mask color and a background color,
+    # all of which should be opaque. 
+    #
+    # @param [Fixnum] color The color that was the result of compositing.
+    # @param [Fixnum] mask The opauqe variant of the color that was being composed
+    # @param [Fixnum] bg The background color on which the color was composed.
+    # @param [Fixnum] tolerance The decomposition tolerance level, a value between 0 and 255.
+    # @return [Fixnum] The decomposed alpha channel value, between 0 and 255.
+    # @see #decompose_alpha
+    def alpha_decomposable?(color, mask, bg, tolerance = 1)
+      components = decompose_alpha_components(color, mask, bg)
+      sum = components.inject(0) { |a,b| a + b } 
+      max = components.max * 3
+      return components.max <= 255 && components.min >= 0 && (sum + tolerance * 3) >= max
+    end
+    
+    # Decomposes the alpha channel value given the resulting color, the mask color 
+    # and a background color, all of which should be opaque.
+    #
+    # Make sure to call {#alpha_decomposable?} first to see if the alpha channel
+    # value can successfully decomposed with a given tolerance, otherwise the return 
+    # value of this method is undefined.
+    #
+    # @param [Fixnum] color The color that was the result of compositing.
+    # @param [Fixnum] mask The opauqe variant of the color that was being composed
+    # @param [Fixnum] bg The background color on which the color was composed.
+    # @return [Fixnum] The best fitting alpha channel, a value between 0 and 255.
+    # @see #alpha_decomposable?
+    def decompose_alpha(color, mask, bg)
+      components = decompose_alpha_components(color, mask, bg)
+      (components.inject(0) { |a,b| a + b } / 3.0).round
+    end
+    
+    # Decomposes an alpha channel for either the r, g or b color channel.
+    # @param [:r, :g, :b] The channel to decompose the alpha channel from.
+    # @param [Fixnum] color The color that was the result of compositing.
+    # @param [Fixnum] mask The opauqe variant of the color that was being composed
+    # @param [Fixnum] bg The background color on which the color was composed.
+    # @param [Fixnum] The decomposed alpha value for the channel.
+    def decompose_alpha_component(channel, color, mask, bg)
+      ((send(channel, bg) - send(channel, color)).to_f / 
+          (send(channel, bg) - send(channel, mask)).to_f * MAX).round
+    end
+    
+    # Decomposes the alpha channels for the r, g and b color channel.
+    # @param [Fixnum] color The color that was the result of compositing.
+    # @param [Fixnum] mask The opauqe variant of the color that was being composed
+    # @param [Fixnum] bg The background color on which the color was composed.    
+    # @return [Array<Fixnum>] The decomposed alpha values for the r, g and b channels.
+    def decompose_alpha_components(color, mask, bg)
+      [
+        decompose_alpha_component(:r, color, mask, bg),
+        decompose_alpha_component(:g, color, mask, bg),
+        decompose_alpha_component(:b, color, mask, bg)
+      ]
     end
 
     ####################################################################
