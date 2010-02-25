@@ -21,7 +21,7 @@ describe ChunkyPNG::Canvas do
   end
   
   describe '#to_rgba_stream' do
-    before (:each) do
+    before(:each) do
       File.open(resource_file('pixelstream.rgba'), 'rb') { |f| @reference_data = f.read }
     end
     
@@ -32,7 +32,7 @@ describe ChunkyPNG::Canvas do
   end
 
   describe '#to_rgb_stream' do
-    before (:each) do
+    before(:each) do
       File.open(resource_file('pixelstream.rgb'), 'rb') { |f| @reference_data = f.read }
     end
     
