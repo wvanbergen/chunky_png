@@ -89,6 +89,13 @@ module ChunkyPNG
     def grayscale?
       all? { |color| Color.grayscale?(color) }
     end
+    
+    # Returns a palette with all the opaque variants of the colors in this palette.
+    # @return [ChunkyPNG::Palette] A new Palette instance with only opaque colors.
+    # @see ChunkyPNG::Color#opaque!
+    def opaque_palette
+      self.class.new(map { |c| ChunkyPNG::Color.opaque!(c) })
+    end
 
     # Checks whether this palette is suitable for decoding an image from a datastream.
     #

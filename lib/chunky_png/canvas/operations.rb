@@ -28,6 +28,34 @@ module ChunkyPNG
         end
         ChunkyPNG::Canvas.new(crop_width, crop_height, new_pixels)
       end
+      
+      def change_theme_color!(old_theme_color, new_theme_color, bg_color = ChunkyPNG::Color::WHITE, tolerance = 5)
+        base, mask = extract_mask(old_theme_color, bg_color, tolerance)
+        mask.change_mask_color!(new_theme_color)
+        self.replace(base.compose(mask))
+      end
+      
+      def extract_mask(mask_color, bg_color, tolerance = 5)
+        base_pixels = []
+        mask_pixels = []
+
+        pixels.each do |pixel|
+          if ChunkyPNG::Color.alpha_decomposable?(pixel, mask_color, bg_color, tolerance)
+            mask_pixels << ChunkyPNG::Color.decompose_color(pixel, mask_color, bg_color, tolerance)
+            base_pixels << bg_color
+          else
+            mask_pixels << (mask_color & 0xffffff00)
+            base_pixels << pixel
+          end
+        end
+        
+        [ self.class.new(width, height, base_pixels), self.class.new(width, height, mask_pixels) ]
+      end
+      
+      def change_mask_color!(new_color)
+        raise "This is not a mask image!" if palette.opaque_palette.size != 1
+        pixels.map! { |pixel| (new_color & 0xffffff00) | ChunkyPNG::Color.a(pixel) }
+      end
 
       protected
 
