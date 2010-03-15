@@ -30,6 +30,27 @@ describe ChunkyPNG::Canvas::PNGEncoding do
 
       File.unlink(filename)
     end
+
+    it "should save an image using the normal routine correctly" do
+      canvas = reference_canvas('operations')
+      Zlib::Deflate.should_receive(:deflate).with(anything, Zlib::DEFAULT_COMPRESSION).and_return('')
+      canvas.to_blob
+    end
+
+
+    it "should save an image using the :best_compression routine correctly" do
+      canvas = reference_canvas('operations')
+      canvas.should_not_receive(:encode_png_scanline)
+      Zlib::Deflate.should_receive(:deflate).with(anything, Zlib::BEST_SPEED).and_return('')
+      canvas.to_blob(:fast_rgba)
+    end
+
+    it "should save an image using the :best_compression routine correctly" do
+      canvas = reference_canvas('operations')
+      canvas.should_receive(:encode_png_scanline_paeth).at_least(:once).and_return([5, 0, 0, 0, 0, 0, 0])
+      Zlib::Deflate.should_receive(:deflate).with(anything, Zlib::BEST_COMPRESSION).and_return('')
+      canvas.to_blob(:best_compression)
+    end
   end
 
   describe '#encode_scanline' do

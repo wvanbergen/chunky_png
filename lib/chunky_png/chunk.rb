@@ -191,8 +191,8 @@ module ChunkyPNG
         Zlib::Inflate.inflate(data_chunks.map { |c| c.content }.join(''))
       end
       
-      def self.split_in_chunks(data, chunk_size = 2147483647)
-        streamdata = Zlib::Deflate.deflate(data)
+      def self.split_in_chunks(data, level = Zlib::DEFAULT_COMPRESSION, chunk_size = 2147483647)
+        streamdata = Zlib::Deflate.deflate(data, level)
         # TODO: Split long streamdata over multiple chunks
         [ ChunkyPNG::Chunk::ImageData.new('IDAT', streamdata) ]
       end

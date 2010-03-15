@@ -67,8 +67,8 @@ module ChunkyPNG
           ds.transparency_chunk = encoding_palette.to_trns_chunk unless encoding_palette.opaque?
         end
         
-        data           = encode_png_pixelstream(encoding[:color_mode], encoding[:interlace])
-        ds.data_chunks = Chunk::ImageData.split_in_chunks(data)
+        data           = encode_png_pixelstream(encoding[:color_mode], encoding[:interlace], encoding[:compression])
+        ds.data_chunks = Chunk::ImageData.split_in_chunks(data, encoding[:compression])
         ds.end_chunk   = Chunk::End.new
         return ds
       end
@@ -86,9 +86,11 @@ module ChunkyPNG
       def determine_png_encoding(constraints = {})
         
         if constraints == :fast_rgb
-          encoding = { :color_mode => ChunkyPNG::COLOR_TRUECOLOR }
+          encoding = { :color_mode => ChunkyPNG::COLOR_TRUECOLOR, :compression => Zlib::BEST_SPEED }
         elsif constraints == :fast_rgba
-          encoding = { :color_mode => ChunkyPNG::COLOR_TRUECOLOR_ALPHA }
+          encoding = { :color_mode => ChunkyPNG::COLOR_TRUECOLOR_ALPHA, :compression => Zlib::BEST_SPEED }
+        elsif constraints == :best_compression
+          encoding = { :compression => Zlib::BEST_COMPRESSION }
         else
           encoding = constraints
         end
@@ -103,6 +105,8 @@ module ChunkyPNG
           encoding[:color_mode] ||= encoding_palette.best_colormode
         end
         
+        encoding[:compression] ||= Zlib::DEFAULT_COMPRESSION
+        
         encoding[:interlace] = case encoding[:interlace]
           when nil, false, ChunkyPNG::INTERLACING_NONE then ChunkyPNG::INTERLACING_NONE
           when true, ChunkyPNG::INTERLACING_ADAM7      then ChunkyPNG::INTERLACING_ADAM7
@@ -116,26 +120,28 @@ module ChunkyPNG
       # mode, possibly with interlacing.
       # @param [Integer] color_mode The color mode to use for encoding.
       # @param [Integer] interlace The interlacing method to use.
-      # @param [String] The PNG encoded canvas as string.
-      def encode_png_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, interlace = ChunkyPNG::INTERLACING_NONE)
+      # @param [Integer] compression The Zlib compression level.
+      # @return [String] The PNG encoded canvas as string.
+      def encode_png_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, interlace = ChunkyPNG::INTERLACING_NONE, compression = ZLib::DEFAULT_COMPRESSION)
 
         if color_mode == ChunkyPNG::COLOR_INDEXED && (encoding_palette.nil? || !encoding_palette.can_encode?)
           raise "This palette is not suitable for encoding!"
         end
 
         case interlace
-          when ChunkyPNG::INTERLACING_NONE  then encode_png_image_without_interlacing(color_mode)
-          when ChunkyPNG::INTERLACING_ADAM7 then encode_png_image_with_interlacing(color_mode)
+          when ChunkyPNG::INTERLACING_NONE  then encode_png_image_without_interlacing(color_mode, compression)
+          when ChunkyPNG::INTERLACING_ADAM7 then encode_png_image_with_interlacing(color_mode, compression)
           else raise "Unknown interlacing method!"
         end
       end
 
       # Encodes the canvas according to the PNG format specification with a given color mode.
       # @param [Integer] color_mode The color mode to use for encoding.
-      # @param [String] Th PNG encoded canvas as string.
-      def encode_png_image_without_interlacing(color_mode)
+      # @param [Integer] compression The Zlib compression level.
+      # @return [String] The PNG encoded canvas as string.
+      def encode_png_image_without_interlacing(color_mode, compression = ZLib::DEFAULT_COMPRESSION)
         stream = ""
-        encode_png_image_pass_to_stream(stream, color_mode)
+        encode_png_image_pass_to_stream(stream, color_mode, compression)
         stream
       end
       
@@ -146,13 +152,14 @@ module ChunkyPNG
       # one by one, concatenating the resulting strings.
       #
       # @param [Integer] color_mode The color mode to use for encoding.
-      # @param [String] Th PNG encoded canvas as string.
-      def encode_png_image_with_interlacing(color_mode)
+      # @param [Integer] compression The Zlib compression level.
+      # @return [String] The PNG encoded canvas as string.
+      def encode_png_image_with_interlacing(color_mode, compression = ZLib::DEFAULT_COMPRESSION)
         stream = ""
         0.upto(6) do |pass|
           subcanvas = self.class.adam7_extract_pass(pass, self)
           subcanvas.encoding_palette = encoding_palette
-          subcanvas.encode_png_image_pass_to_stream(stream, color_mode)
+          subcanvas.encode_png_image_pass_to_stream(stream, color_mode, compression)
         end
         stream
       end
@@ -160,17 +167,20 @@ module ChunkyPNG
       # Encodes the canvas to a stream, in a given color mode.
       # @param [String, IO, :<<] stream The stream to write to.
       # @param [Integer] color_mode The color mode to use for encoding.
-      def encode_png_image_pass_to_stream(stream, color_mode)
+      # @param [Integer] compression The Zlib compression level.
+      def encode_png_image_pass_to_stream(stream, color_mode, compression = ZLib::DEFAULT_COMPRESSION)
 
-        case color_mode
-        when ChunkyPNG::COLOR_TRUECOLOR_ALPHA
+        if compression < Zlib::BEST_COMPRESSION && color_mode == ChunkyPNG::COLOR_TRUECOLOR_ALPHA
+          # Fast RGBA saving routine
           stream << pixels.pack("xN#{width}" * height)
           
-        when ChunkyPNG::COLOR_TRUECOLOR 
+        elsif compression < Zlib::BEST_COMPRESSION && color_mode == ChunkyPNG::COLOR_TRUECOLOR
+          # Fast RGB saving routine
           line_packer = 'x' + ('NX' * width)
           stream << pixels.pack(line_packer * height)
           
         else
+          # Normal saving routine
           pixel_size = Color.bytesize(color_mode)
           pixel_encoder = case color_mode
             when ChunkyPNG::COLOR_TRUECOLOR       then lambda { |color| Color.to_truecolor_bytes(color) }
@@ -184,7 +194,7 @@ module ChunkyPNG
           previous_bytes = Array.new(pixel_size * width, 0)
           each_scanline do |line|
             unencoded_bytes = line.map(&pixel_encoder).flatten
-            stream << encode_png_scanline_up(unencoded_bytes, previous_bytes, pixel_size).pack('C*')
+            stream << encode_png_scanline_paeth(unencoded_bytes, previous_bytes, pixel_size).pack('C*')
             previous_bytes = unencoded_bytes
           end
         end
