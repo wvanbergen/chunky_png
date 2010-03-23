@@ -15,7 +15,7 @@ module ChunkyPNG
 
     # Builds a new palette given a set (Enumerable instance) of colors.
     #
-    # @param [Enumerbale<CFixnum>] enum The set of colors to include in this palette.
+    # @param [Enumerbale<Integer>] enum The set of colors to include in this palette.
     #   This Enumerbale can contains duplicates.
     # @param [Array] decoding_map An array of colors in the exact order at which
     #   they appeared in the palette chunk, so that this array can be used for decoding.
@@ -64,7 +64,7 @@ module ChunkyPNG
     end
 
     # Builds a palette instance from a given set of pixels.
-    # @param [Enumerable<Fixnum>] pixels An enumeration of pixels to create a palette for
+    # @param [Enumerable<Integer>] pixels An enumeration of pixels to create a palette for
     # @return [ChunkyPNG::Palette] The palette instance.
     def self.from_pixels(pixels)
       self.new(pixels)
@@ -118,7 +118,7 @@ module ChunkyPNG
     end
 
     # Returns a color, given the position in the original palette chunk.
-    # @param [Fixnum] index The 0-based position of the color in the palette.
+    # @param [Integer] index The 0-based position of the color in the palette.
     # @return [ChunkyPNG::Color] The color that is stored in the palette under the given index
     # @see ChunkyPNG::Palette#can_decode?
     def [](index)
@@ -127,7 +127,7 @@ module ChunkyPNG
 
     # Returns the position of a color in the palette
     # @param [ChunkyPNG::Color] color The color for which to look up the index.
-    # @return [Fixnum] The 0-based position of the color in the palette.
+    # @return [Integer] The 0-based position of the color in the palette.
     # @see ChunkyPNG::Palette#can_encode?
     def index(color)
       @encoding_map[color]
@@ -166,7 +166,7 @@ module ChunkyPNG
     end
 
     # Determines the most suitable colormode for this palette.
-    # @return [Fixnum] The colormode which would create the smalles possible
+    # @return [Integer] The colormode which would create the smalles possible
     #    file for images that use this exact palette.
     def best_colormode
       if grayscale?

@@ -179,12 +179,12 @@ module ChunkyPNG
       # scanline, combining them using a color mode dependent color decoder.
       #
       # @param [Integer] filter The filter used to encode the bytes.
-      # @param [Array<Fixnum>] bytes The filtered bytes to decode.
-      # @param [Array<Fixnum>] previous_bytes The decoded bytes of the 
+      # @param [Array<Integer>] bytes The filtered bytes to decode.
+      # @param [Array<Integer>] previous_bytes The decoded bytes of the 
       #      previous scanline.
       # @param [Integer] pixelsize The amount of bytes used for every pixel.
       #      This depends on the used color mode and color depth.
-      # @return [Array<Fixnum>] The array of original bytes for the scanline,
+      # @return [Array<Integer>] The array of original bytes for the scanline,
       #      before they were encoded.
       def decode_png_scanline(filter, bytes, previous_bytes, pixelsize = 3)
         case filter

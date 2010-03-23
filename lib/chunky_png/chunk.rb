@@ -31,7 +31,7 @@ module ChunkyPNG
     # Verifies the CRC of a chunk.
     # @param [String] type The chunk's type.
     # @param [String] content The chunk's content.
-    # @param [Fixnum] content The chunk's content.
+    # @param [Integer] content The chunk's content.
     # @raise [RuntimeError] An exception is raised if the found CRC value
     #    is not equal to the expected CRC value.
     def self.verify_crc!(type, content, found_crc)

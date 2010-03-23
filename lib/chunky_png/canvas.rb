@@ -59,7 +59,7 @@ module ChunkyPNG
 
       @width, @height = width, height
 
-      if initial.kind_of?(Fixnum)
+      if initial.kind_of?(Integer)
         @pixels = Array.new(width * height, initial)
       elsif initial.kind_of?(Array) && initial.size == width * height
         @pixels = initial

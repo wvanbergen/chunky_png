@@ -202,7 +202,7 @@ module ChunkyPNG
 
       # Passes to this canvas of pixel values line by line.
       # @yield [line] Yields the scanlines of this image one by one.
-      # @yieldparam [Array<Fixnum>] line An line of fixnums representing pixels
+      # @yieldparam [Array<Integer>] line An line of fixnums representing pixels
       def each_scanline(&block)
         for line_no in 0...height do
           scanline = pixels[width * line_no, width]
@@ -212,10 +212,10 @@ module ChunkyPNG
 
       # Encodes the bytes of a scanline with a given filter.
       # @param [Integer] filter The filter method to use.
-      # @param [Array<Fixnum>]  bytes The scanline bytes to encode.
-      # @param [Array<Fixnum>]  previous_bytes The original bytes of the previous scanline.
+      # @param [Array<Integer>]  bytes The scanline bytes to encode.
+      # @param [Array<Integer>]  previous_bytes The original bytes of the previous scanline.
       # @param [Integer] pixelsize The number of bytes per pixel.
-      # @return [Array<Fixnum>] The filtered array of bytes.
+      # @return [Array<Integer>] The filtered array of bytes.
       def encode_png_scanline(filter, bytes, previous_bytes = nil, pixelsize = 3)
         case filter
         when ChunkyPNG::FILTER_NONE    then encode_png_scanline_none(    bytes, previous_bytes, pixelsize)
@@ -228,10 +228,10 @@ module ChunkyPNG
       end
 
       # Encodes the bytes of a scanline without filtering.
-      # @param [Array<Fixnum>]  bytes The scanline bytes to encode.
-      # @param [Array<Fixnum>]  previous_bytes The original bytes of the previous scanline.
+      # @param [Array<Integer>]  bytes The scanline bytes to encode.
+      # @param [Array<Integer>]  previous_bytes The original bytes of the previous scanline.
       # @param [Integer] pixelsize The number of bytes per pixel.
-      # @return [Array<Fixnum>] The filtered array of bytes.
+      # @return [Array<Integer>] The filtered array of bytes.
       def encode_png_scanline_none(original_bytes, previous_bytes = nil, pixelsize = 3)
         [ChunkyPNG::FILTER_NONE] + original_bytes
       end
