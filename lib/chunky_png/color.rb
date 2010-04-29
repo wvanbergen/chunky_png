@@ -82,7 +82,7 @@ module ChunkyPNG
       case str
         when /^(?:#|0x)?([0-9a-f]{6})$/i then ($1.hex << 8) | 0xff
         when /^(?:#|0x)?([0-9a-f]{8})$/i then $1.hex
-        else raise "Not a valid hex color notation: #{str.inspect}!"
+        else raise ChunkyPNG::ExpectationFailed, "Not a valid hex color notation: #{str.inspect}!"
       end
     end
 
@@ -396,7 +396,7 @@ module ChunkyPNG
         when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then 4
         when ChunkyPNG::COLOR_GRAYSCALE       then 1
         when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then 2
-        else raise "Don't know the bytesize of pixels in this colormode: #{color_mode}!"
+        else raise ChunkyPNG::NotSupported, "Don't know the bytesize of pixels in this colormode: #{color_mode}!"
       end
     end
   end

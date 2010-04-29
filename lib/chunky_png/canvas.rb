@@ -64,7 +64,7 @@ module ChunkyPNG
       elsif initial.kind_of?(Array) && initial.size == width * height
         @pixels = initial
       else
-        raise "Cannot use this value as initial canvas: #{initial.inspect}!"
+        raise ChunkyPNG::ExpectationFailed, "Cannot use this value as initial canvas: #{initial.inspect}!"
       end
     end
     

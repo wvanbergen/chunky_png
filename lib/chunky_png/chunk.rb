@@ -36,7 +36,7 @@ module ChunkyPNG
     #    is not equal to the expected CRC value.
     def self.verify_crc!(type, content, found_crc)
       expected_crc = Zlib.crc32(content, Zlib.crc32(type))
-      raise "Chuck CRC mismatch!" if found_crc != expected_crc
+      raise ChunkyPNG::CRCMismatch, "Chuck CRC mismatch!" if found_crc != expected_crc
     end
 
     # The base chunk class is the superclass for every chunk type. It contains
@@ -246,7 +246,7 @@ module ChunkyPNG
 
       def self.read(type, content)
         keyword, compression, value = content.unpack('Z*Ca*')
-        raise "Compression method #{compression.inspect} not supported!" unless compression == ChunkyPNG::COMPRESSION_DEFAULT
+        raise ChunkyPNG::NotSupported, "Compression method #{compression.inspect} not supported!" unless compression == ChunkyPNG::COMPRESSION_DEFAULT
         new(keyword, Zlib::Inflate.inflate(value))
       end
 

@@ -61,7 +61,7 @@ module ChunkyPNG
       # @param [ChunkyPNG::Datastream] ds The datastream to decode.
       # @return [ChunkyPNG::Canvas] The canvas decoded from the PNG datastream.
       def from_datastream(ds)
-        raise "Only 8-bit color depth is currently supported by ChunkyPNG!" unless ds.header_chunk.depth == 8
+        raise ChunkyPNG::NotSupported, "Only 8-bit color depth is currently supported by ChunkyPNG!" unless ds.header_chunk.depth == 8
 
         width      = ds.header_chunk.width
         height     = ds.header_chunk.height
@@ -83,12 +83,12 @@ module ChunkyPNG
       # @param [Integer] interlace The interlace method of the encoded pixelstream.
       # @return [ChunkyPNG::Canvas] The decoded Canvas instance.
       def decode_png_pixelstream(stream, width, height, color_mode = ChunkyPNG::COLOR_TRUECOLOR, interlace = ChunkyPNG::INTERLACING_NONE)
-        raise "This palette is not suitable for decoding!" if decoding_palette && !decoding_palette.can_decode?
+        raise ChunkyPNG::ExpectationFailed, "This palette is not suitable for decoding!" if decoding_palette && !decoding_palette.can_decode?
 
         return case interlace
           when ChunkyPNG::INTERLACING_NONE  then decode_png_without_interlacing(stream, width, height, color_mode)
           when ChunkyPNG::INTERLACING_ADAM7 then decode_png_with_adam7_interlacing(stream, width, height, color_mode)
-          else raise "Don't know how the handle interlacing method #{interlace}!"
+          else raise ChunkyPNG::NotSupported, "Don't know how the handle interlacing method #{interlace}!"
         end
       end
 
@@ -146,13 +146,13 @@ module ChunkyPNG
           when ChunkyPNG::COLOR_INDEXED         then lambda { |bytes| decoding_palette[bytes.first] }
           when ChunkyPNG::COLOR_GRAYSCALE       then lambda { |bytes| ChunkyPNG::Color.grayscale(*bytes) }
           when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then lambda { |bytes| ChunkyPNG::Color.grayscale_alpha(*bytes) }
-          else raise "No suitable pixel decoder found for color mode #{color_mode}!"
+          else raise ChunkyPNG::NotSupported, "No suitable pixel decoder found for color mode #{color_mode}!"
         end
         
         pixels = []
         if width > 0
           
-          raise "Invalid stream length!" unless stream.length - start_pos >= width * height * pixel_size + height
+          raise ChunkyPNG::ExpectationFailed, "Invalid stream length!" unless stream.length - start_pos >= width * height * pixel_size + height
           
           decoded_bytes = Array.new(width * pixel_size, 0)
           for line_no in 0...height do
@@ -193,7 +193,7 @@ module ChunkyPNG
         when ChunkyPNG::FILTER_UP      then decode_png_scanline_up(      bytes, previous_bytes, pixelsize)
         when ChunkyPNG::FILTER_AVERAGE then decode_png_scanline_average( bytes, previous_bytes, pixelsize)
         when ChunkyPNG::FILTER_PAETH   then decode_png_scanline_paeth(   bytes, previous_bytes, pixelsize)
-        else raise "Unknown filter type"
+        else raise ChunkyPNG::NotSupported, "Unknown filter type: #{filter}!"
         end
       end
 

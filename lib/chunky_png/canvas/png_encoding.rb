@@ -125,13 +125,13 @@ module ChunkyPNG
       def encode_png_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, interlace = ChunkyPNG::INTERLACING_NONE, compression = ZLib::DEFAULT_COMPRESSION)
 
         if color_mode == ChunkyPNG::COLOR_INDEXED && (encoding_palette.nil? || !encoding_palette.can_encode?)
-          raise "This palette is not suitable for encoding!"
+          raise ChunkyPNG::ExpectationFailed, "This palette is not suitable for encoding!"
         end
 
         case interlace
           when ChunkyPNG::INTERLACING_NONE  then encode_png_image_without_interlacing(color_mode, compression)
           when ChunkyPNG::INTERLACING_ADAM7 then encode_png_image_with_interlacing(color_mode, compression)
-          else raise "Unknown interlacing method!"
+          else raise ChunkyPNG::NotSupported, "Unknown interlacing method: #{interlace}!"
         end
       end
 
@@ -188,7 +188,7 @@ module ChunkyPNG
             when ChunkyPNG::COLOR_INDEXED         then lambda { |color| [encoding_palette.index(color)] }
             when ChunkyPNG::COLOR_GRAYSCALE       then lambda { |color| Color.to_grayscale_bytes(color) }
             when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then lambda { |color| Color.to_grayscale_alpha_bytes(color) }
-            else raise "Cannot encode pixels for this mode: #{color_mode}!"
+            else raise ChunkyPNG::NotSupported, "Cannot encode pixels for this mode: #{color_mode}!"
           end
 
           previous_bytes = Array.new(pixel_size * width, 0)
@@ -223,7 +223,7 @@ module ChunkyPNG
         when ChunkyPNG::FILTER_UP      then encode_png_scanline_up(      bytes, previous_bytes, pixelsize)
         when ChunkyPNG::FILTER_AVERAGE then encode_png_scanline_average( bytes, previous_bytes, pixelsize)
         when ChunkyPNG::FILTER_PAETH   then encode_png_scanline_paeth(   bytes, previous_bytes, pixelsize)
-        else raise "Unknown filter type"
+        else raise ChunkyPNG::NotSupported, "Unknown filter type: #{filter}!"
         end
       end
 

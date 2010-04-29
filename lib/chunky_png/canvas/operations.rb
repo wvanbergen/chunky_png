@@ -53,15 +53,15 @@ module ChunkyPNG
       end
       
       def change_mask_color!(new_color)
-        raise "This is not a mask image!" if palette.opaque_palette.size != 1
+        raise ChunkyPNG::ExpectationMismatch, "This is not a mask image!" if palette.opaque_palette.size != 1
         pixels.map! { |pixel| (new_color & 0xffffff00) | ChunkyPNG::Color.a(pixel) }
       end
 
       protected
 
       def check_size_constraints!(other, offset_x, offset_y)
-        raise "Background image width is too small!"  if width  < other.width  + offset_x
-        raise "Background image height is too small!" if height < other.height + offset_y
+        raise ChunkyPNG::ExpectationMismatch, "Background image width is too small!"  if width  < other.width  + offset_x
+        raise ChunkyPNG::ExpectationMismatch, "Background image height is too small!" if height < other.height + offset_y
       end
     end
   end
