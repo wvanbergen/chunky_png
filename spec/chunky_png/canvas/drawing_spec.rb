@@ -26,4 +26,13 @@ describe ChunkyPNG::Canvas::Drawing do
       canvas.should == reference_canvas('lines')
     end
   end
+  
+  describe '#rect' do
+    it "should draw a rectangle with the correct colors" do
+      canvas = ChunkyPNG::Canvas.new(16, 16, ChunkyPNG::Color::WHITE)
+      canvas.rect(1, 1, 10, 10, ChunkyPNG::Color.rgb(0, 255, 0), ChunkyPNG::Color.rgba(255, 0, 0, 100))
+      canvas.rect(5, 5, 14, 14, ChunkyPNG::Color.rgb(0, 0, 255), ChunkyPNG::Color.rgba(255, 255, 0, 100))
+      canvas.should == reference_canvas('rect')
+    end
+  end
 end

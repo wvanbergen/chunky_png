@@ -59,10 +59,29 @@ module ChunkyPNG
           end
           point(x1, y1, color)
         end
+        
+        return self
       end
       
       alias :line :line_xiaolin_wu
       
+      def rect(x0, y0, x1, y1, line_color, fill_color = ChunkyPNG::COLOR::TRANSPARENT)
+      
+        # Fill
+        [x0, x1].min.upto([x0, x1].max) do |x|
+          [y0, y1].min.upto([y0, y1].max) do |y|
+            point(x, y, fill_color)
+          end
+        end
+        
+        # Stroke
+        line(x0, y0, x0, y1, line_color)
+        line(x0, y1, x1, y1, line_color)
+        line(x1, y1, x1, y0, line_color)
+        line(x1, y0, x0, y0, line_color)
+        
+        return self
+      end
     end
   end
 end
