@@ -77,6 +77,11 @@ describe ChunkyPNG::Color do
   end
   
   describe '#compose' do
+
+    it "should use the foregorund color as is when the background color is fully transparent" do
+      compose(@non_opaque, @fully_transparent).should == @non_opaque
+    end
+
     it "should use the foregorund color as is when an opaque color is given as foreground color" do
       compose(@opaque, @white).should == @opaque
     end
@@ -85,7 +90,7 @@ describe ChunkyPNG::Color do
       compose(@fully_transparent, @white).should == @white
     end
 
-    it "should compose pixels correctly" do
+    it "should compose pixels correctly with both algorithms" do
       compose_quick(@non_opaque, @white).should   == 0x9fc2d6ff
       compose_precise(@non_opaque, @white).should == 0x9fc2d6ff
     end

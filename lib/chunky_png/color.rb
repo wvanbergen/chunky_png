@@ -181,7 +181,7 @@ module ChunkyPNG
     # @return [Integer] The composited color.
     # @see ChunkyPNG::Color#compose_precise
     def compose_quick(fg, bg)
-      return fg if opaque?(fg)
+      return fg if opaque?(fg) || fully_transparent?(bg)
       return bg if fully_transparent?(fg)
       
       a_com = int8_mult(0xff - a(fg), a(bg))
@@ -203,7 +203,7 @@ module ChunkyPNG
     # @return [Integer] The composited color.
     # @see ChunkyPNG::Color#compose_quick
     def compose_precise(fg, bg)
-      return fg if opaque?(fg)
+      return fg if opaque?(fg) || fully_transparent?(bg)
       return bg if fully_transparent?(fg)
       
       fg_a  = a(fg).to_f / MAX
@@ -380,7 +380,7 @@ module ChunkyPNG
     WHITE = rgb(255, 255, 255)
 
     # Fully transparent pixel/color
-    TRANSPARENT = rgba(255, 255, 255, 0)
+    TRANSPARENT = rgba(0, 0, 0, 0)
 
     ####################################################################
     # STATIC UTILITY METHODS
