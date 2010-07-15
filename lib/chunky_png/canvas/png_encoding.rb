@@ -52,7 +52,18 @@ module ChunkyPNG
       alias :to_s :to_blob
 
       # Converts this Canvas to a datastream, so that it can be saved as a PNG image.
-      # @param [Hash] constraints The constraints to use when encoding the canvas.
+      # @param [Hash, Symbol] constraints The constraints to use when encoding the canvas.
+      #    This can either be a hash with different constraints, or a symbol which acts as a 
+      #    preset for some constraints. If no constraints are given, ChunkyPNG will decide  
+      #    for itself how to best create the PNG datastream. 
+      #    Supported presets are :fast_rgba for quickly saving images with transparency,
+      #    :fast_rgb for quickly saving opaque images, and :best_compression to obtain the
+      #    smallest possible filesize.
+      # @option constraints [Fixnum] :color_mode The color mode to use. Use one of the 
+      #    ChunkyPNG::COLOR_* constants.
+      # @option constraints [true, false] :interlace Whether to use interlacing.
+      # @option constraints [Fixnum] :compression The compression level for Zlib. This can be a
+      #    value between 0 and 9, or a Zlib constant like Zlib::BEST_COMPRESSION.
       # @return [ChunkyPNG::Datastream] The PNG datastream containing the encoded canvas.
       # @see ChunkyPNG::Canvas::PNGEncoding#determine_png_encoding
       def to_datastream(constraints = {})
@@ -81,7 +92,8 @@ module ChunkyPNG
       # You can provide constraints for the encoding variables by passing a hash with 
       # encoding variables to this method.
       #
-      # @param [Hash] constraints The constraints for the encoding.
+      # @param [Hash, Symbol] constraints The constraints for the encoding. This can be a
+      #    Hash or a preset symbol.
       # @return [Hash] A hash with encoding options for {ChunkyPNG::Canvas::PNGEncoding#to_datastream}
       def determine_png_encoding(constraints = {})
         

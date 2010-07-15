@@ -19,10 +19,11 @@ Issue tracker:: http://github.com/wvanbergen/chunky_png/issues
   chosen automatically, based on the amount of used colors.
 * R/W access to the image's pixels.
 * R/W access to all image metadata that is stored in chunks.
-* Memory efficient (uses a Fixnum, i.e. 4 bytes of memory, per pixel)
+* Memory efficient (uses a Fixnum, i.e. 4 or 8 bytes of memory per pixel, depending
+  on the hardware)
 * Reasonably fast for Ruby standards, by only using integer math and a highly
   optimized saving routine.
-* Interoperability with RMagick.
+* Interoperability with RMagick if you really have to.
 
 == Classes
 
