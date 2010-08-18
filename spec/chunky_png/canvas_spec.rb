@@ -45,10 +45,9 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should return the correct pixels" do
-      @canvas.row(0).tap do |data|
-        data.should have(@canvas.width).items
-        data.should == [65535, 268500991, 536936447, 805371903, 1073807359, 1342242815, 1610678271, 1879113727, 2147549183, 2415984639, 2684420095, 2952855551, 3221291007, 3489726463, 3758161919, 4026597375]
-      end
+      data = @canvas.row(0)
+      data.should have(@canvas.width).items
+      data.should == [65535, 268500991, 536936447, 805371903, 1073807359, 1342242815, 1610678271, 1879113727, 2147549183, 2415984639, 2684420095, 2952855551, 3221291007, 3489726463, 3758161919, 4026597375]
     end
   end
 
@@ -61,10 +60,9 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should return the correct pixels" do
-      @canvas.column(0).tap do |data|
-        data.should have(@canvas.height).items
-        data.should == [65535, 1114111, 2162687, 3211263, 4259839, 5308415, 6356991, 7405567, 8454143, 9502719, 10551295, 11599871, 12648447, 13697023, 14745599, 15794175]
-      end
+      data = @canvas.column(0)
+      data.should have(@canvas.height).items
+      data.should == [65535, 1114111, 2162687, 3211263, 4259839, 5308415, 6356991, 7405567, 8454143, 9502719, 10551295, 11599871, 12648447, 13697023, 14745599, 15794175]
     end
   end
 end

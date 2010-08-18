@@ -124,11 +124,7 @@ module ChunkyPNG
     # @return [Array<Integer>] The vector of pixels in the requested column.
     def column(x)
       assert_x!(x)
-      [].tap do |column_pixels|
-        for y in 0...height do
-          column_pixels << self[x, y]
-        end
-      end
+      (0...height).inject([]) { |pixels, y| pixels << self[x, y] }
     end
 
     # Replaces a row of pixels on this canvas.
@@ -200,6 +196,17 @@ module ChunkyPNG
     # @return [ChunkyPNG::Image] This canvas wrapped in an Image instance.
     def to_image
       ChunkyPNG::Image.from_canvas(self)
+    end
+    
+    #################################################################
+    # RUBY 1.8.6 compatibility
+    #################################################################
+    
+    unless respond_to?(:tap)
+      def tap(&block)
+        yield(self)
+        self
+      end
     end
     
     protected
