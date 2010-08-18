@@ -56,6 +56,46 @@ module ChunkyPNG
         raise ChunkyPNG::ExpectationFailed, "This is not a mask image!" if palette.opaque_palette.size != 1
         pixels.map! { |pixel| (new_color & 0xffffff00) | ChunkyPNG::Color.a(pixel) }
       end
+      
+      def flip_horizontally
+        self.class.new(width, height).tap do |flipped|
+          for y in 0...height do
+            flipped.replace_row!(height - (y + 1), row(y))
+          end
+        end
+      end
+      
+      def flip_vertically
+        self.class.new(width, height).tap do |flipped|
+          for x in 0...width do
+            flipped.replace_column!(width - (x + 1), column(x))
+          end
+        end
+      end
+
+      def rotate_right
+        self.class.new(height, width).tap do |rotated|
+          for i in 0...width do
+            rotated.replace_row!(i, column(i).reverse)
+          end
+        end
+      end
+      
+      def rotate_left
+        self.class.new(height, width).tap do |rotated|
+          for i in 0...width do
+            rotated.replace_row!(width - (i + 1), column(i))
+          end
+        end
+      end
+      
+      def rotate_180
+        self.class.new(width, height).tap do |flipped|
+          for y in 0...height do
+            flipped.replace_row!(height - (y + 1), row(y).reverse)
+          end
+        end
+      end
 
       protected
 
