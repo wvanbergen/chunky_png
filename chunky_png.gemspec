@@ -25,7 +25,10 @@ Gem::Specification.new do |s|
   s.email    = ['willem@railsdoctors.com']
   s.homepage = 'http://wiki.github.com/wvanbergen/chunky_png'
 
-  s.add_development_dependency('rspec', '>= 1.2.9')
+  s.add_development_dependency('rake')
+  s.add_development_dependency('rspec', '>= 1.3')
+  s.add_development_dependency('git')
+  s.add_development_dependency('gemcutter')
 
   s.rdoc_options << '--title' << s.name << '--main' << 'README.rdoc' << '--line-numbers' << '--inline-source'
   s.extra_rdoc_files = ['README.rdoc']
