@@ -98,6 +98,7 @@ module ChunkyPNG
     # @param [Integer] y The y-coordinate of the pixel (row)
     # @param [ChunkyPNG::Color] pixel The new pixel for the provided coordinates.
     def []=(x, y, color)
+      assert_xy!(x, y)
       @pixels[y * width + x] = color
     end
 
@@ -106,16 +107,71 @@ module ChunkyPNG
     # @param [Integer] y The y-coordinate of the pixel (row)
     # @return [ChunkyPNG::Color] The current pixel at the provided coordinates.
     def [](x, y)
+      assert_xy!(x, y)
       @pixels[y * width + x]
     end
-    
+
+    # Returns an extracted row as vector of pixels
+    # @param [Integer] y The 0-based row index
+    # @return [Array<Integer>] The vector of pixels in the requested row
+    def row(y)
+      assert_y!(y)
+      pixels.slice(y * width, width)
+    end
+
+    # Returns an extracted column as vector of pixels.
+    # @param [Integer] x The 0-based column index.
+    # @return [Array<Integer>] The vector of pixels in the requested column.
+    def column(x)
+      assert_x!(x)
+      [].tap do |column_pixels|
+        for y in 0...height do
+          column_pixels << self[x, y]
+        end
+      end
+    end
+
+    # Replaces a row of pixels on this canvas.
+    # @param [Integer] y The 0-based row index.
+    # @param [Array<Integer>] vector The vector of pixels to replace the row with.
+    def replace_row!(y, vector)
+      assert_y!(y) && assert_width!(vector.length)
+      pixels[y * width, width] = vector
+    end
+
+    # Replaces a column of pixels on this canvas.
+    # @param [Integer] x The 0-based column index.
+    # @param [Array<Integer>] vector The vector of pixels to replace the column with.
+    def replace_column!(x, vector)
+      assert_x!(x) && assert_height!(vector.length)
+      for y in 0...height do
+        self[x, y] = vector[y]
+      end
+    end
+
     # Checks whether the given coordinates are in the range of the canvas
     # @param [Integer] x The x-coordinate of the pixel (column)
     # @param [Integer] y The y-coordinate of the pixel (row)
     # @return [true, false] True if the x and y coordinate are in the range 
     #    of this canvas.
-    def include?(x, y)
-      (0...width).include?(x) && (0...height).include?(y)
+    def include_xy?(x, y)
+      include_x?(x) && include_y?(y)
+    end
+    
+    alias_method :include?, :include_xy?
+
+    # Checks whether the given y-coordinate is in the range of the canvas
+    # @param [Integer] y The y-coordinate of the pixel (row)
+    # @return [true, false] True if the y-coordinate is in the range of this canvas.
+    def include_y?(y)
+      y >= 0 && y < height
+    end
+
+    # Checks whether the given x-coordinate is in the range of the canvas
+    # @param [Integer] x The y-coordinate of the pixel (column)
+    # @return [true, false] True if the x-coordinate is in the range of this canvas.
+    def include_x?(x)
+      x >= 0 && x < width
     end
 
     # Returns the palette used for this canvas.
@@ -144,6 +200,42 @@ module ChunkyPNG
     # @return [ChunkyPNG::Image] This canvas wrapped in an Image instance.
     def to_image
       ChunkyPNG::Image.from_canvas(self)
+    end
+    
+    protected
+    
+    # Throws an exception if the x-coordinate is out of bounds.
+    def assert_x!(x)
+      raise ChunkyPNG::OutOfBounds, "Column index out of bounds!" unless include_x?(x)
+      return true
+    end
+    
+    # Throws an exception if the y-coordinate is out of bounds.
+    def assert_y!(y)
+      raise ChunkyPNG::OutOfBounds, "Row index out of bounds!" unless include_y?(y)
+      return true
+    end
+    
+    # Throws an exception if the x- or y-coordinate is out of bounds.
+    def assert_xy!(x, y)
+      raise ChunkyPNG::OutOfBounds, "Coordinates out of bounds!" unless include_xy?(x, y)
+      return true
+    end
+    
+    def assert_height!(vector_length)
+      raise ChunkyPNG::ExpectationFailed, "The length of the vector does not match the canvas height!" if height != vector_length
+      return true
+    end
+    
+    def assert_width!(vector_length)
+      raise ChunkyPNG::ExpectationFailed, "The length of the vector does not match the canvas width!" if width != vector_length
+      return true
+    end
+    
+    def assert_size!(matrix_width, matrix_height)
+      raise ChunkyPNG::ExpectationFailed, "The width of the matrix does not match the canvas width!"   if width  != matrix_width
+      raise ChunkyPNG::ExpectationFailed, "The height of the matrix does not match the canvas height!" if height != matrix_height
+      return true
     end
   end
 end

@@ -51,19 +51,19 @@ module ChunkyPNG
   FILTER_UP             = 2
   FILTER_AVERAGE        = 3
   FILTER_PAETH          = 4
-  
+
   ###################################################
   # ChunkyPNG exception classes
   ###################################################
-  
+
   # Default exception class for ChunkyPNG
   class Exception < ::StandardError
   end
-  
+
   # Exception that is raised for an unsopported PNG image.
   class NotSupported < ChunkyPNG::Exception
   end
-  
+
   # Exception that is raised if the PNG signature is not encountered at the 
   # beginning of the file.
   class SignatureMismatch < ChunkyPNG::Exception
@@ -73,8 +73,11 @@ module ChunkyPNG
   class CRCMismatch < ChunkyPNG::Exception
   end
 
-  
   # Exception that is raised if an expectation fails.
   class ExpectationFailed < ChunkyPNG::Exception
-  end  
+  end
+
+  # Exception that is raised if an expectation fails.
+  class OutOfBounds < ChunkyPNG::ExpectationFailed
+  end
 end

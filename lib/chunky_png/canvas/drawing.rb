@@ -39,9 +39,9 @@ module ChunkyPNG
             e_acc_temp, e_acc = e_acc, (e_acc + e) & 0xffff
             x0 = x0 + sx if (e_acc <= e_acc_temp)
             w = 0xff - (e_acc >> 8)
-            point(x0, y0, ChunkyPNG::Color.fade(color, w)) if include?(x0, y0)
+            point(x0, y0, ChunkyPNG::Color.fade(color, w)) if include_xy?(x0, y0)
             y0 = y0 + 1
-            point(x0 + sx, y0, ChunkyPNG::Color.fade(color, 0xff - w)) if include?(x0 + sx, y0)
+            point(x0 + sx, y0, ChunkyPNG::Color.fade(color, 0xff - w)) if include_xy?(x0 + sx, y0)
           end
           point(x1, y1, color)
           
@@ -53,9 +53,9 @@ module ChunkyPNG
             e_acc_temp, e_acc = e_acc, (e_acc + e) & 0xffff
             y0 += 1 if (e_acc <= e_acc_temp)
             w = 0xff - (e_acc >> 8)
-            point(x0, y0, ChunkyPNG::Color.fade(color, w)) if include?(x0, y0)
+            point(x0, y0, ChunkyPNG::Color.fade(color, w)) if include_xy?(x0, y0)
             x0 += sx
-            point(x0, y0 + 1, ChunkyPNG::Color.fade(color, 0xff - w)) if include?(x0, y0 + 1)
+            point(x0, y0 + 1, ChunkyPNG::Color.fade(color, 0xff - w)) if include_xy?(x0, y0 + 1)
           end
           point(x1, y1, color)
         end
