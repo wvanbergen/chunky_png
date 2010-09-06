@@ -2,19 +2,21 @@ require 'spec_helper'
 
 describe ChunkyPNG::Canvas::Operations do
   describe '#crop' do
-    before(:each) do
-      @canvas = ChunkyPNG::Canvas.from_file(resource_file('operations.png'))
-    end
+    before { @canvas = reference_canvas('operations') }
 
     it "should crop the right pixels from the original canvas" do
       cropped = @canvas.crop(10, 5, 4, 8)
       cropped.should == reference_canvas('cropped')
     end
+    
+    it "should raise an exception when the cropped image falls outside the oiginal image" do
+      lambda { @canvas.crop(16, 16, 2, 2) }.should raise_error(ChunkyPNG::OutOfBounds)
+    end
   end
 
   describe '#compose' do
     it "should compose pixels correctly" do
-      canvas = ChunkyPNG::Canvas.from_file(resource_file('operations.png'))
+      canvas = reference_canvas('operations')
       subcanvas = ChunkyPNG::Canvas.new(4, 8, ChunkyPNG::Color.rgba(0, 0, 0, 75))
       canvas.compose(subcanvas, 8, 4)
       canvas.should == reference_canvas('composited')
@@ -25,17 +27,23 @@ describe ChunkyPNG::Canvas::Operations do
       mask = reference_canvas('clock_mask_updated')
       base.compose(mask).should == reference_canvas('clock_updated')
     end
+    
+    it "should raise an exception when the pixels to compose fall outside the image" do
+      lambda { reference_canvas('operations').compose(ChunkyPNG::Canvas.new(1,1), 16, 16) }.should raise_error(ChunkyPNG::OutOfBounds)
+    end
   end
 
   describe '#replace' do
-    before(:each) do
-      @canvas = ChunkyPNG::Canvas.from_file(resource_file('operations.png'))
-    end
+    before { @canvas = reference_canvas('operations') }
 
     it "should replace the correct pixels" do
       subcanvas = ChunkyPNG::Canvas.new(3, 2, ChunkyPNG::Color.rgb(200, 255, 0))
       @canvas.replace(subcanvas, 5, 4)
       @canvas.should == reference_canvas('replaced')
+    end
+    
+    it "should raise an exception when the pixels to replace fall outside the image" do
+      lambda { @canvas.replace(ChunkyPNG::Canvas.new(1,1), 16, 16) }.should raise_error(ChunkyPNG::OutOfBounds)
     end
   end
   
@@ -85,6 +93,11 @@ describe ChunkyPNG::Canvas::Operations do
     it "should still only have one opaque color" do
       @mask.change_mask_color!(@new_color)
       @mask.palette.opaque_palette.size.should == 1
+    end
+    
+    it "should raise an exception when the mask image has more than once color" do
+      not_a_mask = reference_canvas('operations')
+      lambda { not_a_mask.change_mask_color!(@new_color) }.should raise_error(ChunkyPNG::ExpectationFailed)
     end
   end
 end
