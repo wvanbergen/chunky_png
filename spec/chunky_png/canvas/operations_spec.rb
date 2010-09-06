@@ -87,34 +87,74 @@ describe ChunkyPNG::Canvas::Operations do
       @mask.palette.opaque_palette.size.should == 1
     end
   end
-  
+end
+
+describe ChunkyPNG::Canvas::Operations do
+  before { @stubbed = reference_canvas('clock_stubbed') }
+
   describe '#flip_horizontally' do
     it "should flip the pixels horizontally" do
-      reference_canvas('clock_stubbed').flip_horizontally.should == reference_canvas('clock_flip_horizontally')
+      @stubbed.flip_horizontally.should == reference_canvas('clock_flip_horizontally')
+    end
+    
+    it "should return itself when applied twice" do
+      @stubbed.flip_horizontally.flip_horizontally.should == @stubbed
     end
   end
-  
+
   describe '#flip_vertically' do
     it "should flip the pixels vertically" do
-      reference_canvas('clock_stubbed').flip_vertically.should == reference_canvas('clock_flip_vertically')
+      @stubbed.flip_vertically.should == reference_canvas('clock_flip_vertically')
+    end
+    
+    it "should return itself when applied twice" do
+      @stubbed.flip_vertically.flip_vertically.should == @stubbed
     end
   end
 
   describe '#rotate_left' do
     it "should rotate the pixels 90 degrees counter-clockwise" do
-      reference_canvas('clock_stubbed').rotate_left.should == reference_canvas('clock_rotate_left')
+      @stubbed.rotate_left.should == reference_canvas('clock_rotate_left')
+    end
+    
+    it "it should rotate 180 degrees when applied twice" do
+      @stubbed.rotate_left.rotate_left.should == reference_canvas('clock_rotate_180')
+    end
+    
+    it "it should rotate right when applied three times" do
+      @stubbed.rotate_left.rotate_left.rotate_left.should == reference_canvas('clock_rotate_right')
+    end
+    
+    it "should return itself when applied four times" do
+      @stubbed.rotate_left.rotate_left.rotate_left.rotate_left.should == @stubbed
     end
   end
-  
+
   describe '#rotate_right' do
     it "should rotate the pixels 90 degrees clockwise" do
-      reference_canvas('clock_stubbed').rotate_right.should == reference_canvas('clock_rotate_right')
+      @stubbed.rotate_right.should == reference_canvas('clock_rotate_right')
+    end
+    
+    it "it should rotate 180 degrees when applied twice" do
+      @stubbed.rotate_right.rotate_right.should == reference_canvas('clock_rotate_180')
+    end
+    
+    it "it should rotate left when applied three times" do
+      @stubbed.rotate_right.rotate_right.rotate_right.should == reference_canvas('clock_rotate_left')
+    end
+    
+    it "should return itself when applied four times" do
+      @stubbed.rotate_right.rotate_right.rotate_right.rotate_right.should == @stubbed
     end
   end
-  
+
   describe '#rotate_180' do
     it "should rotate the pixels 180 degrees" do
-      reference_canvas('clock_stubbed').rotate_180.should == reference_canvas('clock_rotate_180')
+      @stubbed.rotate_180.should == reference_canvas('clock_rotate_180')
+    end
+    
+    it "should return itself when applied twice" do
+      @stubbed.rotate_180.rotate_180.should == @stubbed
     end
   end
 end
