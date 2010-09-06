@@ -3,4 +3,5 @@ spec/resources/_*.png
 /pkg
 /tmp
 /doc
-.yardoc
+/.yardoc
+/.bundle
