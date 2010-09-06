@@ -21,7 +21,7 @@ module ChunkyPNG
       # @param [Integer] offset_x The x-offset to apply the new forgeround on.
       # @param [Integer] offset_y The y-offset to apply the new forgeround on.
       # @return [ChunkyPNG::Canvas] Returns itself, but with the other canvas composed onto it.
-      # @raise [ChunkyPNG::ExpectationFailed] when the other canvas doesn't fit on this one,
+      # @raise [ChunkyPNG::OutOfBounds] when the other canvas doesn't fit on this one,
       #     given the offset and size of the other canavs.
       # @see #replace
       def compose(other, offset_x = 0, offset_y = 0)
@@ -41,7 +41,7 @@ module ChunkyPNG
       # them with semi-transparent pixels from the foreground image, see {#compose}.
       #
       # @return [ChunkyPNG::Canvas] Returns itself, but with the other canvas composed onto it.
-      # @raise [ChunkyPNG::ExpectationFailed] when the other canvas doesn't fit on this one,
+      # @raise [ChunkyPNG::OutOfBounds] when the other canvas doesn't fit on this one,
       #     given the offset and size of the other canavs.
       # @see #compose
       def replace(other, offset_x = 0, offset_y = 0)
@@ -62,12 +62,12 @@ module ChunkyPNG
       # @param [Integer] crop_width The width of the image to be cropped.
       # @param [Integer] crop_height The height of the image to be cropped.
       # @return [ChunkyPNG::Canvas] Returns the newly created cropped image.
-      # @raise [ChunkyPNG::ExpectationFailed] when the crop dimensions plus the given coordinates 
+      # @raise [ChunkyPNG::OutOfBounds] when the crop dimensions plus the given coordinates 
       #     are bigger then the original image.
       def crop(x, y, crop_width, crop_height)
         
-        raise ChunkyPNG::ExpectationFailed, "Image width is too small!" if crop_width + x > width
-        raise ChunkyPNG::ExpectationFailed, "Image width is too small!" if crop_height + y > height
+        raise ChunkyPNG::OutOfBounds, "Image width is too small!" if crop_width + x > width
+        raise ChunkyPNG::OutOfBounds, "Image width is too small!" if crop_height + y > height
         
         new_pixels = []
         for cy in 0...crop_height do
@@ -228,10 +228,10 @@ module ChunkyPNG
       # @param [ChunkyPNG::Canvas] other The other canvas
       # @param [Integer] offset_x The x offset on which the other image will be applied.
       # @param [Integer] offset_y The y offset on which the other image will be applied.
-      # @raise [ChunkyPNG::ExpectationFailed] when the other image doesn't fit.
+      # @raise [ChunkyPNG::OutOfBounds] when the other image doesn't fit.
       def check_size_constraints!(other, offset_x, offset_y)
-        raise ChunkyPNG::ExpectationFailed, "Background image width is too small!"  if width  < other.width  + offset_x
-        raise ChunkyPNG::ExpectationFailed, "Background image height is too small!" if height < other.height + offset_y
+        raise ChunkyPNG::OutOfBounds, "Background image width is too small!"  if width  < other.width  + offset_x
+        raise ChunkyPNG::OutOfBounds, "Background image height is too small!" if height < other.height + offset_y
       end
     end
   end

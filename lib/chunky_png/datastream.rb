@@ -37,7 +37,6 @@ module ChunkyPNG
     # @return [ChunkyPNG::Chunk::Header]
     attr_accessor :end_chunk
 
-
     # Initializes a new Datastream instance.
     def initialize
       @other_chunks = []
@@ -94,6 +93,7 @@ module ChunkyPNG
       # This method reads the PNG signature from the stream, setting the current position
       # of the stream directly after the signature, where the IHDR chunk should begin.
       #
+      # @param [IO] io The stream to read the PNG signature from.
       # @raise [RuntimeError] An exception is raised if the PNG signature is not found at
       #    the beginning of the stream.
       def verify_signature!(io)
@@ -133,6 +133,7 @@ module ChunkyPNG
     end
     
     # Returns all the textual metadata key/value pairs as hash.
+    # @return [Hash] A hash containing metadata fields and their values.
     def metadata
       metadata = {}
       other_chunks.select do |chunk|
