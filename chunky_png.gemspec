@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('gemcutter')
 
   s.rdoc_options << '--title' << s.name << '--main' << 'README.rdoc' << '--line-numbers' << '--inline-source'
-  s.extra_rdoc_files = ['README.rdoc']
+  s.extra_rdoc_files = ['README.rdoc', 'BENCHMARKS.rdoc']
 
   # Do not change the files and test_files fields by hand. This will be done
   # automatically by the gem release script.
