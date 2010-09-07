@@ -60,6 +60,9 @@ The main classes and modules used within ChunkyPNG are:
   png_stream = ChunkyPNG::Datastream.from_file('filename.png')
   png_stream.each_chunk { |chunk| p chunk.type }
 
+For more information, see the project wiki on http://github.com/wvanbergen/chunky_png/wiki
+or the RDOC documentation on http://rdoc.info/github/wvanbergen/chunky_png/.
+
 == About
 
 The library is written by Willem van Bergen for Floorplanner.com, and released
