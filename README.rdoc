@@ -5,8 +5,8 @@ maximum portability. Let me rephrase: it does NOT require RMagick or any other
 memory leaking image library.
 
 Source code:: http://github.com/wvanbergen/chunky_png/tree
-RDoc:: http://rdoc.info/projects/wvanbergen/chunky_png
-Wiki:: http://wiki.github.com/wvanbergen/chunky_png
+RDoc:: http://rdoc.info/github/wvanbergen/chunky_png/master/file/README.rdoc
+Wiki:: http://github.com/wvanbergen/chunky_png/wiki
 Issue tracker:: http://github.com/wvanbergen/chunky_png/issues
 
 == Features
@@ -61,7 +61,7 @@ The main classes and modules used within ChunkyPNG are:
   png_stream.each_chunk { |chunk| p chunk.type }
 
 For more information, see the project wiki on http://github.com/wvanbergen/chunky_png/wiki
-or the RDOC documentation on http://rdoc.info/github/wvanbergen/chunky_png/.
+or the RDOC documentation on http://rdoc.info/github/wvanbergen/chunky_png/master/file/README.rdoc.
 
 == About
 
