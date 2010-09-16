@@ -29,7 +29,7 @@ module ChunkyPNG
     # @param [ChunkyPNG::Image] other The other image to copy.
     def initialize_copy(other)
       super(other)
-      @metdata = other.metadata
+      @metadata = other.metadata
     end
     
     # Returns the metadata for this image as PNG chunks.
