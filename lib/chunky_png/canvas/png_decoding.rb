@@ -113,7 +113,7 @@ module ChunkyPNG
       # @param color_mode (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       def decode_png_with_adam7_interlacing(stream, width, height, color_mode)
-        canvas     = ChunkyPNG::Canvas.new(width, height)
+        canvas     = new(width, height)
         pixel_size = Color.bytesize(color_mode)
         start_pos  = 0
         for pass in 0...7 do
