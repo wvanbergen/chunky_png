@@ -28,7 +28,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rake')
   s.add_development_dependency('rspec', '>= 1.3')
   s.add_development_dependency('git')
-  s.add_development_dependency('gemcutter')
 
   s.rdoc_options << '--title' << s.name << '--main' << 'README.rdoc' << '--line-numbers' << '--inline-source'
   s.extra_rdoc_files = ['README.rdoc', 'BENCHMARKS.rdoc']
