@@ -25,6 +25,10 @@ module MatrixSpecHelper
   def reference_canvas(name)
     ChunkyPNG::Canvas.from_file(resource_file("#{name}.png"))
   end
+  
+  def reference_image(name)
+    ChunkyPNG::Image.from_file(resource_file("#{name}.png"))
+  end
 end
 
 Spec::Runner.configure do |config|

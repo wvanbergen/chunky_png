@@ -73,8 +73,6 @@ describe ChunkyPNG::Canvas::Adam7Interlacing do
   end
 
   describe '#adam7_merge_pass' do
-    before(:each) { @reference = reference_canvas('adam7') } 
-    
     it "should merge the submatrices correctly" do
       submatrices = [
         ChunkyPNG::Canvas.new(1, 1,  168430335), # r = 10
@@ -86,9 +84,9 @@ describe ChunkyPNG::Canvas::Adam7Interlacing do
         ChunkyPNG::Canvas.new(8, 4, 1175063295), # r = 70
       ]
       
-      canvas = ChunkyPNG::Canvas.new(8,8)
+      canvas = ChunkyPNG::Image.new(8,8)
       submatrices.each_with_index { |m, pass| adam7_merge_pass(pass, canvas, m) }
-      canvas.should == @reference
+      canvas.should == reference_image('adam7')
     end
   end
 
