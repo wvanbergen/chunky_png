@@ -139,13 +139,14 @@ module ChunkyPNG
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       def decode_png_image_pass(stream, width, height, color_mode, start_pos = 0)
         
+        stream << "\255" if color_mode == ChunkyPNG::COLOR_TRUECOLOR
         pixel_size    = Color.bytesize(color_mode)
         pixel_decoder = case color_mode
-          when ChunkyPNG::COLOR_TRUECOLOR       then lambda { |bytes| ChunkyPNG::Color.rgb(*bytes) }
-          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then lambda { |bytes| ChunkyPNG::Color.rgba(*bytes) }
-          when ChunkyPNG::COLOR_INDEXED         then lambda { |bytes| decoding_palette[bytes.first] }
-          when ChunkyPNG::COLOR_GRAYSCALE       then lambda { |bytes| ChunkyPNG::Color.grayscale(*bytes) }
-          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then lambda { |bytes| ChunkyPNG::Color.grayscale_alpha(*bytes) }
+          when ChunkyPNG::COLOR_TRUECOLOR;       lambda { |s, pos| s.unpack("@#{pos + 1}" << ('NX' * width)).map { |c| c | 0x000000ff } }
+          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA; lambda { |s, pos| s.unpack("@#{pos + 1}N#{width}") }
+          when ChunkyPNG::COLOR_INDEXED;         lambda { |s, pos| (1..width).map { |i| decoding_palette[s.getbyte(pos + i)] } }
+          when ChunkyPNG::COLOR_GRAYSCALE;       lambda { |s, pos| (1..width).map { |i| ChunkyPNG::Color.grayscale(s.getbyte(pos + i)) } }
+          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA; lambda { |s, pos| (0...width).map { |i| ChunkyPNG::Color.grayscale_alpha(s.getbyte(pos + (i * 2) + 1), s.getbyte(pos + (i * 2) + 2)) } }
           else raise ChunkyPNG::NotSupported, "No suitable pixel decoder found for color mode #{color_mode}!"
         end
         
@@ -155,21 +156,65 @@ module ChunkyPNG
           raise ChunkyPNG::ExpectationFailed, "Invalid stream length!" unless stream.length - start_pos >= width * height * pixel_size + height
           
           decoded_bytes = Array.new(width * pixel_size, 0)
+          line_length    = width * pixel_size
+          pos, prev_pos  = start_pos, nil
+
           for line_no in 0...height do
+            decode_png_str_scanline(stream, pos, line_length, prev_pos, pixel_size)
+            pixels += pixel_decoder.call(stream, pos)
 
-            # get bytes of scanline
-            position       = start_pos + line_no * (width * pixel_size + 1)
-            line_length    = width * pixel_size
-            bytes          = stream.unpack("@#{position}CC#{line_length}")
-            filter         = bytes.shift
-            decoded_bytes  = decode_png_scanline(filter, bytes, decoded_bytes, pixel_size)
-
-            # decode bytes into colors
-            decoded_bytes.each_slice(pixel_size) { |bytes| pixels << pixel_decoder.call(bytes) }
+            prev_pos = pos
+            pos += line_length + 1
           end
         end
         
         new(width, height, pixels)
+      end
+
+      def decode_png_str_scanline(stream, pos, line_length, prev_pos, pixelsize)
+        case stream.getbyte(pos)
+          when ChunkyPNG::FILTER_NONE;    # noop
+          when ChunkyPNG::FILTER_SUB;     decode_png_str_scanline_sub(     stream, pos, line_length, prev_pos, pixelsize)
+          when ChunkyPNG::FILTER_UP;      decode_png_str_scanline_up(      stream, pos, line_length, prev_pos, pixelsize)
+          when ChunkyPNG::FILTER_AVERAGE; decode_png_str_scanline_average( stream, pos, line_length, prev_pos, pixelsize)
+          when ChunkyPNG::FILTER_PAETH;   decode_png_str_scanline_paeth(   stream, pos, line_length, prev_pos, pixelsize)
+          else raise ChunkyPNG::NotSupported, "Unknown filter type: #{stream.getbyte(pos)}!"
+        end
+      end
+
+      def decode_png_str_scanline_sub(stream, pos, line_length, prev_pos, pixelsize)
+        for i in 1..line_length do
+          stream.setbyte(pos + i, (stream.getbyte(pos + i) + (i > pixelsize ? stream.getbyte(pos + i - pixelsize) : 0)) & 0xff)
+        end
+      end
+
+      def decode_png_str_scanline_up(stream, pos, line_length, prev_pos, pixelsize)
+        for i in 1..line_length do
+          up = prev_pos ? stream.getbyte(prev_pos + i) : 0
+          stream.setbyte(pos + i, (stream.getbyte(pos + i) + up) & 0xff)
+        end
+      end
+
+      def decode_png_str_scanline_average(stream, pos, line_length, prev_pos, pixelsize)
+        for i in 1..line_length do
+          a = (i > pixelsize) ? stream.getbyte(pos + i - pixelsize) : 0
+          b = prev_pos ? stream.getbyte(prev_pos + i) : 0
+          stream.setbyte(pos + i, (stream.getbyte(pos + i) + ((a + b) >> 1)) & 0xff)
+        end
+      end
+
+      def decode_png_str_scanline_paeth(stream, pos, line_length, prev_pos, pixelsize)
+        for i in 1..line_length do
+          a = (i > pixelsize) ? stream.getbyte(pos + i - pixelsize) : 0
+          b = prev_pos ? stream.getbyte(prev_pos + i) : 0
+          c = (prev_pos && i > pixelsize) ? stream.getbyte(prev_pos + i - pixelsize) : 0
+          p = a + b - c
+          pa = (p - a).abs
+          pb = (p - b).abs
+          pc = (p - c).abs
+          pr = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c)
+          stream.setbyte(pos + i, (stream.getbyte(pos + i) + pr) & 0xff)
+        end
       end
 
       # Decodes filtered bytes from a scanline from a PNG pixelstream,

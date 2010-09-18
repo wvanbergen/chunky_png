@@ -81,3 +81,15 @@ module ChunkyPNG
   class OutOfBounds < ChunkyPNG::ExpectationFailed
   end
 end
+
+if RUBY_VERSION.to_f < 1.9
+  class String
+    def getbyte(index)
+      self[index]
+    end
+
+    def setbyte(index, val)
+      self[index] = val
+    end
+  end
+end
