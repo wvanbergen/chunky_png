@@ -214,7 +214,7 @@ module ChunkyPNG
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
       # @see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline
       def decode_png_scanline_sub(bytes, previous_bytes, pixelsize = 3)
-        bytes.each_with_index { |b, i| bytes[i] = (b + (i >= pixelsize ? bytes[i-pixelsize] : 0)) % 256 }
+        bytes.each_with_index { |b, i| bytes[i] = (b + (i >= pixelsize ? bytes[i-pixelsize] : 0)) & 0xff }
         bytes
       end
 
@@ -225,7 +225,7 @@ module ChunkyPNG
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
       # @see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline
       def decode_png_scanline_up(bytes, previous_bytes, pixelsize = 3)
-        bytes.each_with_index { |b, i| bytes[i] = (b + previous_bytes[i]) % 256 }
+        bytes.each_with_index { |b, i| bytes[i] = (b + previous_bytes[i]) & 0xff }
         bytes
       end
 
@@ -239,7 +239,7 @@ module ChunkyPNG
         bytes.each_with_index do |byte, i|
           a = (i >= pixelsize) ? bytes[i - pixelsize] : 0
           b = previous_bytes[i]
-          bytes[i] = (byte + ((a + b) >> 1)) % 256
+          bytes[i] = (byte + ((a + b) >> 1)) & 0xff
         end
         bytes
       end
@@ -260,7 +260,7 @@ module ChunkyPNG
           pb = (p - b).abs
           pc = (p - c).abs
           pr = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c)
-          bytes[i] = (byte + pr) % 256
+          bytes[i] = (byte + pr) & 0xff
         end
         bytes
       end

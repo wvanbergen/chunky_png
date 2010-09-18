@@ -254,7 +254,7 @@ module ChunkyPNG
         encoded_bytes = []
         for index in 0...original_bytes.length do
           a = (index >= pixelsize) ? original_bytes[index - pixelsize] : 0
-          encoded_bytes[index] = (original_bytes[index] - a) % 256
+          encoded_bytes[index] = (original_bytes[index] - a) & 0xff
         end
         [ChunkyPNG::FILTER_SUB] + encoded_bytes
       end
@@ -265,7 +265,7 @@ module ChunkyPNG
         encoded_bytes = []
         for index in 0...original_bytes.length do
           b = previous_bytes[index]
-          encoded_bytes[index] = (original_bytes[index] - b) % 256
+          encoded_bytes[index] = (original_bytes[index] - b) & 0xff
         end
         [ChunkyPNG::FILTER_UP] + encoded_bytes
       end
@@ -277,7 +277,7 @@ module ChunkyPNG
         for index in 0...original_bytes.length do
           a = (index >= pixelsize) ? original_bytes[index - pixelsize] : 0
           b = previous_bytes[index]
-          encoded_bytes[index] = (original_bytes[index] - ((a + b) >> 1)) % 256
+          encoded_bytes[index] = (original_bytes[index] - ((a + b) >> 1)) & 0xff
         end
         [ChunkyPNG::FILTER_AVERAGE] + encoded_bytes
       end
@@ -295,7 +295,7 @@ module ChunkyPNG
           pb = (p - b).abs
           pc = (p - c).abs
           pr = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c)
-          encoded_bytes[i] = (original_bytes[i] - pr) % 256
+          encoded_bytes[i] = (original_bytes[i] - pr) & 0xff
         end
         [ChunkyPNG::FILTER_PAETH] + encoded_bytes
       end
