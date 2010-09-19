@@ -138,8 +138,7 @@ module ChunkyPNG
       # @param [Integer] start_pos The position in the pixel stream to start reading.
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       def decode_png_image_pass(stream, width, height, color_mode, start_pos = 0)
-        
-        stream << "\255" if color_mode == ChunkyPNG::COLOR_TRUECOLOR
+        stream << ChunkyPNG::EXTRA_BYTE if color_mode == ChunkyPNG::COLOR_TRUECOLOR
         pixel_size    = Color.bytesize(color_mode)
         pixel_decoder = case color_mode
           when ChunkyPNG::COLOR_TRUECOLOR;       lambda { |s, pos| s.unpack("@#{pos + 1}" << ('NX' * width)).map { |c| c | 0x000000ff } }
