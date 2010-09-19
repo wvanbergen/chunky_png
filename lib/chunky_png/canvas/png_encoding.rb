@@ -182,35 +182,81 @@ module ChunkyPNG
       # @param [Integer] compression The Zlib compression level.
       def encode_png_image_pass_to_stream(stream, color_mode, compression = ZLib::DEFAULT_COMPRESSION)
 
-        if compression < Zlib::BEST_COMPRESSION && color_mode == ChunkyPNG::COLOR_TRUECOLOR_ALPHA
-          # Fast RGBA saving routine
-          stream << pixels.pack("xN#{width}" * height)
-          
-        elsif compression < Zlib::BEST_COMPRESSION && color_mode == ChunkyPNG::COLOR_TRUECOLOR
-          # Fast RGB saving routine
-          line_packer = 'x' + ('NX' * width)
-          stream << pixels.pack(line_packer * height)
-          
-        else
-          # Normal saving routine
-          pixel_size = Color.bytesize(color_mode)
-          pixel_encoder = case color_mode
-            when ChunkyPNG::COLOR_TRUECOLOR       then lambda { |color| Color.to_truecolor_bytes(color) }
-            when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then lambda { |color| Color.to_truecolor_alpha_bytes(color) }
-            when ChunkyPNG::COLOR_INDEXED         then lambda { |color| [encoding_palette.index(color)] }
-            when ChunkyPNG::COLOR_GRAYSCALE       then lambda { |color| Color.to_grayscale_bytes(color) }
-            when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then lambda { |color| Color.to_grayscale_alpha_bytes(color) }
-            else raise ChunkyPNG::NotSupported, "Cannot encode pixels for this mode: #{color_mode}!"
-          end
-
-          previous_bytes = Array.new(pixel_size * width, 0)
-          each_scanline do |line|
-            unencoded_bytes = line.map(&pixel_encoder).flatten
-            stream << encode_png_scanline_paeth(unencoded_bytes, previous_bytes, pixel_size).pack('C*')
-            previous_bytes = unencoded_bytes
+        start_pos  = stream.bytesize
+        pixel_size = Color.bytesize(color_mode)
+        line_width = pixel_size * width
+        
+        # Encode the whole image without filtering
+        stream << case color_mode
+          when ChunkyPNG::COLOR_TRUECOLOR; pixels.pack(('x' + ('NX' * width)) * height)
+          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA; pixels.pack("xN#{width}" * height)
+          when ChunkyPNG::COLOR_INDEXED; pixels.map { |p| encoding_palette.index(p) }.pack("xC#{width}" * height)
+          when ChunkyPNG::COLOR_GRAYSCALE; pixels.map { |p| p >> 8 }.pack("xC#{width}" * height)
+          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA; pixels.pack("xn#{width}" * height)
+          else raise ChunkyPNG::NotSupported, "Cannot encode pixels for this mode: #{color_mode}!"
+        end
+        
+        # Determine the filter method
+        filter_method = case compression
+          when Zlib::BEST_COMPRESSION; :encode_png_str_scanline_paeth
+          when Zlib::NO_COMPRESSION..Zlib::BEST_SPEED; nil
+          else :encode_png_str_scanline_up
+        end
+        
+        # Now, apply filtering if any
+        if filter_method
+          (height - 1).downto(0) do |y|
+            pos = start_pos + y * (line_width + 1)
+            prev_pos = (y == 0) ? nil : pos - (line_width + 1)
+            send(filter_method, stream, pos, prev_pos, line_width, pixel_size)
           end
         end
       end
+
+      def encode_png_str_scanline_none(stream, pos, prev_pos, line_width, pixel_size)
+        # noop - this method shouldn't get called at all.
+      end
+
+      def encode_png_str_scanline_sub(stream, pos, prev_pos, line_width, pixel_size)
+        line_width.downto(1) do |i|
+          a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
+          stream.setbyte(pos + i, (stream.getbyte(pos + i) - a) & 0xff)
+        end
+        stream.setbyte(pos, ChunkyPNG::FILTER_SUB)
+      end
+
+      def encode_png_str_scanline_up(stream, pos, prev_pos, line_width, pixel_size)
+        line_width.downto(1) do |i|
+          b = prev_pos ? stream.getbyte(prev_pos + i) : 0
+          stream.setbyte(pos + i, (stream.getbyte(pos + i) - b) & 0xff)
+        end
+        stream.setbyte(pos, ChunkyPNG::FILTER_UP)
+      end
+      
+      def encode_png_str_scanline_average(stream, pos, prev_pos, line_width, pixel_size)
+        line_width.downto(1) do |i|
+          a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
+          b = prev_pos ? stream.getbyte(prev_pos + i) : 0
+          stream.setbyte(pos + i, (stream.getbyte(pos + i) - ((a + b) >> 1)) & 0xff)
+        end
+        stream.setbyte(pos, ChunkyPNG::FILTER_AVERAGE)
+      end
+      
+      def encode_png_str_scanline_paeth(stream, pos, prev_pos, line_width, pixel_size)
+        line_width.downto(1) do |i|
+          a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
+          b = (prev_pos) ? stream.getbyte(prev_pos + i) : 0
+          c = (prev_pos && i > pixel_size) ? stream.getbyte(prev_pos + i - pixel_size) : 0
+          p = a + b - c
+          pa = (p - a).abs
+          pb = (p - b).abs
+          pc = (p - c).abs
+          pr = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c)
+          stream.setbyte(pos + i, (stream.getbyte(pos + i) - pr) & 0xff)
+        end
+        stream.setbyte(pos, ChunkyPNG::FILTER_PAETH)
+      end
+      
 
       # Passes to this canvas of pixel values line by line.
       # @yield [line] Yields the scanlines of this image one by one.

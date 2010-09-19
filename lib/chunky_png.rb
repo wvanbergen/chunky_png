@@ -86,5 +86,6 @@ if RUBY_VERSION.to_f < 1.9
   class String
     alias_method :getbyte, :[]
     alias_method :setbyte, :[]=
+    alias_method :bytesize, :size
   end
 end
