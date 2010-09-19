@@ -48,17 +48,17 @@ module ChunkyPNG
         to_datastream(constraints).to_blob
       end
       
-      alias :to_string :to_blob
-      alias :to_s :to_blob
+      alias_method :to_string, :to_blob
+      alias_method :to_s, :to_blob
 
       # Converts this Canvas to a datastream, so that it can be saved as a PNG image.
       # @param [Hash, Symbol] constraints The constraints to use when encoding the canvas.
       #    This can either be a hash with different constraints, or a symbol which acts as a 
       #    preset for some constraints. If no constraints are given, ChunkyPNG will decide  
       #    for itself how to best create the PNG datastream. 
-      #    Supported presets are :fast_rgba for quickly saving images with transparency,
-      #    :fast_rgb for quickly saving opaque images, and :best_compression to obtain the
-      #    smallest possible filesize.
+      #    Supported presets are <tt>:fast_rgba</tt> for quickly saving images with transparency,
+      #    <tt>:fast_rgb</tt> for quickly saving opaque images, and <tt>:best_compression</tt> to
+      #    obtain the smallest possible filesize.
       # @option constraints [Fixnum] :color_mode The color mode to use. Use one of the 
       #    ChunkyPNG::COLOR_* constants.
       # @option constraints [true, false] :interlace Whether to use interlacing.
@@ -68,16 +68,16 @@ module ChunkyPNG
       # @see ChunkyPNG::Canvas::PNGEncoding#determine_png_encoding
       def to_datastream(constraints = {})
         encoding = determine_png_encoding(constraints)
-        
+
         ds = Datastream.new
         ds.header_chunk = Chunk::Header.new(:width => width, :height => height, 
             :color => encoding[:color_mode], :interlace => encoding[:interlace])
-        
+
         if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
           ds.palette_chunk      = encoding_palette.to_plte_chunk
           ds.transparency_chunk = encoding_palette.to_trns_chunk unless encoding_palette.opaque?
         end
-        
+
         data           = encode_png_pixelstream(encoding[:color_mode], encoding[:interlace], encoding[:compression])
         ds.data_chunks = Chunk::ImageData.split_in_chunks(data, encoding[:compression])
         ds.end_chunk   = Chunk::End.new
@@ -96,7 +96,7 @@ module ChunkyPNG
       #    Hash or a preset symbol.
       # @return [Hash] A hash with encoding options for {ChunkyPNG::Canvas::PNGEncoding#to_datastream}
       def determine_png_encoding(constraints = {})
-        
+
         if constraints == :fast_rgb
           encoding = { :color_mode => ChunkyPNG::COLOR_TRUECOLOR, :compression => Zlib::BEST_SPEED }
         elsif constraints == :fast_rgba
@@ -106,7 +106,7 @@ module ChunkyPNG
         else
           encoding = constraints
         end
-        
+
         # Do not create a pallete when the encoding is given and does not require a palette.
         if encoding[:color_mode]
           if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
@@ -116,9 +116,9 @@ module ChunkyPNG
           self.encoding_palette = self.palette
           encoding[:color_mode] ||= encoding_palette.best_colormode
         end
-        
+
         encoding[:compression] ||= Zlib::DEFAULT_COMPRESSION
-        
+
         encoding[:interlace] = case encoding[:interlace]
           when nil, false, ChunkyPNG::INTERLACING_NONE then ChunkyPNG::INTERLACING_NONE
           when true, ChunkyPNG::INTERLACING_ADAM7      then ChunkyPNG::INTERLACING_ADAM7
@@ -127,7 +127,7 @@ module ChunkyPNG
 
         return encoding
       end
-      
+
       # Encodes the canvas according to the PNG format specification with a given color 
       # mode, possibly with interlacing.
       # @param [Integer] color_mode The color mode to use for encoding.
@@ -156,7 +156,7 @@ module ChunkyPNG
         encode_png_image_pass_to_stream(stream, color_mode, compression)
         stream
       end
-      
+
       # Encodes the canvas according to the PNG format specification with a given color 
       # mode and Adam7 interlacing.
       #
@@ -175,7 +175,7 @@ module ChunkyPNG
         end
         stream
       end
-      
+
       # Encodes the canvas to a stream, in a given color mode.
       # @param [String, IO, :<<] stream The stream to write to.
       # @param [Integer] color_mode The color mode to use for encoding.

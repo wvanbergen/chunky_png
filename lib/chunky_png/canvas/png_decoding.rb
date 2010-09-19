@@ -41,7 +41,7 @@ module ChunkyPNG
         from_datastream(ChunkyPNG::Datastream.from_blob(str))
       end
 
-      alias :from_string :from_blob
+      alias_method :from_string, :from_blob
 
       # Decodes a Canvas from a PNG encoded file.
       # @param [String] filename The file to read from.
@@ -56,6 +56,8 @@ module ChunkyPNG
       def from_io(io)
         from_datastream(ChunkyPNG::Datastream.from_io(io))
       end
+
+      alias_method :from_stream, :from_io
 
       # Decodes the Canvas from a PNG datastream instance.
       # @param [ChunkyPNG::Datastream] ds The datastream to decode.

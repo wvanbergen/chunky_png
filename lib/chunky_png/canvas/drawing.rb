@@ -63,7 +63,7 @@ module ChunkyPNG
         return self
       end
       
-      alias :line :line_xiaolin_wu
+      alias_method :line, :line_xiaolin_wu
       
       def rect(x0, y0, x1, y1, line_color, fill_color = ChunkyPNG::COLOR::TRANSPARENT)
       
