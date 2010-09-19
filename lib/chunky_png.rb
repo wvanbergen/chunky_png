@@ -80,4 +80,14 @@ module ChunkyPNG
   # Exception that is raised if an expectation fails.
   class OutOfBounds < ChunkyPNG::ExpectationFailed
   end
+  
+  EXTRA_BYTE = (RUBY_VERSION.to_f < 1.9) ? "\0" : "\0".force_encoding('ASCII-8BIT')
+end
+
+if RUBY_VERSION.to_f < 1.9
+  class String
+    alias_method :getbyte, :[]
+    alias_method :setbyte, :[]=
+    alias_method :bytesize, :size
+  end
 end

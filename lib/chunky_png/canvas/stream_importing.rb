@@ -17,7 +17,7 @@ module ChunkyPNG
       # @return [ChunkyPNG::Canvas] The newly constructed canvas instance.
       def from_rgb_stream(width, height, stream)
         string = stream.respond_to?(:read) ? stream.read(3 * width * height) : stream.to_s[0, 3 * width * height]
-        string << "\255" # Add a fourth byte to the last RGB triple.
+        string << ChunkyPNG::EXTRA_BYTE # Add a fourth byte to the last RGB triple.
         unpacker = 'NX' * (width * height)
         pixels = string.unpack(unpacker).map { |color| color | 0x000000ff }
         self.new(width, height, pixels)
@@ -51,7 +51,7 @@ module ChunkyPNG
       # @param [#read, String] stream The stream to read the pixel data from.
       # @return [ChunkyPNG::Canvas] The newly constructed canvas instance.
       def from_bgr_stream(width, height, stream)
-        string = "\255" # Add a first byte to the first BGR triple.
+        string = ChunkyPNG::EXTRA_BYTE # Add a first byte to the first BGR triple.
         string << stream.respond_to?(:read) ? stream.read(3 * width * height) : stream.to_s[0, 3 * width * height]
         pixels = string.unpack("@1" << ('XV' * (width * height))).map { |color| color | 0x000000ff }
         self.new(width, height, pixels)

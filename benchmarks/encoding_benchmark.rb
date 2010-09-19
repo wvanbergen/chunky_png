@@ -21,11 +21,13 @@ puts "---------------------------------------------"
 puts
 
 Benchmark.bmbm do |x|
-  x.report('Default (indexed)')  { n.times { image.to_blob } }
+  x.report('Autodetect (indexed)')  { n.times { image.to_blob } }
 
   # Presets
+  x.report(':no_compression')    { n.times { image.to_blob(:no_compression) } }
   x.report(':fast_rgba')         { n.times { image.to_blob(:fast_rgba) } }
   x.report(':fast_rgb')          { n.times { image.to_blob(:fast_rgb) } }
+  x.report(':good_compression')  { n.times { image.to_blob(:good_compression) } }
   x.report(':best_compression')  { n.times { image.to_blob(:best_compression) } }
   
   # Some options
