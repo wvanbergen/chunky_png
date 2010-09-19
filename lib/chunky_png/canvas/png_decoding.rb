@@ -14,12 +14,12 @@ module ChunkyPNG
     # * Based on the color mode, width and height of the original image, which
     #   is read from the PNG header (IHDR chunk), the amount of bytes
     #   per line is determined.
-    # * For every line of pixels in the original image, the determined amount
-    #   of bytes is read from the pixel stream.
+    # * For every line of pixels in the encoded image, the original byte values
+    #   are restored by unapplying the milter method for that line.
     # * The read bytes are unfiltered given by the filter function specified by
     #   the first byte of the line.
-    # * The unfiltered bytes are converted into colored pixels, using the color mode.
-    # * All lines combined form the original image.
+    # * The unfiltered pixelstream are is into colored pixels, using the color mode.
+    # * All lines combined to form the original image.
     #
     # For interlaced images, the original image was split into 7 subimages.
     # These images get decoded just like the process above (from step 3), and get 
@@ -86,8 +86,8 @@ module ChunkyPNG
         raise ChunkyPNG::ExpectationFailed, "This palette is not suitable for decoding!" if decoding_palette && !decoding_palette.can_decode?
 
         return case interlace
-          when ChunkyPNG::INTERLACING_NONE  then decode_png_without_interlacing(stream, width, height, color_mode)
-          when ChunkyPNG::INTERLACING_ADAM7 then decode_png_with_adam7_interlacing(stream, width, height, color_mode)
+          when ChunkyPNG::INTERLACING_NONE;  decode_png_without_interlacing(stream, width, height, color_mode)
+          when ChunkyPNG::INTERLACING_ADAM7; decode_png_with_adam7_interlacing(stream, width, height, color_mode)
           else raise ChunkyPNG::NotSupported, "Don't know how the handle interlacing method #{interlace}!"
         end
       end
@@ -159,7 +159,7 @@ module ChunkyPNG
           pos, prev_pos  = start_pos, nil
 
           for line_no in 0...height do
-            decode_png_str_scanline(stream, pos, line_length, prev_pos, pixel_size)
+            decode_png_str_scanline(stream, pos, prev_pos, line_length, pixel_size)
             pixels += pixel_decoder.call(stream, pos)
 
             prev_pos = pos
@@ -170,43 +170,80 @@ module ChunkyPNG
         new(width, height, pixels)
       end
 
-      def decode_png_str_scanline(stream, pos, line_length, prev_pos, pixelsize)
+      # Decodes a scanline if it was encoded using filtering. 
+      #
+      # It will extract the filtering method from the first byte of the scanline, and uses the 
+      # method to change the subsequent bytes to unfiltered values. This will modify the pixelstream.
+      #
+      # The bytes of the scanline can then be used to construct pixels, based on the color mode..
+      #
+      # @param [String] stream The pixelstream to undo the filtering in.
+      # @param [Integer] pos The starting position of the scanline to decode.
+      # @param [Integer, nil] prev_pos The starting position of the previously decoded scanline, or <tt>nil</tt>
+      #     if this is the first scanline of the image.
+      # @param [Integer] line_length The number of bytes in the scanline, discounting the filter method byte.
+      # @param [Integer] pixel_size The number of bytes used per pixel, based on the color mode.
+      # @return [nil]
+      def decode_png_str_scanline(stream, pos, prev_pos, line_length, pixel_size)
         case stream.getbyte(pos)
           when ChunkyPNG::FILTER_NONE;    # noop
-          when ChunkyPNG::FILTER_SUB;     decode_png_str_scanline_sub(     stream, pos, line_length, prev_pos, pixelsize)
-          when ChunkyPNG::FILTER_UP;      decode_png_str_scanline_up(      stream, pos, line_length, prev_pos, pixelsize)
-          when ChunkyPNG::FILTER_AVERAGE; decode_png_str_scanline_average( stream, pos, line_length, prev_pos, pixelsize)
-          when ChunkyPNG::FILTER_PAETH;   decode_png_str_scanline_paeth(   stream, pos, line_length, prev_pos, pixelsize)
+          when ChunkyPNG::FILTER_SUB;     decode_png_str_scanline_sub(     stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_UP;      decode_png_str_scanline_up(      stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_AVERAGE; decode_png_str_scanline_average( stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_PAETH;   decode_png_str_scanline_paeth(   stream, pos, prev_pos, line_length, pixel_size)
           else raise ChunkyPNG::NotSupported, "Unknown filter type: #{stream.getbyte(pos)}!"
         end
       end
 
-      def decode_png_str_scanline_sub(stream, pos, line_length, prev_pos, pixelsize)
+      # Decodes a scanline that wasn't encoded using filtering. This is a no-op.
+      # @params (see #decode_png_str_scanline)
+      # @return [nil]
+      def decode_png_str_scanline_sub_none(stream, pos, prev_pos, line_length, pixel_size)
+        # noop - this method shouldn't get called.
+      end
+
+      # Decodes a scanline in a pxielstream that was encoded using SUB filtering.
+      # This will chnage the pixelstream to have unfiltered values.
+      # @params (see #decode_png_str_scanline)
+      # @return [nil]
+      def decode_png_str_scanline_sub(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
-          stream.setbyte(pos + i, (stream.getbyte(pos + i) + (i > pixelsize ? stream.getbyte(pos + i - pixelsize) : 0)) & 0xff)
+          stream.setbyte(pos + i, (stream.getbyte(pos + i) + (i > pixel_size ? stream.getbyte(pos + i - pixel_size) : 0)) & 0xff)
         end
       end
 
-      def decode_png_str_scanline_up(stream, pos, line_length, prev_pos, pixelsize)
+      # Decodes a scanline in a pxielstream that was encoded using UP filtering.
+      # This will chnage the pixelstream to have unfiltered values.
+      # @params (see #decode_png_str_scanline)
+      # @return [nil]
+      def decode_png_str_scanline_up(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
           up = prev_pos ? stream.getbyte(prev_pos + i) : 0
           stream.setbyte(pos + i, (stream.getbyte(pos + i) + up) & 0xff)
         end
       end
 
-      def decode_png_str_scanline_average(stream, pos, line_length, prev_pos, pixelsize)
+      # Decodes a scanline in a pxielstream that was encoded using AVERAGE filtering.
+      # This will chnage the pixelstream to have unfiltered values.
+      # @params (see #decode_png_str_scanline)
+      # @return [nil]
+      def decode_png_str_scanline_average(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
-          a = (i > pixelsize) ? stream.getbyte(pos + i - pixelsize) : 0
+          a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
           b = prev_pos ? stream.getbyte(prev_pos + i) : 0
           stream.setbyte(pos + i, (stream.getbyte(pos + i) + ((a + b) >> 1)) & 0xff)
         end
       end
 
-      def decode_png_str_scanline_paeth(stream, pos, line_length, prev_pos, pixelsize)
+      # Decodes a scanline in a pxielstream that was encoded using PAETH filtering.
+      # This will chnage the pixelstream to have unfiltered values.
+      # @params (see #decode_png_str_scanline)
+      # @return [nil]
+      def decode_png_str_scanline_paeth(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
-          a = (i > pixelsize) ? stream.getbyte(pos + i - pixelsize) : 0
+          a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
           b = prev_pos ? stream.getbyte(prev_pos + i) : 0
-          c = (prev_pos && i > pixelsize) ? stream.getbyte(prev_pos + i - pixelsize) : 0
+          c = (prev_pos && i > pixel_size) ? stream.getbyte(prev_pos + i - pixel_size) : 0
           p = a + b - c
           pa = (p - a).abs
           pb = (p - b).abs
@@ -214,99 +251,6 @@ module ChunkyPNG
           pr = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c)
           stream.setbyte(pos + i, (stream.getbyte(pos + i) + pr) & 0xff)
         end
-      end
-
-      # Decodes filtered bytes from a scanline from a PNG pixelstream,
-      # to return the original bytes of the image.
-      #
-      # The decoded bytes should be used to get the original pixels of the 
-      # scanline, combining them using a color mode dependent color decoder.
-      #
-      # @param [Integer] filter The filter used to encode the bytes.
-      # @param [Array<Integer>] bytes The filtered bytes to decode.
-      # @param [Array<Integer>] previous_bytes The decoded bytes of the 
-      #      previous scanline.
-      # @param [Integer] pixelsize The amount of bytes used for every pixel.
-      #      This depends on the used color mode and color depth.
-      # @return [Array<Integer>] The array of original bytes for the scanline,
-      #      before they were encoded.
-      def decode_png_scanline(filter, bytes, previous_bytes, pixelsize = 3)
-        case filter
-        when ChunkyPNG::FILTER_NONE    then decode_png_scanline_none(    bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_SUB     then decode_png_scanline_sub(     bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_UP      then decode_png_scanline_up(      bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_AVERAGE then decode_png_scanline_average( bytes, previous_bytes, pixelsize)
-        when ChunkyPNG::FILTER_PAETH   then decode_png_scanline_paeth(   bytes, previous_bytes, pixelsize)
-        else raise ChunkyPNG::NotSupported, "Unknown filter type: #{filter}!"
-        end
-      end
-
-      # Decoded filtered scanline bytes that were not filtered.
-      # @param bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @param previous_bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @param pixelsize (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline
-      def decode_png_scanline_none(bytes, previous_bytes, pixelsize = 3)
-        bytes
-      end
-
-      # Decoded filtered scanline bytes that were filtered using SUB filtering.
-      # @param bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @param previous_bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @param pixelsize (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline
-      def decode_png_scanline_sub(bytes, previous_bytes, pixelsize = 3)
-        bytes.each_with_index { |b, i| bytes[i] = (b + (i >= pixelsize ? bytes[i-pixelsize] : 0)) & 0xff }
-        bytes
-      end
-
-      # Decoded filtered scanline bytes that were filtered using UP filtering.
-      # @param bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @param previous_bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @param pixelsize (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline
-      def decode_png_scanline_up(bytes, previous_bytes, pixelsize = 3)
-        bytes.each_with_index { |b, i| bytes[i] = (b + previous_bytes[i]) & 0xff }
-        bytes
-      end
-
-      # Decoded filtered scanline bytes that were filtered using AVERAGE filtering.
-      # @param bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @param previous_bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @param pixelsize (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline
-      def decode_png_scanline_average(bytes, previous_bytes, pixelsize = 3)
-        bytes.each_with_index do |byte, i|
-          a = (i >= pixelsize) ? bytes[i - pixelsize] : 0
-          b = previous_bytes[i]
-          bytes[i] = (byte + ((a + b) >> 1)) & 0xff
-        end
-        bytes
-      end
-
-      # Decoded filtered scanline bytes that were filtered using PAETH filtering.
-      # @param bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @param previous_bytes (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @param pixelsize (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline)
-      # @see ChunkyPNG::Canvas::PNGDecoding#decode_png_scanline
-      def decode_png_scanline_paeth(bytes, previous_bytes, pixelsize = 3)
-        bytes.each_with_index do |byte, i|
-          a = (i >= pixelsize) ? bytes[i - pixelsize] : 0
-          b = previous_bytes[i]
-          c = (i >= pixelsize) ? previous_bytes[i - pixelsize] : 0
-          p = a + b - c
-          pa = (p - a).abs
-          pb = (p - b).abs
-          pc = (p - c).abs
-          pr = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c)
-          bytes[i] = (byte + pr) & 0xff
-        end
-        bytes
       end
     end
   end
