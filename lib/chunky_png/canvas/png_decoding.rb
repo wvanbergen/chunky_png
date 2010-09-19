@@ -241,7 +241,8 @@ module ChunkyPNG
       # @return [nil]
       def decode_png_str_scanline_paeth(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
-          a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
+          cur_pos = pos + i
+          a = (i > pixel_size) ? stream.getbyte(cur_pos - pixel_size) : 0
           b = prev_pos ? stream.getbyte(prev_pos + i) : 0
           c = (prev_pos && i > pixel_size) ? stream.getbyte(prev_pos + i - pixel_size) : 0
           p = a + b - c
@@ -249,7 +250,7 @@ module ChunkyPNG
           pb = (p - b).abs
           pc = (p - c).abs
           pr = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c)
-          stream.setbyte(pos + i, (stream.getbyte(pos + i) + pr) & 0xff)
+          stream.setbyte(cur_pos, (stream.getbyte(cur_pos) + pr) & 0xff)
         end
       end
     end
