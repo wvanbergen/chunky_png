@@ -102,12 +102,20 @@ module ChunkyPNG
       @pixels[y * width + x] = color
     end
 
+    def set_pixel(x, y, color)
+      @pixels[y * width + x] = color
+    end
+
     # Returns a single pixel from this canvas.
     # @param [Integer] x The x-coordinate of the pixel (column)
     # @param [Integer] y The y-coordinate of the pixel (row)
     # @return [ChunkyPNG::Color] The current pixel at the provided coordinates.
     def [](x, y)
       assert_xy!(x, y)
+      @pixels[y * width + x]
+    end
+    
+    def get_pixel(x, y)
       @pixels[y * width + x]
     end
 
@@ -124,7 +132,7 @@ module ChunkyPNG
     # @return [Array<Integer>] The vector of pixels in the requested column.
     def column(x)
       assert_x!(x)
-      (0...height).inject([]) { |pixels, y| pixels << self[x, y] }
+      (0...height).inject([]) { |pixels, y| pixels << get_pixel(x, y) }
     end
 
     # Replaces a row of pixels on this canvas.
@@ -141,7 +149,7 @@ module ChunkyPNG
     def replace_column!(x, vector)
       assert_x!(x) && assert_height!(vector.length)
       for y in 0...height do
-        self[x, y] = vector[y]
+        set_pixel(x, y, vector[y])
       end
     end
 

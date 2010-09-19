@@ -29,7 +29,7 @@ module ChunkyPNG
 
         for y in 0...other.height do
           for x in 0...other.width do
-            self[x + offset_x, y + offset_y] = ChunkyPNG::Color.compose(other[x, y], self[x + offset_x, y + offset_y])
+            set_pixel(x + offset_x, y + offset_y, ChunkyPNG::Color.compose(other.get_pixel(x, y), get_pixel(x + offset_x, y + offset_y)))
           end
         end
         self

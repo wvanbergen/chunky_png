@@ -5,7 +5,7 @@ module ChunkyPNG
       
       # Sets a point on the canvas by composing a pixel with its background color.
       def point(x, y, color)
-        self[x, y] = ChunkyPNG::Color.compose(color, self[x, y])
+        set_pixel(x, y, ChunkyPNG::Color.compose(color, get_pixel(x, y)))
       end
       
       # Draws an anti-aliased line using Xiaolin Wu's algorithm.
