@@ -49,6 +49,17 @@ describe ChunkyPNG::Canvas::PNGEncoding do
       canvas.to_blob(:fast_rgba)
     end
 
+    it "should save an image using the :good_compression routine correctly" do
+      canvas = reference_canvas('operations')
+      canvas.should_not_receive(:encode_png_str_scanline_none)
+      canvas.should_not_receive(:encode_png_str_scanline_sub)
+      canvas.should_not_receive(:encode_png_str_scanline_up)
+      canvas.should_not_receive(:encode_png_str_scanline_average)
+      canvas.should_not_receive(:encode_png_str_scanline_paeth)
+      Zlib::Deflate.should_receive(:deflate).with(anything, Zlib::BEST_COMPRESSION).and_return('')
+      canvas.to_blob(:good_compression)
+    end
+
     it "should save an image using the :best_compression routine correctly" do
       canvas = reference_canvas('operations')
       canvas.should_receive(:encode_png_str_scanline_paeth).exactly(canvas.height).times
@@ -57,7 +68,48 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
   end
 
-  describe '#encode_scanline' do
+  describe '#encode_png_image_pass_to_stream' do
+    before { @canvas = ChunkyPNG::Canvas.new(2, 2, ChunkyPNG::Color.rgba(1, 2, 3, 4)) }
+
+    it "should encode using RGBA / no filtering mode correctly" do
+      @canvas.encode_png_image_pass_to_stream(stream = "", ChunkyPNG::COLOR_TRUECOLOR_ALPHA, ChunkyPNG::FILTER_NONE)
+      stream.should == "\0\1\2\3\4\1\2\3\4\0\1\2\3\4\1\2\3\4"
+    end
+
+    it "should encode using RGBA / SUB filtering mode correctly" do
+      @canvas.encode_png_image_pass_to_stream(stream = "", ChunkyPNG::COLOR_TRUECOLOR_ALPHA, ChunkyPNG::FILTER_SUB)
+      stream.should == "\1\1\2\3\4\0\0\0\0\1\1\2\3\4\0\0\0\0"
+    end
+
+    it "should encode using RGBA / UP filtering mode correctly" do
+      @canvas.encode_png_image_pass_to_stream(stream = "", ChunkyPNG::COLOR_TRUECOLOR_ALPHA, ChunkyPNG::FILTER_UP)
+      stream.should == "\2\1\2\3\4\1\2\3\4\2\0\0\0\0\0\0\0\0"
+    end
+
+    it "should encode using RGBA / AVERAGE filtering mode correctly" do
+      @canvas.encode_png_image_pass_to_stream(stream = "", ChunkyPNG::COLOR_TRUECOLOR_ALPHA, ChunkyPNG::FILTER_AVERAGE)
+      stream.should == "\3\1\2\3\4\1\1\2\2\3\1\1\2\2\0\0\0\0"
+    end
+
+    it "should encode using RGB / no filtering mode correctly" do
+      @canvas.encode_png_image_pass_to_stream(stream = "", ChunkyPNG::COLOR_TRUECOLOR, ChunkyPNG::FILTER_NONE)
+      stream.should == "\0\1\2\3\1\2\3\0\1\2\3\1\2\3"
+    end
+
+    it "should encode using indexed / no filtering mode correctly" do
+      @canvas.stub(:encoding_palette).and_return(mock('Palette', :index => 1))
+      @canvas.encode_png_image_pass_to_stream(stream = "", ChunkyPNG::COLOR_INDEXED, ChunkyPNG::FILTER_NONE)
+      stream.should == "\0\1\1\0\1\1"
+    end
+
+    it "should encode using indexed / PAETH filtering mode correctly" do
+      @canvas.stub(:encoding_palette).and_return(mock('Palette', :index => 1))
+      @canvas.encode_png_image_pass_to_stream(stream = "", ChunkyPNG::COLOR_INDEXED, ChunkyPNG::FILTER_PAETH)
+      stream.should == "\4\1\0\4\0\0"
+    end
+  end
+
+  describe '#encode_png_str_scanline' do
 
     it "should encode a scanline without filtering correctly" do
       stream = [ChunkyPNG::FILTER_NONE, 0, 0, 0, 1, 1, 1, 2, 2, 2].pack('C*')
