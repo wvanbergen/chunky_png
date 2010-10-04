@@ -104,7 +104,7 @@ module ChunkyPNG
       # @param color_mode (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       def decode_png_without_interlacing(stream, width, height, color_mode)
-        decode_png_image_pass(stream, width, height, color_mode)
+        decode_png_image_pass(stream, width, height, color_mode, 0)
       end
 
       # Decodes a canvas from a Adam 7 interlaced PNG encoded pixelstream, using a 
@@ -139,7 +139,7 @@ module ChunkyPNG
       # @param color_mode (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       # @param [Integer] start_pos The position in the pixel stream to start reading.
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
-      def decode_png_image_pass(stream, width, height, color_mode, start_pos = 0)
+      def decode_png_image_pass(stream, width, height, color_mode, start_pos)
         stream << ChunkyPNG::EXTRA_BYTE if color_mode == ChunkyPNG::COLOR_TRUECOLOR
         pixel_size    = Color.bytesize(color_mode)
         pixel_decoder = case color_mode
