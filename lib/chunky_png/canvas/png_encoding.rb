@@ -188,7 +188,7 @@ module ChunkyPNG
       # @param [String] stream The stream to write to.
       # @param [Integer] color_mode The color mode to use for encoding.
       # @param [Integer] filtering The filtering method to use.
-      def encode_png_image_pass_to_stream(stream, color_mode, filtering = ChunkyPNG::FILTER_NONE)
+      def encode_png_image_pass_to_stream(stream, color_mode, filtering)
 
         start_pos  = stream.bytesize
         pixel_size = Color.bytesize(color_mode)
