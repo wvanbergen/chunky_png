@@ -25,14 +25,9 @@ Issue tracker:: http://github.com/wvanbergen/chunky_png/issues
   optimized saving routine.
 * Interoperability with RMagick if you really have to.
 
-== Classes
-
-The main classes and modules used within ChunkyPNG are:
-
-<tt>ChunkyPNG::Image</tt> :: create PNG images from scratch or based on another PNG image.
-<tt>ChunkyPNG::Datastream</tt> :: low-level read and write access to PNG images from or to a file or stream.
-<tt>ChunkyPNG::Canvas</tt> :: represents an image canvas as a matrix of pixels.
-<tt>ChunkyPNG::Color</tt> :: to handle Fixnums as color values.
+Also, have a look at OilyPNG at http://github.com/wvanbergen/oily_png. OilyPNG is a 
+mixin module that implements some of the ChunkyPNG algorithms in C, which 
+provides a massive speed boost to encoding and decoding.
 
 == Usage
 

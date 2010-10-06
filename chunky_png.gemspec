@@ -17,8 +17,13 @@ Gem::Specification.new do |s|
     write textual metadata from PNG files. Low-level read/write access to PNG chunks is
     also possible.
     
-    This library supports simple drawing on the image canvas and simple operations like alpha composition
-    and cropping. Finally, it can import from and export to RMagick for interoperability. 
+    This library supports simple drawing on the image canvas and simple operations like
+    alpha composition and cropping. Finally, it can import from and export to RMagick for 
+    interoperability.
+    
+    Also, have a look at OilyPNG at http://github.com/wvanbergen/oily_png. OilyPNG is a 
+    drop in mixin module that implements some of the ChunkyPNG algorithms in C, which 
+    provides a massive speed boost to encoding and decoding.
   EOT
 
   s.authors  = ['Willem van Bergen']
@@ -26,8 +31,7 @@ Gem::Specification.new do |s|
   s.homepage = 'http://wiki.github.com/wvanbergen/chunky_png'
 
   s.add_development_dependency('rake')
-  s.add_development_dependency('rspec', '>= 1.3')
-  s.add_development_dependency('git')
+  s.add_development_dependency('rspec', '~> 1.3')
 
   s.rdoc_options << '--title' << s.name << '--main' << 'README.rdoc' << '--line-numbers' << '--inline-source'
   s.extra_rdoc_files = ['README.rdoc', 'BENCHMARKS.rdoc']
