@@ -27,7 +27,7 @@ module ChunkyPNG
 
   # The current version of ChunkyPNG. This value will be updated automatically
   # by them gem:release rake task.
-  VERSION = "0.10.2"
+  VERSION = "0.10.3"
 
   ###################################################
   # PNG international standard defined constants
