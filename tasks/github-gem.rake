@@ -332,6 +332,9 @@ module GithubGem
 
         # Reload the gemspec so the changes are incorporated
         load_gemspec!
+        
+        # ALso mark the Gemfile.lock file as changed because of the new version.
+        modified_files << 'Gemfile.lock' if File.exist?(File.join(root_dir, 'Gemfile.lock'))
       end
     end
 
