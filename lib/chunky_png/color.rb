@@ -355,7 +355,7 @@ module ChunkyPNG
     # @param [Integer] color The grayscale color to convert.
     # @return [Array<Integer>] An array with 1 Integer element.
     def to_grayscale_bytes(color)
-      [r(color)] # assumption r == g == b
+      [b(color)] # assumption r == g == b
     end
 
     # Returns an array with the grayscale teint and alpha channel values
@@ -366,7 +366,7 @@ module ChunkyPNG
     # @param [Integer] color The grayscale color to convert.
     # @return [Array<Integer>] An array with 2 Integer elements.
     def to_grayscale_alpha_bytes(color)
-      [r(color), a(color)] # assumption r == g == b
+      [b(color), a(color)] # assumption r == g == b
     end
 
     ####################################################################
