@@ -5,7 +5,7 @@ require 'bundler'
 
 Bundler.setup
 
-require 'spec'
+require 'rspec'
 require 'chunky_png'
 
 module ResourceFileHelper
@@ -31,7 +31,7 @@ module MatrixSpecHelper
   end
 end
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   config.include ResourceFileHelper
   config.include MatrixSpecHelper
 end
