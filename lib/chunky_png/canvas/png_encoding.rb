@@ -136,7 +136,7 @@ module ChunkyPNG
         end
         return encoding
       end
-
+      
       # Encodes the canvas according to the PNG format specification with a given color 
       # mode, possibly with interlacing.
       # @param [Integer] color_mode The color mode to use for encoding.
@@ -160,7 +160,7 @@ module ChunkyPNG
       # @param [Integer] filtering The filtering method to use.
       # @return [String] The PNG encoded canvas as string.
       def encode_png_image_without_interlacing(color_mode, filtering = ChunkyPNG::FILTER_NONE)
-        stream = ""
+        stream = ChunkyPNG::Datastream.empty_bytearray
         encode_png_image_pass_to_stream(stream, color_mode, filtering)
         stream
       end
@@ -175,7 +175,7 @@ module ChunkyPNG
       # @param [Integer] filtering The filtering method to use.
       # @return [String] The PNG encoded canvas as string.
       def encode_png_image_with_interlacing(color_mode, filtering = ChunkyPNG::FILTER_NONE)
-        stream = ""
+        stream = ChunkyPNG::Datastream.empty_bytearray
         0.upto(6) do |pass|
           subcanvas = self.class.adam7_extract_pass(pass, self)
           subcanvas.encoding_palette = encoding_palette

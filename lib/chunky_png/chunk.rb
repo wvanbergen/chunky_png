@@ -158,14 +158,14 @@ module ChunkyPNG
       # @return [ChunkyPNG::Chunk::End] The new End chunk instance.
       # @raise [RuntimeError] Raises an exception if the content was not empty.
       def self.read(type, content)
-        raise 'The IEND chunk should be empty!' if content != ''
+        raise 'The IEND chunk should be empty!' if content.bytesize > 0
         self.new
       end
 
       # Returns an empty string, because this chunk should always be empty.
       # @return [""] An empty string.
       def content
-        ''
+        ChunkyPNG::Datastream.empty_bytearray
       end
     end
 
