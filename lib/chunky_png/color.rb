@@ -80,8 +80,8 @@ module ChunkyPNG
     # converted color value.
     def from_hex(str)
       case str
-        when /^(?:#|0x)?([0-9a-f]{6})$/i then ($1.hex << 8) | 0xff
-        when /^(?:#|0x)?([0-9a-f]{8})$/i then $1.hex
+        when /^(?:#|0x)?([0-9a-f]{6})$/i; ($1.hex << 8) | 0xff
+        when /^(?:#|0x)?([0-9a-f]{8})$/i; $1.hex
         else raise ChunkyPNG::ExpectationFailed, "Not a valid hex color notation: #{str.inspect}!"
       end
     end
@@ -391,11 +391,11 @@ module ChunkyPNG
     # @return [Integer] The number of bytes used per pixel in a datastream.
     def bytesize(color_mode)
       case color_mode
-        when ChunkyPNG::COLOR_INDEXED         then 1
-        when ChunkyPNG::COLOR_TRUECOLOR       then 3
-        when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then 4
-        when ChunkyPNG::COLOR_GRAYSCALE       then 1
-        when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then 2
+        when ChunkyPNG::COLOR_INDEXED;         1
+        when ChunkyPNG::COLOR_TRUECOLOR;       3
+        when ChunkyPNG::COLOR_TRUECOLOR_ALPHA; 4
+        when ChunkyPNG::COLOR_GRAYSCALE;       1
+        when ChunkyPNG::COLOR_GRAYSCALE_ALPHA; 2
         else raise ChunkyPNG::NotSupported, "Don't know the bytesize of pixels in this colormode: #{color_mode}!"
       end
     end

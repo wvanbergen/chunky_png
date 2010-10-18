@@ -77,11 +77,11 @@ module ChunkyPNG
         until io.eof?
           chunk = ChunkyPNG::Chunk.read(io)
           case chunk
-            when ChunkyPNG::Chunk::Header       then ds.header_chunk        = chunk
-            when ChunkyPNG::Chunk::Palette      then ds.palette_chunk       = chunk
-            when ChunkyPNG::Chunk::Transparency then ds.transparency_chunk  = chunk
-            when ChunkyPNG::Chunk::ImageData    then ds.data_chunks        << chunk
-            when ChunkyPNG::Chunk::End          then ds.end_chunk           = chunk
+            when ChunkyPNG::Chunk::Header;       ds.header_chunk = chunk
+            when ChunkyPNG::Chunk::Palette;      ds.palette_chunk = chunk
+            when ChunkyPNG::Chunk::Transparency; ds.transparency_chunk = chunk
+            when ChunkyPNG::Chunk::ImageData;    ds.data_chunks << chunk
+            when ChunkyPNG::Chunk::End;          ds.end_chunk = chunk
             else ds.other_chunks << chunk
           end
         end

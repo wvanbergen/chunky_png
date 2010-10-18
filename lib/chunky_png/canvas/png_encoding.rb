@@ -149,8 +149,8 @@ module ChunkyPNG
         end
 
         case interlace
-          when ChunkyPNG::INTERLACING_NONE  then encode_png_image_without_interlacing(color_mode, filtering)
-          when ChunkyPNG::INTERLACING_ADAM7 then encode_png_image_with_interlacing(color_mode, filtering)
+          when ChunkyPNG::INTERLACING_NONE;  encode_png_image_without_interlacing(color_mode, filtering)
+          when ChunkyPNG::INTERLACING_ADAM7; encode_png_image_with_interlacing(color_mode, filtering)
           else raise ChunkyPNG::NotSupported, "Unknown interlacing method: #{interlace}!"
         end
       end
