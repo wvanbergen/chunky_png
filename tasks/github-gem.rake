@@ -71,23 +71,23 @@ module GithubGem
 
     # Defines RSpec tasks
     def define_rspec_tasks!
-      require 'spec/rake/spectask'
+      require 'rspec/core/rake_task'
 
       namespace(:spec) do
         desc "Verify all RSpec examples for #{gemspec.name}"
-        Spec::Rake::SpecTask.new(:basic) do |t|
-          t.spec_files = FileList[spec_pattern]
+        RSpec::Core::RakeTask.new(:basic) do |t|
+          t.pattern = spec_pattern
         end
 
         desc "Verify all RSpec examples for #{gemspec.name} and output specdoc"
-        Spec::Rake::SpecTask.new(:specdoc) do |t|
-          t.spec_files = FileList[spec_pattern]
-          t.spec_opts << '--format' << 'specdoc' << '--color'
+        RSpec::Core::RakeTask.new(:specdoc) do |t|
+          t.pattern = spec_pattern
+          t.rspec_opts = ['--format', 'documentation', '--color']
         end
 
         desc "Run RCov on specs for #{gemspec.name}"
-        Spec::Rake::SpecTask.new(:rcov) do |t|
-          t.spec_files = FileList[spec_pattern]
+        RSpec::Core::RakeTask.new(:rcov) do |t|
+          t.pattern = spec_pattern
           t.rcov = true
           t.rcov_opts = ['--exclude', '"spec/*,gems/*"', '--rails']
         end
@@ -271,8 +271,7 @@ module GithubGem
     # All work is done by the task's dependencies, so just display a release completed message.
     def release_task
       puts
-      puts '------------------------------------------------------------'
-      puts "Released #{gemspec.name} version #{gemspec.version}"
+      puts "Release successful."
     end
 
     private
@@ -333,7 +332,7 @@ module GithubGem
         # Reload the gemspec so the changes are incorporated
         load_gemspec!
         
-        # ALso mark the Gemfile.lock file as changed because of the new version.
+        # Also mark the Gemfile.lock file as changed because of the new version.
         modified_files << 'Gemfile.lock' if File.exist?(File.join(root_dir, 'Gemfile.lock'))
       end
     end
