@@ -71,9 +71,9 @@ module ChunkyPNG
     end
 
     # Checks whether the size of this palette is suitable for indexed storage.
-    # @return [true, false] True if the number of colors in this palette is less than 256.
+    # @return [true, false] True if the number of colors in this palette is at most 256.
     def indexable?
-      size < 256
+      size <= 256
     end
 
     # Check whether this pelette only contains opaque colors.
