@@ -1,12 +1,7 @@
-$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-
 require 'rubygems'
 require 'bundler'
 
-Bundler.setup
-
-require 'rspec'
-require 'chunky_png'
+Bundler.require(:default, :development)
 
 module ResourceFileHelper
   def resource_file(name)
