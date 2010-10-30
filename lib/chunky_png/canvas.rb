@@ -215,6 +215,14 @@ module ChunkyPNG
       ChunkyPNG::Image.from_canvas(self)
     end
     
+    def inspect
+      inspected = "<#{self.class.name} #{width}x#{height} ["
+      for y in 0...height
+        inspected << "\n\t[" << row(y).map { |p| ChunkyPNG::Color.to_hex(p) }.join(' ') << ']'
+      end
+      inspected << "\n]>"
+    end
+
     #################################################################
     # RUBY 1.8.6 compatibility
     #################################################################
