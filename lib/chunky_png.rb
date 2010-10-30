@@ -3,6 +3,7 @@ require 'zlib'
 require 'stringio'
 require 'enumerator'
 
+require 'chunky_png/compatibility'
 require 'chunky_png/datastream'
 require 'chunky_png/chunk'
 require 'chunky_png/palette'
@@ -81,14 +82,6 @@ module ChunkyPNG
   class OutOfBounds < ChunkyPNG::ExpectationFailed
   end
   
-  EMPTY_BYTEARRAY = (RUBY_VERSION.to_f < 1.9) ? "".freeze : "".force_encoding('ASCII-8BIT').freeze
-  EXTRA_BYTE      = (RUBY_VERSION.to_f < 1.9) ? "\0" : "\0".force_encoding('ASCII-8BIT')
-end
-
-if RUBY_VERSION.to_f < 1.9
-  class String
-    alias_method :getbyte, :[]
-    alias_method :setbyte, :[]=
-    alias_method :bytesize, :size
-  end
+  EMPTY_BYTEARRAY = String.method_defined?(:force_encoding) ? "".force_encoding('ASCII-8BIT').freeze : "".freeze
+  EXTRA_BYTE      = String.method_defined?(:force_encoding) ? "\0".force_encoding('ASCII-8BIT') : "\0"
 end
