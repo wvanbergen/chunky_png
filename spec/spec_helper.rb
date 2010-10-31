@@ -7,6 +7,18 @@ module ResourceFileHelper
   def resource_file(name)
     File.expand_path("./resources/#{name}", File.dirname(__FILE__))
   end
+  
+  def suite_file(kind, file)
+    File.join(suite_dir(kind), file)
+  end
+  
+  def suite_dir(kind)
+    File.expand_path("./png_suite/#{kind}", File.dirname(__FILE__))
+  end
+  
+  def suite_files(kind, pattern = '*.png')
+    Dir[File.join(suite_dir(kind), pattern)]
+  end
 end
 
 
@@ -27,6 +39,7 @@ module MatrixSpecHelper
 end
 
 RSpec.configure do |config|
+  config.extend ResourceFileHelper
   config.include ResourceFileHelper
   config.include MatrixSpecHelper
 end
