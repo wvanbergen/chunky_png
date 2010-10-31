@@ -12,11 +12,6 @@ describe ChunkyPNG::Datastream do
       filename = resource_file('damaged_chunk.png')
       lambda { ChunkyPNG::Datastream.from_file(filename) }.should raise_error
     end
-
-    it "should not raise an error for an unsupported color depth when only reading the datastream" do
-      filename = resource_file('indexed_4bit.png')
-      lambda { ChunkyPNG::Datastream.from_file(filename) }.should_not raise_error
-    end
   end
 
   describe '#metadata' do
