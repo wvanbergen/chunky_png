@@ -44,31 +44,31 @@ describe ChunkyPNG::Canvas::Adam7Interlacing do
 
   describe '#adam7_multiplier_offset' do
     it "should get the multiplier and offset values for pass 1 correctly" do
-      adam7_multiplier_offset(0).should == { :x_offset => 0, :x_shift => 3, :y_offset => 0, :y_shift => 3 }
+      adam7_multiplier_offset(0).should == [3, 0, 3, 0]
     end
     
     it "should get the multiplier and offset values for pass 2 correctly" do
-      adam7_multiplier_offset(1).should == { :x_offset => 4, :x_shift => 3, :y_offset => 0, :y_shift => 3 }
+      adam7_multiplier_offset(1).should == [3, 4, 3, 0]
     end
     
     it "should get the multiplier and offset values for pass 3 correctly" do
-      adam7_multiplier_offset(2).should == { :x_offset => 0, :x_shift => 2, :y_offset => 4, :y_shift => 3 }
+      adam7_multiplier_offset(2).should == [2, 0, 3, 4]
     end
     
     it "should get the multiplier and offset values for pass 4 correctly" do
-      adam7_multiplier_offset(3).should == { :x_offset => 2, :x_shift => 2, :y_offset => 0, :y_shift => 2 }
+      adam7_multiplier_offset(3).should == [2, 2, 2, 0]
     end
     
     it "should get the multiplier and offset values for pass 5 correctly" do
-      adam7_multiplier_offset(4).should == { :x_offset => 0, :x_shift => 1, :y_offset => 2, :y_shift => 2 }
+      adam7_multiplier_offset(4).should == [1, 0, 2, 2]
     end
 
     it "should get the multiplier and offset values for pass 6 correctly" do
-      adam7_multiplier_offset(5).should == { :x_offset => 1, :x_shift => 1, :y_offset => 0, :y_shift => 1 }
+      adam7_multiplier_offset(5).should == [1, 1, 1, 0]
     end
     
     it "should get the multiplier and offset values for pass 7 correctly" do
-      adam7_multiplier_offset(6).should == { :x_offset => 0, :x_shift => 0, :y_offset => 1, :y_shift => 1 }
+      adam7_multiplier_offset(6).should == [0, 0, 1, 1]
     end
   end
 
