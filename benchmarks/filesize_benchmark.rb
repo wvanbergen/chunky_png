@@ -6,7 +6,7 @@ Bundler.setup
 require 'benchmark'
 require 'chunky_png'
 
-files = ['pixelstream_reference.png', 'operations.png', 'gray_10x10.png', 'clock_stubbed.png']
+files = ['pixelstream_reference.png', 'operations.png', 'clock_stubbed.png']
 
 def encode_png(image, constraints = {})
   filesize = nil

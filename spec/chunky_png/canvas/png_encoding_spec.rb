@@ -13,7 +13,7 @@ describe ChunkyPNG::Canvas::PNGEncoding do
         
         ds = ChunkyPNG::Datastream.from_file(filename)
         ds.header_chunk.color.should == color_mode
-        ChunkyPNG::Canvas.from_datastream(ds).should == reference_canvas('gray_10x10')
+        ChunkyPNG::Canvas.from_datastream(ds).should == ChunkyPNG::Canvas.new(10, 10, ChunkyPNG::Color.rgb(100, 100, 100))
         
         File.unlink(filename)
       end
@@ -36,7 +36,6 @@ describe ChunkyPNG::Canvas::PNGEncoding do
       Zlib::Deflate.should_receive(:deflate).with(anything, Zlib::DEFAULT_COMPRESSION).and_return('')
       canvas.to_blob
     end
-
 
     it "should save an image using the :fast_rgba routine correctly" do
       canvas = reference_canvas('operations')
