@@ -20,7 +20,7 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
     
     it "should encode an image with interlacing correctly" do
-      input_canvas = ChunkyPNG::Canvas.from_file(resource_file('16x16_non_interlaced.png'))
+      input_canvas = ChunkyPNG::Canvas.from_file(resource_file('operations.png'))
       filename = resource_file("_tmp_interlaced.png")
       input_canvas.save(filename, :interlace => true)
       
