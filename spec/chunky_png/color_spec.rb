@@ -28,6 +28,17 @@ describe ChunkyPNG::Color do
       pixel_bytesize(ChunkyPNG::COLOR_GRAYSCALE_ALPHA, 1).should == 1
     end
   end
+  
+  describe '#pass_bytesize' do
+    it "should calculate a pass size correctly" do
+      pass_bytesize(ChunkyPNG::COLOR_TRUECOLOR, 8, 10, 10).should == 310
+    end
+    
+    it "should return 0 if one of the dimensions is zero" do
+      pass_bytesize(ChunkyPNG::COLOR_TRUECOLOR, 8, 0, 10).should == 0
+      pass_bytesize(ChunkyPNG::COLOR_TRUECOLOR, 8, 10, 0).should == 0
+    end
+  end
 
   describe '#rgba' do
     it "should represent pixels as the correct number" do

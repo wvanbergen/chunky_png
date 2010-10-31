@@ -432,6 +432,7 @@ module ChunkyPNG
     # @param [Integer] width The height of the image pass.
     # @return [Integer] The number of bytes used per scanline in a datastream.
     def pass_bytesize(color_mode, depth, width, height)
+      return 0 if width == 0 || height == 0
       (scanline_bytesize(color_mode, depth, width) + 1) * height
     end
   end
