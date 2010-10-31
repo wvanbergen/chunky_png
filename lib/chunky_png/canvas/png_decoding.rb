@@ -130,24 +130,45 @@ module ChunkyPNG
         canvas
       end
       
+      # Extract 4 consecutive bits from a byte.
+      # @param [Integer] byte The byte (0..255) value to extract a 4 bit value from.
+      # @param [Integer] index The index within the byte. This should be either 0 or 2; 
+      #        the value will be modded by 2 to enforce this.
+      # @return [Integer] The extracted 4bit value (0..15)
       def decode_png_extract_4bit_value(byte, index)
         (index & 0x01 == 0) ? ((byte & 0xf0) >> 4) : (byte & 0x0f)
       end
       
+      # Extract 2 consecutive bits from a byte.
+      # @param [Integer] byte The byte (0..255) value to extract a 2 bit value from.
+      # @param [Integer] index The index within the byte. This should be either 0, 1, 2, or 3; 
+      #        the value will be modded by 4 to enforce this.
+      # @return [Integer] The extracted 2 bit value (0..3)
       def decode_png_extract_2bit_value(byte, index)
         bitshift = 6 - ((index & 0x03) << 1)
         (byte & (0x03 << bitshift)) >> bitshift
       end
 
+      # Extract a bit from a byte on a given index.
+      # @param [Integer] byte The byte (0..255) value to extract a a bit from.
+      # @param [Integer] index The index within the byte. This should be 0..7; 
+      #        the value will be modded by 8 to enforce this.
+      # @return [Integer] Either 1 or 0.
       def decode_png_extract_1bit_value(byte, index)
         bitshift = 7 - (index & 0x07)
         (byte & (0x01 << bitshift)) >> bitshift
       end
       
+      # Resamples a 16 bit value to an 8 bit value. This will discard some color information.
+      # @param [Integer] value The 16 bit value to resample.
+      # @return [Integer] The 8 bit resampled value
       def decode_png_resample_16bit_value(value)
         value >> 8
       end
       
+      # Resamples a 4 bit value to an 8 bit value.
+      # @param [Integer] value The 4 bit value to resample.
+      # @return [Integer] The 8 bit resampled value.
       def decode_png_resample_4bit_value(value)
         case value
         when 0x00; 0
@@ -169,6 +190,9 @@ module ChunkyPNG
         end
       end
       
+      # Resamples a 2 bit value to an 8 bit value.
+      # @param [Integer] value The 2 bit value to resample.
+      # @return [Integer] The 8 bit resampled value.
       def decode_png_resample_2bit_value(value)
         case value
         when 0x00; 0x00
@@ -178,6 +202,11 @@ module ChunkyPNG
         end
       end
 
+      # Decodes a scanline of a 1-bit, indexed image into a row of pixels.
+      # @param [String] stream The stream to decode from.
+      # @param [Integer] pos The position in the stream on qhich the scanline starts (including the filter byte).
+      # @param [Integer] width The width in pixels of the scanline.
+      # @return [Array<Integer>] An array of decoded pixels.
       def decode_png_pixels_from_scanline_indexed_1bit(stream, pos, width)
         (0...width).map do |index|
           palette_pos = decode_png_extract_1bit_value(stream.getbyte(pos + 1 + (index >> 3)), index) 
@@ -185,6 +214,9 @@ module ChunkyPNG
         end
       end
 
+      # Decodes a scanline of a 2-bit, indexed image into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_indexed_2bit(stream, pos, width)
         (0...width).map do |index|
           palette_pos = decode_png_extract_2bit_value(stream.getbyte(pos + 1 + (index >> 2)), index)
@@ -192,6 +224,9 @@ module ChunkyPNG
         end
       end
 
+      # Decodes a scanline of a 4-bit, indexed image into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_indexed_4bit(stream, pos, width)
         (0...width).map do |index|
           palette_pos = decode_png_extract_4bit_value(stream.getbyte(pos + 1 + (index >> 1)), index)
@@ -199,14 +234,23 @@ module ChunkyPNG
         end
       end
 
+      # Decodes a scanline of a 8-bit, indexed image into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_indexed_8bit(stream, pos, width)
         (1..width).map { |i| decoding_palette[stream.getbyte(pos + i)] }
       end
 
+      # Decodes a scanline of an 8-bit, true color image with transparency into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_truecolor_alpha_8bit(stream, pos, width)
         stream.unpack("@#{pos + 1}N#{width}")
       end
-      
+
+      # Decodes a scanline of a 16-bit, true color image with transparency into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_truecolor_alpha_16bit(stream, pos, width)
         [].tap do |pixels|
           stream.unpack("@#{pos + 1}n#{width * 4}").each_slice(4) do |r, g, b, a|
@@ -216,10 +260,16 @@ module ChunkyPNG
         end
       end
       
+      # Decodes a scanline of an 8-bit, true color image into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_truecolor_8bit(stream, pos, width)
         stream.unpack("@#{pos + 1}" << ('NX' * width)).map { |c| c | 0x000000ff }
       end
       
+      # Decodes a scanline of a 16-bit, true color image into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_truecolor_16bit(stream, pos, width)
         [].tap do |pixels|
           stream.unpack("@#{pos + 1}n#{width * 3}").each_slice(3) do |r, g, b|
@@ -228,10 +278,27 @@ module ChunkyPNG
         end
       end
 
+      # Decodes a scanline of an 8-bit, grayscale image with transparency into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_grayscale_alpha_8bit(stream, pos, width)
         (0...width).map { |i| ChunkyPNG::Color.grayscale_alpha(stream.getbyte(pos + (i * 2) + 1), stream.getbyte(pos + (i * 2) + 2)) }
       end
+      
+      # Decodes a scanline of a 16-bit, grayscale image with transparency into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
+      def decode_png_pixels_from_scanline_grayscale_alpha_16bit(stream, pos, width)
+        [].tap do |pixels|
+          stream.unpack("@#{pos + 1}n#{width * 2}").each_slice(2) do |g, a|
+            pixels << ChunkyPNG::Color.grayscale_alpha(decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(a))
+          end
+        end
+      end
 
+      # Decodes a scanline of a 1-bit, grayscale image into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_grayscale_1bit(stream, pos, width)
         (0...width).map do |index|
           value = decode_png_extract_1bit_value(stream.getbyte(pos + 1 + (index >> 3)), index)
@@ -239,6 +306,9 @@ module ChunkyPNG
         end
       end
 
+      # Decodes a scanline of a 2-bit, grayscale image into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_grayscale_2bit(stream, pos, width)
         (0...width).map do |index|
           value = decode_png_extract_2bit_value(stream.getbyte(pos + 1 + (index >> 2)), index)
@@ -246,6 +316,9 @@ module ChunkyPNG
         end
       end
 
+      # Decodes a scanline of a 4-bit, grayscale image into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_grayscale_4bit(stream, pos, width)
         (0...width).map do |index|
           value = decode_png_extract_4bit_value(stream.getbyte(pos + 1 + (index >> 1)), index)
@@ -253,22 +326,26 @@ module ChunkyPNG
         end
       end
       
+      # Decodes a scanline of an 8-bit, grayscale image into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_grayscale_8bit(stream, pos, width)
         (1..width).map { |i| ChunkyPNG::Color.grayscale(stream.getbyte(pos + i)) }
       end
       
+      # Decodes a scanline of a 16-bit, grayscale image into a row of pixels.
+      # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
+      # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_grayscale_16bit(stream, pos, width)
         values = stream.unpack("@#{pos + 1}n#{width}")
         values.map { |value| ChunkyPNG::Color.grayscale(decode_png_resample_16bit_value(value)) }
       end
       
-      def decode_png_pixels_from_scanline_grayscale_alpha_16bit(stream, pos, width)
-        values = stream.unpack("@#{pos + 1}n#{width * 2}")
-        pixels = []
-        values.each_slice(2) { |g, a| pixels << ChunkyPNG::Color.grayscale_alpha(decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(a)) }
-        pixels
-      end
-      
+      # Returns the method name to use to decode scanlines into pixels.
+      # @param [Integer] color_mode The color mode of the image.
+      # @param [Integer] depth The bit depth of the image.
+      # @return [Symbol] The method name to use for decoding, to be called on the canvas class.
+      # @raise [ChunkyPNG::NotSupported] when the color_mode and/or bit depth is not supported.
       def decode_png_pixels_from_scanline_method(color_mode, depth)
         decoder_method = case color_mode
           when ChunkyPNG::COLOR_TRUECOLOR;       :"decode_png_pixels_from_scanline_truecolor_#{depth}bit"

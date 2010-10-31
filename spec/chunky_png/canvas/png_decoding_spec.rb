@@ -53,6 +53,47 @@ describe ChunkyPNG::Canvas::PNGDecoding do
       stream.unpack('@14C12').should == [10, 20, 40, 60, 60, 60, 70, 120, 90, 120, 54, 120]
     end
   end
+  
+  describe '#decode_png_extract_4bit_value' do
+    it "should extract the high bits successfully" do
+      decode_png_extract_4bit_value('10010110'.to_i(2), 0).should == '1001'.to_i(2)
+    end
+    
+    it "should extract the low bits successfully" do
+      decode_png_extract_4bit_value('10010110'.to_i(2), 17).should == '0110'.to_i(2)
+    end
+  end
+  
+  describe '#decode_png_extract_2bit_value' do
+    it "should extract the first 2 bits successfully" do
+      decode_png_extract_2bit_value('10010110'.to_i(2), 0).should == '10'.to_i(2)
+    end
+
+    it "should extract the second 2 bits successfully" do
+      decode_png_extract_2bit_value('10010110'.to_i(2), 5).should == '01'.to_i(2)
+    end
+
+    it "should extract the third 2 bits successfully" do
+      decode_png_extract_2bit_value('10010110'.to_i(2), 2).should == '01'.to_i(2)
+    end
+
+    it "should extract the low two bits successfully" do
+      decode_png_extract_2bit_value('10010110'.to_i(2), 7).should == '10'.to_i(2)
+    end
+  end
+  
+  describe '#decode_png_extract_1bit_value' do
+    it "should extract all separate bits correctly" do
+      decode_png_extract_1bit_value('10010110'.to_i(2), 0).should == 1
+      decode_png_extract_1bit_value('10010110'.to_i(2), 1).should == 0
+      decode_png_extract_1bit_value('10010110'.to_i(2), 2).should == 0
+      decode_png_extract_1bit_value('10010110'.to_i(2), 3).should == 1
+      decode_png_extract_1bit_value('10010110'.to_i(2), 4).should == 0
+      decode_png_extract_1bit_value('10010110'.to_i(2), 5).should == 1
+      decode_png_extract_1bit_value('10010110'.to_i(2), 6).should == 1
+      decode_png_extract_1bit_value('10010110'.to_i(2), 7).should == 0
+    end
+  end
 
   describe '.from_datastream' do
 
