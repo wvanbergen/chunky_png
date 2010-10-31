@@ -11,6 +11,24 @@ describe ChunkyPNG::Color do
     @fully_transparent = 0x0a649600
   end
 
+  describe '#pixel_bytesize' do
+    it "should return the normal amount of bytes with a bit depth of 8" do
+      pixel_bytesize(ChunkyPNG::COLOR_TRUECOLOR, 8).should == 3
+    end
+
+    it "should return a multiple of the normal amount of bytes with a bit depth greater than 8" do
+      pixel_bytesize(ChunkyPNG::COLOR_TRUECOLOR, 16).should == 6
+      pixel_bytesize(ChunkyPNG::COLOR_TRUECOLOR_ALPHA, 16).should == 8
+      pixel_bytesize(ChunkyPNG::COLOR_GRAYSCALE_ALPHA, 16).should == 4
+    end
+    
+    it "should return 1 with a bit depth lower than 0" do
+      pixel_bytesize(ChunkyPNG::COLOR_TRUECOLOR, 4).should == 1
+      pixel_bytesize(ChunkyPNG::COLOR_INDEXED, 2).should == 1
+      pixel_bytesize(ChunkyPNG::COLOR_GRAYSCALE_ALPHA, 1).should == 1
+    end
+  end
+
   describe '#rgba' do
     it "should represent pixels as the correct number" do
       rgba(255, 255, 255, 255).should == @white

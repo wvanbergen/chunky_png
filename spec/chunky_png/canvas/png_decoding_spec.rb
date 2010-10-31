@@ -76,9 +76,41 @@ describe ChunkyPNG::Canvas::PNGDecoding do
       canvas_i.should == canvas_ni
     end
 
-    it "should raise an error if the color depth is not supported" do
-      filename = resource_file('indexed_4bit.png')
-      lambda { ChunkyPNG::Canvas.from_file(filename) }.should raise_error
+    it "should decode 4-bit indexed images correctly" do
+      indexed_4bit = ChunkyPNG::Canvas.from_file(resource_file('indexed_4bit.png'))
+      indexed_8bit = ChunkyPNG::Canvas.from_file(resource_file('indexed_4bit_reference.png'))
+      indexed_4bit.should == indexed_8bit
+    end
+
+    it "should decode 4-bit, interlaced indexed images correctly" do
+      indexed_4bit = ChunkyPNG::Canvas.from_file(resource_file('indexed_4bit_interlaced.png'))
+      indexed_8bit = ChunkyPNG::Canvas.from_file(resource_file('indexed_4bit_reference.png'))
+      indexed_4bit.should == indexed_8bit
+    end
+    
+    it "should decode 2-bit indexed images correctly" do
+      indexed_2bit = ChunkyPNG::Canvas.from_file(resource_file('indexed_2bit.png'))
+      indexed_8bit = ChunkyPNG::Canvas.from_file(resource_file('indexed_2bit_reference.png'))
+      indexed_2bit.should == indexed_8bit
+    end
+
+    it "should decode 2-bit, interlaced indexed images correctly" do
+      indexed_2bit = ChunkyPNG::Canvas.from_file(resource_file('indexed_2bit_interlaced.png'))
+      indexed_8bit = ChunkyPNG::Canvas.from_file(resource_file('indexed_2bit_reference.png'))
+      indexed_2bit.should == indexed_8bit
+    end
+
+    
+    it "should decode 1-bit indexed images correctly" do
+      indexed_1bit = ChunkyPNG::Canvas.from_file(resource_file('indexed_1bit.png'))
+      indexed_8bit = ChunkyPNG::Canvas.from_file(resource_file('indexed_1bit_reference.png'))
+      indexed_1bit.should == indexed_8bit
+    end
+
+    it "should decode 1-bit, interlaced indexed images correctly" do
+      indexed_1bit = ChunkyPNG::Canvas.from_file(resource_file('indexed_1bit_interlaced.png'))
+      indexed_8bit = ChunkyPNG::Canvas.from_file(resource_file('indexed_1bit_reference.png'))
+      indexed_1bit.should == indexed_8bit
     end
   end
 end

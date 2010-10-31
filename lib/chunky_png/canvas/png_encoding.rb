@@ -191,7 +191,7 @@ module ChunkyPNG
       def encode_png_image_pass_to_stream(stream, color_mode, filtering)
 
         start_pos  = stream.bytesize
-        pixel_size = Color.bytesize(color_mode)
+        pixel_size = Color.pixel_bytesize(color_mode)
         line_width = pixel_size * width
         
         # Encode the whole image without filtering

@@ -386,18 +386,53 @@ module ChunkyPNG
     # STATIC UTILITY METHODS
     ####################################################################
 
-    # Returns the size in bytes of a pixel when it is stored using a given color mode.
-    # @param [Integer] color_mode The color mode in which the pixels are stored.
-    # @return [Integer] The number of bytes used per pixel in a datastream.
-    def bytesize(color_mode)
+    # Returns the number of sample values per pixel.
+    # @param [Integer] color_mode The color mode being used.
+    # @return [Integer] The number of sample values per pixel.
+    def samples_per_pixel(color_mode)
       case color_mode
         when ChunkyPNG::COLOR_INDEXED;         1
         when ChunkyPNG::COLOR_TRUECOLOR;       3
         when ChunkyPNG::COLOR_TRUECOLOR_ALPHA; 4
         when ChunkyPNG::COLOR_GRAYSCALE;       1
         when ChunkyPNG::COLOR_GRAYSCALE_ALPHA; 2
-        else raise ChunkyPNG::NotSupported, "Don't know the bytesize of pixels in this colormode: #{color_mode}!"
+        else raise ChunkyPNG::NotSupported, "Don't know the numer of samples for this colormode: #{color_mode}!"
       end
+    end
+
+    # Returns the size in bytes of a pixel when it is stored using a given color mode.
+    # @param [Integer] color_mode The color mode in which the pixels are stored.
+    # @return [Integer] The number of bytes used per pixel in a datastream.
+    def pixel_bytesize(color_mode, depth = 8)
+      return 1 if depth < 8
+      (pixel_bitsize(color_mode, depth) / 8.0).ceil
+    end
+    
+    # Returns the size in bits of a pixel when it is stored using a given color mode.
+    # @param [Integer] color_mode The color mode in which the pixels are stored.
+    # @param [Integer] depth The color depth of the pixels.
+    # @return [Integer] The number of bytes used per pixel in a datastream.
+    def pixel_bitsize(color_mode, depth = 8)
+      samples_per_pixel(color_mode) * depth
+    end
+    
+    # Returns the number of bytes used per scanline.
+    # @param [Integer] color_mode The color mode in which the pixels are stored.
+    # @param [Integer] depth The color depth of the pixels.
+    # @param [Integer] width The number of pixels per scanline.
+    # @return [Integer] The number of bytes used per scanline in a datastream.
+    def scanline_bytesize(color_mode, depth, width)
+      ((pixel_bitsize(color_mode, depth) * width) / 8.0).ceil
+    end
+    
+    # Returns the number of bytes used for an image pass
+    # @param [Integer] color_mode The color mode in which the pixels are stored.
+    # @param [Integer] depth The color depth of the pixels.
+    # @param [Integer] width The width of the image pass.
+    # @param [Integer] width The height of the image pass.
+    # @return [Integer] The number of bytes used per scanline in a datastream.
+    def pass_bytesize(color_mode, depth, width, height)
+      (scanline_bytesize(color_mode, depth, width) + 1) * height
     end
   end
 end
