@@ -141,6 +141,12 @@ module ChunkyPNG
       end
       metadata
     end
+   
+    # Returns the uncompressed image data, combined from all the IDAT chunks
+    # @return [String] The uncompressed image data for this datastream
+    def imagedata
+      ChunkyPNG::Chunk::ImageData.combine_chunks(data_chunks)
+    end
 
     ##################################################################################
     # WRITING DATASTREAMS

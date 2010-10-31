@@ -72,7 +72,7 @@ module ChunkyPNG
         depth      = ds.header_chunk.depth
 
         self.decoding_palette = ChunkyPNG::Palette.from_chunks(ds.palette_chunk, ds.transparency_chunk)
-        pixelstream           = ChunkyPNG::Chunk::ImageData.combine_chunks(ds.data_chunks)
+        pixelstream           = ds.imagedata
 
         decode_png_pixelstream(pixelstream, width, height, color_mode, depth, interlace)
       end
@@ -129,29 +129,72 @@ module ChunkyPNG
         end
         canvas
       end
+      
+      def decode_png_extract_4bit_value(byte, index)
+        (index & 0x01 == 0) ? ((byte & 0xf0) >> 4) : (byte & 0x0f)
+      end
+      
+      def decode_png_extract_2bit_value(byte, index)
+        bitshift = 6 - ((index & 0x03) << 1)
+        (byte & (0x03 << bitshift)) >> bitshift
+      end
+
+      def decode_png_extract_1bit_value(byte, index)
+        bitshift = 7 - (index & 0x07)
+        (byte & (0x01 << bitshift)) >> bitshift
+      end
+      
+      def decode_png_resample_16bit_value(value)
+        value >> 8
+      end
+      
+      def decode_png_resample_4bit_value(value)
+        case value
+        when 0x00; 0
+        when 0x01; 17
+        when 0x02; 34
+        when 0x03; 51
+        when 0x04; 68
+        when 0x05; 85
+        when 0x06; 102
+        when 0x07; 119
+        when 0x08; 137
+        when 0x09; 154
+        when 0x0a; 171
+        when 0x0b; 188
+        when 0x0c; 205
+        when 0x0d; 222
+        when 0x0e; 239
+        when 0x0f; 255
+        end
+      end
+      
+      def decode_png_resample_2bit_value(value)
+        case value
+        when 0x00; 0x00
+        when 0x01; 0x55
+        when 0x02; 0xaa
+        when 0x03; 0xff
+        end
+      end
 
       def decode_png_pixels_from_scanline_indexed_1bit(stream, pos, width)
         (0...width).map do |index|
-          byte = stream.getbyte(pos + 1 + (index >> 3))
-          bitshift = 7 - (index & 0x07)
-          palette_pos = (byte & (0x01 << bitshift)) >> bitshift
+          palette_pos = decode_png_extract_1bit_value(stream.getbyte(pos + 1 + (index >> 3)), index) 
           decoding_palette[palette_pos]
         end
       end
 
       def decode_png_pixels_from_scanline_indexed_2bit(stream, pos, width)
         (0...width).map do |index|
-          byte = stream.getbyte(pos + 1 + (index >> 2))
-          bitshift = 6 - ((index & 0x03) << 1)
-          palette_pos = (byte & (0x03 << bitshift)) >> bitshift
+          palette_pos = decode_png_extract_2bit_value(stream.getbyte(pos + 1 + (index >> 2)), index)
           decoding_palette[palette_pos]
         end
       end
 
       def decode_png_pixels_from_scanline_indexed_4bit(stream, pos, width)
         (0...width).map do |index|
-          byte = stream.getbyte(pos + 1 + (index >> 1))
-          palette_pos = (index & 0x01 == 0) ? ((byte & 0xf0) >> 4) : (byte & 0x0f)
+          palette_pos = decode_png_extract_4bit_value(stream.getbyte(pos + 1 + (index >> 1)), index)
           decoding_palette[palette_pos]
         end
       end
@@ -164,16 +207,66 @@ module ChunkyPNG
         stream.unpack("@#{pos + 1}N#{width}")
       end
       
+      def decode_png_pixels_from_scanline_truecolor_alpha_16bit(stream, pos, width)
+        [].tap do |pixels|
+          stream.unpack("@#{pos + 1}n#{width * 4}").each_slice(4) do |r, g, b, a|
+            pixels << ChunkyPNG::Color.rgba(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g),
+                                            decode_png_resample_16bit_value(b), decode_png_resample_16bit_value(a))
+          end
+        end
+      end
+      
       def decode_png_pixels_from_scanline_truecolor_8bit(stream, pos, width)
         stream.unpack("@#{pos + 1}" << ('NX' * width)).map { |c| c | 0x000000ff }
+      end
+      
+      def decode_png_pixels_from_scanline_truecolor_16bit(stream, pos, width)
+        [].tap do |pixels|
+          stream.unpack("@#{pos + 1}n#{width * 3}").each_slice(3) do |r, g, b|
+            pixels << ChunkyPNG::Color.rgb(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(b))
+          end
+        end
       end
 
       def decode_png_pixels_from_scanline_grayscale_alpha_8bit(stream, pos, width)
         (0...width).map { |i| ChunkyPNG::Color.grayscale_alpha(stream.getbyte(pos + (i * 2) + 1), stream.getbyte(pos + (i * 2) + 2)) }
       end
+
+      def decode_png_pixels_from_scanline_grayscale_1bit(stream, pos, width)
+        (0...width).map do |index|
+          value = decode_png_extract_1bit_value(stream.getbyte(pos + 1 + (index >> 3)), index)
+          value == 1 ? ChunkyPNG::Color::WHITE : ChunkyPNG::Color::BLACK
+        end
+      end
+
+      def decode_png_pixels_from_scanline_grayscale_2bit(stream, pos, width)
+        (0...width).map do |index|
+          value = decode_png_extract_2bit_value(stream.getbyte(pos + 1 + (index >> 2)), index)
+          ChunkyPNG::Color.grayscale(decode_png_resample_2bit_value(value))
+        end
+      end
+
+      def decode_png_pixels_from_scanline_grayscale_4bit(stream, pos, width)
+        (0...width).map do |index|
+          value = decode_png_extract_4bit_value(stream.getbyte(pos + 1 + (index >> 1)), index)
+          ChunkyPNG::Color.grayscale(decode_png_resample_4bit_value(value))
+        end
+      end
       
       def decode_png_pixels_from_scanline_grayscale_8bit(stream, pos, width)
         (1..width).map { |i| ChunkyPNG::Color.grayscale(stream.getbyte(pos + i)) }
+      end
+      
+      def decode_png_pixels_from_scanline_grayscale_16bit(stream, pos, width)
+        values = stream.unpack("@#{pos + 1}n#{width}")
+        values.map { |value| ChunkyPNG::Color.grayscale(decode_png_resample_16bit_value(value)) }
+      end
+      
+      def decode_png_pixels_from_scanline_grayscale_alpha_16bit(stream, pos, width)
+        values = stream.unpack("@#{pos + 1}n#{width * 2}")
+        pixels = []
+        values.each_slice(2) { |g, a| pixels << ChunkyPNG::Color.grayscale_alpha(decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(a)) }
+        pixels
       end
       
       def decode_png_pixels_from_scanline_method(color_mode, depth)
@@ -209,7 +302,7 @@ module ChunkyPNG
         pixel_size  = ChunkyPNG::Color.pixel_bytesize(color_mode, depth)
         
         pixels = []
-        if width > 0
+        if width > 0 && height > 0
           raise ChunkyPNG::ExpectationFailed, "Invalid stream length!" unless stream.bytesize - start_pos >= ChunkyPNG::Color.pass_bytesize(color_mode, depth, width, height)
 
           pos, prev_pos = start_pos, nil
