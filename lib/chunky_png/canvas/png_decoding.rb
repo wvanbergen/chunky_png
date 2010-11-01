@@ -88,8 +88,7 @@ module ChunkyPNG
       # @return [ChunkyPNG::Canvas] The decoded Canvas instance.
       def decode_png_pixelstream(stream, width, height, color_mode, depth, interlace)
         raise ChunkyPNG::ExpectationFailed, "This palette is not suitable for decoding!" if decoding_palette && !decoding_palette.can_decode?
-        # p decoding_palette.instance_variable_get(:@decoding_map).map { |c| ChunkyPNG::Color.to_hex(c) }
-        return case interlace
+        case interlace
           when ChunkyPNG::INTERLACING_NONE;  decode_png_without_interlacing(stream, width, height, color_mode, depth)
           when ChunkyPNG::INTERLACING_ADAM7; decode_png_with_adam7_interlacing(stream, width, height, color_mode, depth)
           else raise ChunkyPNG::NotSupported, "Don't know how the handle interlacing method #{interlace}!"
@@ -373,13 +372,15 @@ module ChunkyPNG
       # @param [Integer] start_pos The position in the pixel stream to start reading.
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       def decode_png_image_pass(stream, width, height, color_mode, depth, start_pos)
-        stream << ChunkyPNG::EXTRA_BYTE if color_mode == ChunkyPNG::COLOR_TRUECOLOR
-        pixel_decoder = decode_png_pixels_from_scanline_method(color_mode, depth)
-        line_length   = ChunkyPNG::Color.scanline_bytesize(color_mode, depth, width)
-        pixel_size    = ChunkyPNG::Color.pixel_bytesize(color_mode, depth)
         
         pixels = []
         if width > 0 && height > 0
+          
+          stream << ChunkyPNG::EXTRA_BYTE if color_mode == ChunkyPNG::COLOR_TRUECOLOR
+          pixel_decoder = decode_png_pixels_from_scanline_method(color_mode, depth)
+          line_length   = ChunkyPNG::Color.scanline_bytesize(color_mode, depth, width)
+          pixel_size    = ChunkyPNG::Color.pixel_bytesize(color_mode, depth)
+          
           raise ChunkyPNG::ExpectationFailed, "Invalid stream length!" unless stream.bytesize - start_pos >= ChunkyPNG::Color.pass_bytesize(color_mode, depth, width, height)
 
           pos, prev_pos = start_pos, nil
