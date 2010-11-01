@@ -405,7 +405,7 @@ module ChunkyPNG
     # @return [Integer] The number of bytes used per pixel in a datastream.
     def pixel_bytesize(color_mode, depth = 8)
       return 1 if depth < 8
-      (pixel_bitsize(color_mode, depth) / 8.0).ceil
+      (pixel_bitsize(color_mode, depth) + 7) >> 3
     end
     
     # Returns the size in bits of a pixel when it is stored using a given color mode.
@@ -422,7 +422,7 @@ module ChunkyPNG
     # @param [Integer] width The number of pixels per scanline.
     # @return [Integer] The number of bytes used per scanline in a datastream.
     def scanline_bytesize(color_mode, depth, width)
-      ((pixel_bitsize(color_mode, depth) * width) / 8.0).ceil
+      ((pixel_bitsize(color_mode, depth) * width) + 7) >> 3
     end
     
     # Returns the number of bytes used for an image pass

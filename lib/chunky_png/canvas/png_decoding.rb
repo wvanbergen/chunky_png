@@ -375,8 +375,8 @@ module ChunkyPNG
       def decode_png_image_pass(stream, width, height, color_mode, depth, start_pos)
         stream << ChunkyPNG::EXTRA_BYTE if color_mode == ChunkyPNG::COLOR_TRUECOLOR
         pixel_decoder = decode_png_pixels_from_scanline_method(color_mode, depth)
-        line_length = ChunkyPNG::Color.scanline_bytesize(color_mode, depth, width)
-        pixel_size  = ChunkyPNG::Color.pixel_bytesize(color_mode, depth)
+        line_length   = ChunkyPNG::Color.scanline_bytesize(color_mode, depth, width)
+        pixel_size    = ChunkyPNG::Color.pixel_bytesize(color_mode, depth)
         
         pixels = []
         if width > 0 && height > 0
