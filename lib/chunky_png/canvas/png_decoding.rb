@@ -72,9 +72,7 @@ module ChunkyPNG
         depth      = ds.header_chunk.depth
 
         self.decoding_palette = ChunkyPNG::Palette.from_chunks(ds.palette_chunk, ds.transparency_chunk)
-        pixelstream           = ds.imagedata
-
-        decode_png_pixelstream(pixelstream, width, height, color_mode, depth, interlace)
+        decode_png_pixelstream(ds.imagedata, width, height, color_mode, depth, interlace)
       end
 
       # Decodes a canvas from a PNG encoded pixelstream, using a given width, height, 
