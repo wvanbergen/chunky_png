@@ -37,7 +37,7 @@ describe 'PNG testuite' do
       
       it "should decode #{File.basename(file)} (color mode: #{color_mode}, bit depth: #{bit_depth}) exactly the same as the reference image" do
         decoded = ChunkyPNG::Canvas.from_file(file)
-        File.open(reference, 'rb:binary') { |f| decoded.to_rgba_stream.should == f.read }
+        File.open(reference, 'rb') { |f| decoded.to_rgba_stream.should == f.read }
       end
     end
   end
