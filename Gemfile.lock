@@ -8,16 +8,14 @@ GEM
   specs:
     diff-lcs (1.1.2)
     rake (0.8.7)
-    rspec (2.0.0)
-      rspec-core (= 2.0.0)
-      rspec-expectations (= 2.0.0)
-      rspec-mocks (= 2.0.0)
-    rspec-core (2.0.0)
-    rspec-expectations (2.0.0)
-      diff-lcs (>= 1.1.2)
-    rspec-mocks (2.0.0)
-      rspec-core (= 2.0.0)
-      rspec-expectations (= 2.0.0)
+    rspec (2.1.0)
+      rspec-core (~> 2.1.0)
+      rspec-expectations (~> 2.1.0)
+      rspec-mocks (~> 2.1.0)
+    rspec-core (2.1.0)
+    rspec-expectations (2.1.0)
+      diff-lcs (~> 1.1.2)
+    rspec-mocks (2.1.0)
 
 PLATFORMS
   ruby
@@ -25,4 +23,4 @@ PLATFORMS
 DEPENDENCIES
   chunky_png!
   rake
-  rspec (~> 2.0)
+  rspec (~> 2.1)

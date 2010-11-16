@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   s.homepage = 'http://wiki.github.com/wvanbergen/chunky_png'
 
   s.add_development_dependency('rake')
-  s.add_development_dependency('rspec', '~> 2.0')
+  s.add_development_dependency('rspec', '~> 2.1')
 
   s.rdoc_options << '--title' << s.name << '--main' << 'README.rdoc' << '--line-numbers' << '--inline-source'
   s.extra_rdoc_files = ['README.rdoc', 'BENCHMARKS.rdoc']
