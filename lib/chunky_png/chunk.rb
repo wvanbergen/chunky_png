@@ -187,6 +187,11 @@ module ChunkyPNG
 
     class ImageData < Generic
       
+      def self.read(type, content)
+        raise ExpectationFailed, 'The IDAT chunk should not be empty!' if content.bytesize == 0
+        super
+      end
+      
       def self.combine_chunks(data_chunks)
         Zlib::Inflate.inflate(data_chunks.map { |c| c.content }.join(''))
       end
