@@ -5,7 +5,7 @@ describe 'PNG testuite' do
   context 'Decoding broken images' do
     png_suite_files(:broken).each do |file|
       it "should report #{File.basename(file)} as broken" do
-        lambda { ChunkyPNG::Image.from_file(file) }.should raise_error
+        lambda { ChunkyPNG::Image.from_file(file) }.should raise_error(ChunkyPNG::Exception)
       end
 
       it "should not report #{File.basename(file)} as unsupported" do

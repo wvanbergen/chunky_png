@@ -63,13 +63,15 @@ module ChunkyPNG
       # @param [ChunkyPNG::Datastream] ds The datastream to decode.
       # @return [ChunkyPNG::Canvas] The canvas decoded from the PNG datastream.
       def from_datastream(ds)
-        # raise ChunkyPNG::NotSupported, "Only 8-bit color depth is currently supported by ChunkyPNG!" unless ds.header_chunk.depth == 8
-
         width      = ds.header_chunk.width
         height     = ds.header_chunk.height
         color_mode = ds.header_chunk.color
         interlace  = ds.header_chunk.interlace
         depth      = ds.header_chunk.depth
+
+        if width == 0 || height == 0
+          raise ExpectationFailed, "Invalid image size, width: #{width}, height: #{height}"
+        end
 
         self.decoding_palette = ChunkyPNG::Palette.from_chunks(ds.palette_chunk, ds.transparency_chunk)
         decode_png_pixelstream(ds.imagedata, width, height, color_mode, depth, interlace)
