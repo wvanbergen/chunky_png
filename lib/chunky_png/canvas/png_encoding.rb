@@ -70,14 +70,14 @@ module ChunkyPNG
         encoding = determine_png_encoding(constraints)
 
         ds = Datastream.new
-        ds.header_chunk = Chunk::Header.new(:width => width, :height => height, 
-            :color => encoding[:color_mode], :interlace => encoding[:interlace])
+        ds.header_chunk = Chunk::Header.new(:width => width, :height => height,
+            :color => encoding[:color_mode], :depth => encoding[:bit_depth], :interlace => encoding[:interlace])
 
         if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
           ds.palette_chunk      = encoding_palette.to_plte_chunk
           ds.transparency_chunk = encoding_palette.to_trns_chunk unless encoding_palette.opaque?
         end
-        data           = encode_png_pixelstream(encoding[:color_mode], encoding[:interlace], encoding[:filtering])
+        data           = encode_png_pixelstream(encoding[:color_mode], encoding[:bit_depth], encoding[:interlace], encoding[:filtering])
         ds.data_chunks = Chunk::ImageData.split_in_chunks(data, encoding[:compression])
         ds.end_chunk   = Chunk::End.new
         return ds
@@ -119,6 +119,14 @@ module ChunkyPNG
           self.encoding_palette = self.palette
           encoding[:color_mode] ||= encoding_palette.best_colormode
         end
+        
+        # Set the number of bits per color channel. This will always be 8 except for
+        # indexed image, which may also use lower bit depths
+        if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
+          encoding[:bit_depth] = [encoding_palette.determine_bit_depth, encoding[:bit_depth] || 1].max
+        else
+          encoding[:bit_depth] = 8
+        end
 
         # Use Zlib's default for compression unless otherwise provided.
         encoding[:compression] ||= Zlib::DEFAULT_COMPRESSION
@@ -142,15 +150,15 @@ module ChunkyPNG
       # @param [Integer] color_mode The color mode to use for encoding.
       # @param [Integer] interlace The interlacing method to use.
       # @return [String] The PNG encoded canvas as string.
-      def encode_png_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, interlace = ChunkyPNG::INTERLACING_NONE, filtering = ChunkyPNG::FILTER_NONE)
+      def encode_png_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, bit_depth = 8, interlace = ChunkyPNG::INTERLACING_NONE, filtering = ChunkyPNG::FILTER_NONE)
 
         if color_mode == ChunkyPNG::COLOR_INDEXED && (encoding_palette.nil? || !encoding_palette.can_encode?)
           raise ChunkyPNG::ExpectationFailed, "This palette is not suitable for encoding!"
         end
 
         case interlace
-          when ChunkyPNG::INTERLACING_NONE;  encode_png_image_without_interlacing(color_mode, filtering)
-          when ChunkyPNG::INTERLACING_ADAM7; encode_png_image_with_interlacing(color_mode, filtering)
+          when ChunkyPNG::INTERLACING_NONE;  encode_png_image_without_interlacing(color_mode, bit_depth, filtering)
+          when ChunkyPNG::INTERLACING_ADAM7; encode_png_image_with_interlacing(color_mode, bit_depth, filtering)
           else raise ChunkyPNG::NotSupported, "Unknown interlacing method: #{interlace}!"
         end
       end
@@ -159,9 +167,9 @@ module ChunkyPNG
       # @param [Integer] color_mode The color mode to use for encoding.
       # @param [Integer] filtering The filtering method to use.
       # @return [String] The PNG encoded canvas as string.
-      def encode_png_image_without_interlacing(color_mode, filtering = ChunkyPNG::FILTER_NONE)
+      def encode_png_image_without_interlacing(color_mode, bit_depth = 8, filtering = ChunkyPNG::FILTER_NONE)
         stream = ChunkyPNG::Datastream.empty_bytearray
-        encode_png_image_pass_to_stream(stream, color_mode, filtering)
+        encode_png_image_pass_to_stream(stream, color_mode, bit_depth, filtering)
         stream
       end
 
@@ -174,12 +182,12 @@ module ChunkyPNG
       # @param [Integer] color_mode The color mode to use for encoding.
       # @param [Integer] filtering The filtering method to use.
       # @return [String] The PNG encoded canvas as string.
-      def encode_png_image_with_interlacing(color_mode, filtering = ChunkyPNG::FILTER_NONE)
+      def encode_png_image_with_interlacing(color_mode, bit_depth = 8, filtering = ChunkyPNG::FILTER_NONE)
         stream = ChunkyPNG::Datastream.empty_bytearray
         0.upto(6) do |pass|
           subcanvas = self.class.adam7_extract_pass(pass, self)
           subcanvas.encoding_palette = encoding_palette
-          subcanvas.encode_png_image_pass_to_stream(stream, color_mode, filtering)
+          subcanvas.encode_png_image_pass_to_stream(stream, color_mode, bit_depth, filtering)
         end
         stream
       end
@@ -188,29 +196,24 @@ module ChunkyPNG
       # @param [String] stream The stream to write to.
       # @param [Integer] color_mode The color mode to use for encoding.
       # @param [Integer] filtering The filtering method to use.
-      def encode_png_image_pass_to_stream(stream, color_mode, filtering)
+      def encode_png_image_pass_to_stream(stream, color_mode, bit_depth, filtering)
 
         start_pos  = stream.bytesize
         pixel_size = Color.pixel_bytesize(color_mode)
-        line_width = pixel_size * width
-        
-        # Encode the whole image without filtering
-        stream << case color_mode
-          when ChunkyPNG::COLOR_TRUECOLOR; pixels.pack(('x' + ('NX' * width)) * height)
-          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA; pixels.pack("xN#{width}" * height)
-          when ChunkyPNG::COLOR_INDEXED; pixels.map { |p| encoding_palette.index(p) }.pack("xC#{width}" * height)
-          when ChunkyPNG::COLOR_GRAYSCALE; pixels.map { |p| p >> 8 }.pack("xC#{width}" * height)
-          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA; pixels.pack("xn#{width}" * height)
-          else raise ChunkyPNG::NotSupported, "Cannot encode pixels for this mode: #{color_mode}!"
-        end
+        line_width = Color.scanline_bytesize(color_mode, bit_depth, width)
         
         # Determine the filter method
+        encode_method = encode_png_pixels_to_scanline_method(color_mode, bit_depth)
         filter_method = case filtering
           when ChunkyPNG::FILTER_SUB;     :encode_png_str_scanline_sub
           when ChunkyPNG::FILTER_UP;      :encode_png_str_scanline_up
           when ChunkyPNG::FILTER_AVERAGE; :encode_png_str_scanline_average
           when ChunkyPNG::FILTER_PAETH;   :encode_png_str_scanline_paeth
           else nil
+        end
+        
+        0.upto(height - 1) do |y|
+          stream << send(encode_method, row(y))
         end
         
         # Now, apply filtering if any
@@ -222,6 +225,82 @@ module ChunkyPNG
           end
         end
       end
+      
+      def encode_png_pixels_to_scanline_truecolor_8bit(pixels)
+        pixels.pack('x' + ('NX' * width))
+      end
+      
+      def encode_png_pixels_to_scanline_truecolor_alpha_8bit(pixels)
+        pixels.pack("xN#{width}")
+      end
+
+      def encode_png_pixels_to_scanline_indexed_1bit(pixels)
+        chars = []
+        pixels.each_slice(8) do |p1, p2, p3, p4, p5, p6, p7, p8|
+          chars << ((encoding_palette.index(p1) << 7) |
+                    (encoding_palette.index(p2) << 6) |
+                    (encoding_palette.index(p3) << 5) |
+                    (encoding_palette.index(p4) << 4) |
+                    (encoding_palette.index(p5) << 3) |
+                    (encoding_palette.index(p6) << 2) |
+                    (encoding_palette.index(p7) << 1) |
+                    (encoding_palette.index(p8)))
+        end
+        chars.pack('xC*')
+      end
+      
+      def encode_png_pixels_to_scanline_indexed_2bit(pixels)
+        chars = []
+        pixels.each_slice(4) do |p1, p2, p3, p4|
+          chars << ((encoding_palette.index(p1) << 6) |
+                    (encoding_palette.index(p2) << 4) |
+                    (encoding_palette.index(p3) << 2) |
+                    (encoding_palette.index(p4)))
+        end
+        chars.pack('xC*')
+      end
+      
+      def encode_png_pixels_to_scanline_indexed_4bit(pixels)
+        chars = []
+        pixels.each_slice(2) do |p1, p2|
+          chars << ((encoding_palette.index(p1) << 4) | (encoding_palette.index(p2)))
+        end
+        chars.pack('xC*')
+      end
+      
+      def encode_png_pixels_to_scanline_indexed_8bit(pixels)
+        pixels.map { |p| encoding_palette.index(p) }.pack("xC#{width}")
+      end
+      
+      def encode_png_pixels_to_scanline_grayscale_8bit(pixels)
+        pixels.map { |p| p >> 8 }.pack("xC#{width}")
+      end
+
+      def encode_png_pixels_to_scanline_grayscale_alpha_8bit(pixels)
+        pixels.pack("xn#{width}")
+      end
+      
+      
+      # Returns the method name to use to decode scanlines into pixels.
+      # @param [Integer] color_mode The color mode of the image.
+      # @param [Integer] depth The bit depth of the image.
+      # @return [Symbol] The method name to use for decoding, to be called on the canvas class.
+      # @raise [ChunkyPNG::NotSupported] when the color_mode and/or bit depth is not supported.
+      def encode_png_pixels_to_scanline_method(color_mode, depth)
+        encoder_method = case color_mode
+          when ChunkyPNG::COLOR_TRUECOLOR;       :"encode_png_pixels_to_scanline_truecolor_#{depth}bit"
+          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA; :"encode_png_pixels_to_scanline_truecolor_alpha_#{depth}bit"
+          when ChunkyPNG::COLOR_INDEXED;         :"encode_png_pixels_to_scanline_indexed_#{depth}bit"
+          when ChunkyPNG::COLOR_GRAYSCALE;       :"encode_png_pixels_to_scanline_grayscale_#{depth}bit"
+          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA; :"encode_png_pixels_to_scanline_grayscale_alpha_#{depth}bit"
+          else nil
+        end
+        
+        raise ChunkyPNG::NotSupported, "No encoder found for color mode #{color_mode} and #{depth}-bit depth!" unless respond_to?(encoder_method)
+        encoder_method
+      end
+      
+
 
       # Encodes a scanline of a pixelstream without filtering. This is a no-op.
       # @param [String] stream The pixelstream to work on. This string will be modified.

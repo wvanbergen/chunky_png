@@ -130,7 +130,7 @@ module ChunkyPNG
     # @return [Integer] The 0-based position of the color in the palette.
     # @see ChunkyPNG::Palette#can_encode?
     def index(color)
-      @encoding_map[color]
+      color.nil? ? 0 : @encoding_map[color]
     end
 
     # Creates a tRNS chunk that corresponds with this palette to store the
@@ -181,6 +181,19 @@ module ChunkyPNG
         ChunkyPNG::COLOR_TRUECOLOR
       else
         ChunkyPNG::COLOR_TRUECOLOR_ALPHA
+      end
+    end
+    
+    # Determines the minimal bit depth required for an indexed image
+    # @return [Integer] Number of bits per pixel, i.e. 1, 2, 4 or 8, or nil if this
+    #    image cannot be saved as an indexed image.
+    def determine_bit_depth
+      case size
+      when 1..2; 1
+      when 3..4; 2
+      when 5..16; 4
+      when 17..256; 8
+      else nil
       end
     end
   end

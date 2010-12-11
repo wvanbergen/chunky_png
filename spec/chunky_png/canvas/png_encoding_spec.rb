@@ -19,6 +19,46 @@ describe ChunkyPNG::Canvas::PNGEncoding do
       end
     end
     
+    it "should encode an image with 2 colors using 1-bit indexed color mode" do
+      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file('basic', 'basn3p01.png'))
+      ds = ChunkyPNG::Datastream.from_blob(@canvas.to_blob)
+      ds.header_chunk.color.should == ChunkyPNG::COLOR_INDEXED
+      ds.header_chunk.depth.should == 1
+      @canvas.should == ChunkyPNG::Canvas.from_datastream(ds)
+    end
+    
+    it "should encode an image with 4 colors using 2-bit indexed color mode" do
+      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file('basic', 'basn3p02.png'))
+      ds = ChunkyPNG::Datastream.from_blob(@canvas.to_blob)
+      ds.header_chunk.color.should == ChunkyPNG::COLOR_INDEXED
+      ds.header_chunk.depth.should == 2
+      @canvas.should == ChunkyPNG::Canvas.from_datastream(ds)
+    end
+    
+    it "should encode an image with 16 colors using 4-bit indexed color mode" do
+      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file('basic', 'basn3p04.png'))
+      ds = ChunkyPNG::Datastream.from_blob(@canvas.to_blob)
+      ds.header_chunk.color.should == ChunkyPNG::COLOR_INDEXED
+      ds.header_chunk.depth.should == 4
+      @canvas.should == ChunkyPNG::Canvas.from_datastream(ds)
+    end
+    
+    it "should encode an image with 256 colors using 8-bit indexed color mode" do
+      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file('basic', 'basn3p08.png'))
+      ds = ChunkyPNG::Datastream.from_blob(@canvas.to_blob)
+      ds.header_chunk.color.should == ChunkyPNG::COLOR_INDEXED
+      ds.header_chunk.depth.should == 8
+      @canvas.should == ChunkyPNG::Canvas.from_datastream(ds)
+    end
+    
+    it "should use a higher bit depth than necessary if requested" do
+      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file('basic', 'basn3p01.png'))
+      ds = ChunkyPNG::Datastream.from_blob(@canvas.to_blob(:bit_depth => 4))
+      ds.header_chunk.color.should == ChunkyPNG::COLOR_INDEXED
+      ds.header_chunk.depth.should == 4
+      @canvas.should == ChunkyPNG::Canvas.from_datastream(ds)
+    end
+    
     it "should encode an image with interlacing correctly" do
       input_canvas = ChunkyPNG::Canvas.from_file(resource_file('operations.png'))
       filename = resource_file("_tmp_interlaced.png")
@@ -68,42 +108,65 @@ describe ChunkyPNG::Canvas::PNGEncoding do
   end
 
   describe '#encode_png_image_pass_to_stream' do
-    before { @canvas = ChunkyPNG::Canvas.new(2, 2, ChunkyPNG::Color.rgba(1, 2, 3, 4)) }
+    before do 
+      @canvas = ChunkyPNG::Canvas.new(2, 2, ChunkyPNG::Color.rgba(1, 2, 3, 4))
+      @palette_mock = mock('Palette')
+      @palette_mock.stub(:index).with(ChunkyPNG::Color.rgba(1, 2, 3, 4)).and_return(1)
+      @palette_mock.stub(:index).with(nil).and_return(0)
+    end
 
     it "should encode using RGBA / no filtering mode correctly" do
-      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_TRUECOLOR_ALPHA, ChunkyPNG::FILTER_NONE)
+      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_TRUECOLOR_ALPHA, 8, ChunkyPNG::FILTER_NONE)
       stream.should == "\0\1\2\3\4\1\2\3\4\0\1\2\3\4\1\2\3\4"
     end
 
     it "should encode using RGBA / SUB filtering mode correctly" do
-      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_TRUECOLOR_ALPHA, ChunkyPNG::FILTER_SUB)
+      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_TRUECOLOR_ALPHA, 8, ChunkyPNG::FILTER_SUB)
       stream.should == "\1\1\2\3\4\0\0\0\0\1\1\2\3\4\0\0\0\0"
     end
 
     it "should encode using RGBA / UP filtering mode correctly" do
-      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_TRUECOLOR_ALPHA, ChunkyPNG::FILTER_UP)
+      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_TRUECOLOR_ALPHA, 8, ChunkyPNG::FILTER_UP)
       stream.should == "\2\1\2\3\4\1\2\3\4\2\0\0\0\0\0\0\0\0"
     end
 
     it "should encode using RGBA / AVERAGE filtering mode correctly" do
-      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_TRUECOLOR_ALPHA, ChunkyPNG::FILTER_AVERAGE)
+      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_TRUECOLOR_ALPHA, 8, ChunkyPNG::FILTER_AVERAGE)
       stream.should == "\3\1\2\3\4\1\1\2\2\3\1\1\2\2\0\0\0\0"
     end
 
     it "should encode using RGB / no filtering mode correctly" do
-      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_TRUECOLOR, ChunkyPNG::FILTER_NONE)
+      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_TRUECOLOR, 8, ChunkyPNG::FILTER_NONE)
       stream.should == "\0\1\2\3\1\2\3\0\1\2\3\1\2\3"
     end
 
     it "should encode using indexed / no filtering mode correctly" do
-      @canvas.stub(:encoding_palette).and_return(mock('Palette', :index => 1))
-      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_INDEXED, ChunkyPNG::FILTER_NONE)
+      @canvas.stub(:encoding_palette).and_return(@palette_mock)
+      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_INDEXED, 8, ChunkyPNG::FILTER_NONE)
       stream.should == "\0\1\1\0\1\1"
+    end
+    
+    it "should encode using 1-bit indexed / no filtering mode correctly" do
+      @canvas.stub(:encoding_palette).and_return(@palette_mock)
+      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_INDEXED, 1, ChunkyPNG::FILTER_NONE)
+      stream.should == "\0\xc0\0\xc0"
+    end
+    
+    it "should encode using 2-bit indexed / no filtering mode correctly" do
+      @canvas.stub(:encoding_palette).and_return(@palette_mock)
+      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_INDEXED, 2, ChunkyPNG::FILTER_NONE)
+      stream.should == "\x00\x50\x00\x50"
+    end
+    
+    it "should encode using 4-bit indexed / no filtering mode correctly" do
+      @canvas.stub(:encoding_palette).and_return(@palette_mock)
+      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_INDEXED, 4, ChunkyPNG::FILTER_NONE)
+      stream.should == "\0\x11\0\x11"
     end
 
     it "should encode using indexed / PAETH filtering mode correctly" do
-      @canvas.stub(:encoding_palette).and_return(mock('Palette', :index => 1))
-      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_INDEXED, ChunkyPNG::FILTER_PAETH)
+      @canvas.stub(:encoding_palette).and_return(@palette_mock)
+      @canvas.encode_png_image_pass_to_stream(stream = ChunkyPNG::Datastream.empty_bytearray, ChunkyPNG::COLOR_INDEXED, 8, ChunkyPNG::FILTER_PAETH)
       stream.should == "\4\1\0\4\0\0"
     end
   end
