@@ -64,6 +64,9 @@ module ChunkyPNG
       # @option constraints [true, false] :interlace Whether to use interlacing.
       # @option constraints [Fixnum] :compression The compression level for Zlib. This can be a
       #    value between 0 and 9, or a Zlib constant like Zlib::BEST_COMPRESSION.
+      # @option constraints [Fixnum] :bit_depth The bit depth to use. This option is only used
+      #    for indexed images, in which case it overrides the determined minimal bit depth. For
+      #    all the other color modes, a bit depth of 8 is used.
       # @return [ChunkyPNG::Datastream] The PNG datastream containing the encoded canvas.
       # @see ChunkyPNG::Canvas::PNGEncoding#determine_png_encoding
       def to_datastream(constraints = {})
@@ -148,6 +151,7 @@ module ChunkyPNG
       # Encodes the canvas according to the PNG format specification with a given color 
       # mode, possibly with interlacing.
       # @param [Integer] color_mode The color mode to use for encoding.
+      # @param [Integer] bit_depth The bit depth of the image.
       # @param [Integer] interlace The interlacing method to use.
       # @return [String] The PNG encoded canvas as string.
       def encode_png_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, bit_depth = 8, interlace = ChunkyPNG::INTERLACING_NONE, filtering = ChunkyPNG::FILTER_NONE)
@@ -165,6 +169,7 @@ module ChunkyPNG
 
       # Encodes the canvas according to the PNG format specification with a given color mode.
       # @param [Integer] color_mode The color mode to use for encoding.
+      # @param [Integer] bit_depth The bit depth of the image.
       # @param [Integer] filtering The filtering method to use.
       # @return [String] The PNG encoded canvas as string.
       def encode_png_image_without_interlacing(color_mode, bit_depth = 8, filtering = ChunkyPNG::FILTER_NONE)
@@ -180,6 +185,7 @@ module ChunkyPNG
       # one by one, concatenating the resulting strings.
       #
       # @param [Integer] color_mode The color mode to use for encoding.
+      # @param [Integer] bit_depth The bit depth of the image.
       # @param [Integer] filtering The filtering method to use.
       # @return [String] The PNG encoded canvas as string.
       def encode_png_image_with_interlacing(color_mode, bit_depth = 8, filtering = ChunkyPNG::FILTER_NONE)
@@ -195,6 +201,7 @@ module ChunkyPNG
       # Encodes the canvas to a stream, in a given color mode.
       # @param [String] stream The stream to write to.
       # @param [Integer] color_mode The color mode to use for encoding.
+      # @param [Integer] bit_depth The bit depth of the image.
       # @param [Integer] filtering The filtering method to use.
       def encode_png_image_pass_to_stream(stream, color_mode, bit_depth, filtering)
 
@@ -226,14 +233,23 @@ module ChunkyPNG
         end
       end
       
+      # Encodes a line of pixels using 8-bit truecolor mode.
+      # @param [Array<Integer>] pixels A row of pixels of the original image.
+      # @return [String] The encoded scanline as binary string
       def encode_png_pixels_to_scanline_truecolor_8bit(pixels)
         pixels.pack('x' + ('NX' * width))
       end
       
+      # Encodes a line of pixels using 8-bit truecolor alpha mode.
+      # @param [Array<Integer>] pixels A row of pixels of the original image.
+      # @return [String] The encoded scanline as binary string
       def encode_png_pixels_to_scanline_truecolor_alpha_8bit(pixels)
         pixels.pack("xN#{width}")
       end
 
+      # Encodes a line of pixels using 1-bit indexed mode.
+      # @param [Array<Integer>] pixels A row of pixels of the original image.
+      # @return [String] The encoded scanline as binary string
       def encode_png_pixels_to_scanline_indexed_1bit(pixels)
         chars = []
         pixels.each_slice(8) do |p1, p2, p3, p4, p5, p6, p7, p8|
@@ -249,6 +265,9 @@ module ChunkyPNG
         chars.pack('xC*')
       end
       
+      # Encodes a line of pixels using 2-bit indexed mode.
+      # @param [Array<Integer>] pixels A row of pixels of the original image.
+      # @return [String] The encoded scanline as binary string      
       def encode_png_pixels_to_scanline_indexed_2bit(pixels)
         chars = []
         pixels.each_slice(4) do |p1, p2, p3, p4|
@@ -260,6 +279,9 @@ module ChunkyPNG
         chars.pack('xC*')
       end
       
+      # Encodes a line of pixels using 4-bit indexed mode.
+      # @param [Array<Integer>] pixels A row of pixels of the original image.
+      # @return [String] The encoded scanline as binary string
       def encode_png_pixels_to_scanline_indexed_4bit(pixels)
         chars = []
         pixels.each_slice(2) do |p1, p2|
@@ -268,14 +290,23 @@ module ChunkyPNG
         chars.pack('xC*')
       end
       
+      # Encodes a line of pixels using 8-bit indexed mode.
+      # @param [Array<Integer>] pixels A row of pixels of the original image.
+      # @return [String] The encoded scanline as binary string
       def encode_png_pixels_to_scanline_indexed_8bit(pixels)
         pixels.map { |p| encoding_palette.index(p) }.pack("xC#{width}")
       end
       
+      # Encodes a line of pixels using 8-bit grayscale mode.
+      # @param [Array<Integer>] pixels A row of pixels of the original image.
+      # @return [String] The encoded scanline as binary string
       def encode_png_pixels_to_scanline_grayscale_8bit(pixels)
         pixels.map { |p| p >> 8 }.pack("xC#{width}")
       end
 
+      # Encodes a line of pixels using 8-bit grayscale alpha mode.
+      # @param [Array<Integer>] pixels A row of pixels of the original image.
+      # @return [String] The encoded scanline as binary string
       def encode_png_pixels_to_scanline_grayscale_alpha_8bit(pixels)
         pixels.pack("xn#{width}")
       end
