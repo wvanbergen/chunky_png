@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    chunky_png (0.11.1)
+    chunky_png (0.12.0)
 
 GEM
   remote: http://rubygems.org/
