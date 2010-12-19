@@ -1,7 +1,6 @@
 require 'rubygems'
-require 'bundler'
-
-Bundler.require(:default, :development)
+require 'bundler/setup'
+require 'chunky_png'
 
 module PNGSuite
   

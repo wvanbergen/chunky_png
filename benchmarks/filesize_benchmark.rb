@@ -1,7 +1,5 @@
 require 'rubygems'
-require 'bundler'
-
-Bundler.setup
+require 'bundler/setup'
 
 require 'benchmark'
 require 'chunky_png'
