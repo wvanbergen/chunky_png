@@ -76,18 +76,25 @@ module ChunkyPNG
       size <= 256
     end
 
-    # Check whether this pelette only contains opaque colors.
+    # Check whether this palette only contains opaque colors.
     # @return [true, false] True if all colors in this palette are opaque.
     # @see ChunkyPNG::Color#opaque?
     def opaque?
       all? { |color| Color.opaque?(color) }
     end
 
-    # Check whether this pelette only contains grayscale colors.
+    # Check whether this palette only contains grayscale colors.
     # @return [true, false] True if all colors in this palette are grayscale teints.
     # @see ChunkyPNG::Color#grayscale??
     def grayscale?
       all? { |color| Color.grayscale?(color) }
+    end
+
+    # Check whether this palette only contains bacl and white.
+    # @return [true, false] True if all colors in this palette are grayscale teints.
+    # @see ChunkyPNG::Color#grayscale??
+    def black_and_white?
+      entries == [ChunkyPNG::Color::BLACK, ChunkyPNG::Color::WHITE]
     end
     
     # Returns a palette with all the opaque variants of the colors in this palette.
@@ -168,19 +175,21 @@ module ChunkyPNG
     # Determines the most suitable colormode for this palette.
     # @return [Integer] The colormode which would create the smalles possible
     #    file for images that use this exact palette.
-    def best_colormode
-      if grayscale?
+    def best_color_settings
+      if black_and_white?
+        [ChunkyPNG::COLOR_GRAYSCALE, 1]
+      elsif grayscale?
         if opaque?
-          ChunkyPNG::COLOR_GRAYSCALE
+          [ChunkyPNG::COLOR_GRAYSCALE, 8]
         else
-          ChunkyPNG::COLOR_GRAYSCALE_ALPHA
+          [ChunkyPNG::COLOR_GRAYSCALE_ALPHA, 8]
         end
       elsif indexable?
-        ChunkyPNG::COLOR_INDEXED
+        [ChunkyPNG::COLOR_INDEXED, determine_bit_depth]
       elsif opaque?
-        ChunkyPNG::COLOR_TRUECOLOR
+        [ChunkyPNG::COLOR_TRUECOLOR, 8]
       else
-        ChunkyPNG::COLOR_TRUECOLOR_ALPHA
+        [ChunkyPNG::COLOR_TRUECOLOR_ALPHA, 8]
       end
     end
     
@@ -189,11 +198,11 @@ module ChunkyPNG
     #    image cannot be saved as an indexed image.
     def determine_bit_depth
       case size
-      when 1..2; 1
-      when 3..4; 2
-      when 5..16; 4
-      when 17..256; 8
-      else nil
+        when 1..2; 1
+        when 3..4; 2
+        when 5..16; 4
+        when 17..256; 8
+        else nil
       end
     end
   end

@@ -99,36 +99,30 @@ module ChunkyPNG
       # @return [Hash] A hash with encoding options for {ChunkyPNG::Canvas::PNGEncoding#to_datastream}
       def determine_png_encoding(constraints = {})
 
-        if constraints == :fast_rgb
-          encoding = { :color_mode => ChunkyPNG::COLOR_TRUECOLOR, :compression => Zlib::BEST_SPEED }
-        elsif constraints == :fast_rgba
-          encoding = { :color_mode => ChunkyPNG::COLOR_TRUECOLOR_ALPHA, :compression => Zlib::BEST_SPEED }
-        elsif constraints == :best_compression
-          encoding = { :compression => Zlib::BEST_COMPRESSION, :filtering => ChunkyPNG::FILTER_PAETH }
-        elsif constraints == :good_compression
-          encoding = { :compression => Zlib::BEST_COMPRESSION, :filtering => ChunkyPNG::FILTER_NONE }
-        elsif constraints == :no_compression
-          encoding = { :compression => Zlib::NO_COMPRESSION }
-        else
-          encoding = constraints
+        encoding = case constraints
+          when :fast_rgb;         { :color_mode => ChunkyPNG::COLOR_TRUECOLOR, :compression => Zlib::BEST_SPEED }
+          when :fast_rgba;        { :color_mode => ChunkyPNG::COLOR_TRUECOLOR_ALPHA, :compression => Zlib::BEST_SPEED }
+          when :best_compression; { :compression => Zlib::BEST_COMPRESSION, :filtering => ChunkyPNG::FILTER_PAETH }
+          when :good_compression; { :compression => Zlib::BEST_COMPRESSION, :filtering => ChunkyPNG::FILTER_NONE }
+          when :no_compression;   { :compression => Zlib::NO_COMPRESSION }
+          when :black_and_white;  { :color_mode => ChunkyPNG::COLOR_GRAYSCALE, :bit_depth => 1 } 
+          when Hash; constraints
+          else raise ChunkyPNG::Exception, "Unknown encoding preset: #{constraints.inspect}"
         end
 
         # Do not create a pallete when the encoding is given and does not require a palette.
         if encoding[:color_mode]
           if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
-            self.encoding_palette = self.palette 
+            self.encoding_palette = self.palette
+            encoding[:bit_depth] ||= self.encoding_palette.determine_bit_depth
+          else
+            encoding[:bit_depth] ||= 8
           end
         else
           self.encoding_palette = self.palette
-          encoding[:color_mode] ||= encoding_palette.best_colormode
-        end
-        
-        # Set the number of bits per color channel. This will always be 8 except for
-        # indexed image, which may also use lower bit depths
-        if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
-          encoding[:bit_depth] = [encoding_palette.determine_bit_depth, encoding[:bit_depth] || 1].max
-        else
-          encoding[:bit_depth] = 8
+          suggested_color_mode, suggested_bit_depth = encoding_palette.best_color_settings
+          encoding[:color_mode] ||= suggested_color_mode
+          encoding[:bit_depth]  ||= suggested_bit_depth
         end
 
         # Use Zlib's default for compression unless otherwise provided.
@@ -156,8 +150,9 @@ module ChunkyPNG
       # @return [String] The PNG encoded canvas as string.
       def encode_png_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, bit_depth = 8, interlace = ChunkyPNG::INTERLACING_NONE, filtering = ChunkyPNG::FILTER_NONE)
 
-        if color_mode == ChunkyPNG::COLOR_INDEXED && (encoding_palette.nil? || !encoding_palette.can_encode?)
-          raise ChunkyPNG::ExpectationFailed, "This palette is not suitable for encoding!"
+        if color_mode == ChunkyPNG::COLOR_INDEXED 
+          raise ChunkyPNG::ExpectationFailed, "This palette is not suitable for encoding!" if encoding_palette.nil? || !encoding_palette.can_encode?
+          raise ChunkyPNG::ExpectationFailed, "This palette has too many colors!" if encoding_palette.size > (1 << bit_depth)
         end
 
         case interlace
@@ -267,7 +262,7 @@ module ChunkyPNG
       
       # Encodes a line of pixels using 2-bit indexed mode.
       # @param [Array<Integer>] pixels A row of pixels of the original image.
-      # @return [String] The encoded scanline as binary string      
+      # @return [String] The encoded scanline as binary string
       def encode_png_pixels_to_scanline_indexed_2bit(pixels)
         chars = []
         pixels.each_slice(4) do |p1, p2, p3, p4|
@@ -295,6 +290,49 @@ module ChunkyPNG
       # @return [String] The encoded scanline as binary string
       def encode_png_pixels_to_scanline_indexed_8bit(pixels)
         pixels.map { |p| encoding_palette.index(p) }.pack("xC#{width}")
+      end
+      
+      # Encodes a line of pixels using 1-bit grayscale mode.
+      # @param [Array<Integer>] pixels A row of pixels of the original image.
+      # @return [String] The encoded scanline as binary string
+      def encode_png_pixels_to_scanline_grayscale_1bit(pixels)
+        chars = []
+        pixels.each_slice(8) do |p1, p2, p3, p4, p5, p6, p7, p8|
+          chars << ((p1.nil? ? 0 : (p1 & 0x0000ffff) >> 15 << 7) |
+                    (p2.nil? ? 0 : (p2 & 0x0000ffff) >> 15 << 6) |
+                    (p3.nil? ? 0 : (p3 & 0x0000ffff) >> 15 << 5) |
+                    (p4.nil? ? 0 : (p4 & 0x0000ffff) >> 15 << 4) |
+                    (p5.nil? ? 0 : (p5 & 0x0000ffff) >> 15 << 3) |
+                    (p6.nil? ? 0 : (p6 & 0x0000ffff) >> 15 << 2) |
+                    (p7.nil? ? 0 : (p7 & 0x0000ffff) >> 15 << 1) |
+                    (p8.nil? ? 0 : (p8 & 0x0000ffff) >> 15))
+        end
+        chars.pack('xC*')
+      end
+      
+      # Encodes a line of pixels using 2-bit grayscale mode.
+      # @param [Array<Integer>] pixels A row of pixels of the original image.
+      # @return [String] The encoded scanline as binary string
+      def encode_png_pixels_to_scanline_grayscale_2bit(pixels)
+        chars = []
+        pixels.each_slice(4) do |p1, p2, p3, p4|
+          chars << ((p1.nil? ? 0 : (p1 & 0x0000ffff) >> 14 << 6) |
+                    (p2.nil? ? 0 : (p2 & 0x0000ffff) >> 14 << 4) |
+                    (p3.nil? ? 0 : (p3 & 0x0000ffff) >> 14 << 2) |
+                    (p4.nil? ? 0 : (p4 & 0x0000ffff) >> 14))
+        end
+        chars.pack('xC*')
+      end
+      
+      # Encodes a line of pixels using 2-bit grayscale mode.
+      # @param [Array<Integer>] pixels A row of pixels of the original image.
+      # @return [String] The encoded scanline as binary string
+      def encode_png_pixels_to_scanline_grayscale_4bit(pixels)
+        chars = []
+        pixels.each_slice(2) do |p1, p2|
+          chars << ((p1.nil? ? 0 : ((p1 & 0x0000ffff) >> 12) << 4) | (p2.nil? ? 0 : ((p2 & 0x0000ffff) >> 12)))
+        end
+        chars.pack('xC*')
       end
       
       # Encodes a line of pixels using 8-bit grayscale mode.

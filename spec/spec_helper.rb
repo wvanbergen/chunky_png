@@ -32,11 +32,11 @@ module ResourceFileHelper
     ChunkyPNG::Image.from_file(resource_file("#{name}.png"))
   end
   
-  def display(canvas)
+  def display(png)
     filename = resource_file('_tmp.png')
-    canvas.to_datastream.save(filename)
+    png.save(filename)
     `open #{filename}`
-  end  
+  end
 end
 
 RSpec.configure do |config|
