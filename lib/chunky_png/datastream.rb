@@ -153,7 +153,7 @@ module ChunkyPNG
     ##################################################################################
 
     # Returns an empty stream using binary encoding that can be used as stream to encode to.
-    # @eturn [String] An empty, binary string.
+    # @return [String] An empty, binary string.
     def self.empty_bytearray
       ChunkyPNG::EMPTY_BYTEARRAY.dup
     end
