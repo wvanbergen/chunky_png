@@ -65,7 +65,7 @@ module ChunkyPNG
       
       alias_method :line, :line_xiaolin_wu
       
-      def rect(x0, y0, x1, y1, line_color, fill_color = ChunkyPNG::COLOR::TRANSPARENT)
+      def rect(x0, y0, x1, y1, line_color, fill_color = ChunkyPNG::Color::TRANSPARENT)
       
         # Fill
         [x0, x1].min.upto([x0, x1].max) do |x|
