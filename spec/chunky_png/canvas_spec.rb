@@ -2,46 +2,12 @@ require 'spec_helper'
 
 describe ChunkyPNG::Canvas do
 
-  describe '.from_rgb_stream' do
-    it "should load an image correctly from a datastream" do
-      File.open(resource_file('pixelstream.rgb')) do |stream|
-        matrix = ChunkyPNG::Canvas.from_rgb_stream(240, 180, stream)
-        matrix.should == reference_canvas('pixelstream_reference')
-      end
-    end
-  end
-
-  describe '.from_rgba_stream' do
-    it "should load an image correctly from a datastream" do
-      File.open(resource_file('pixelstream.rgba')) do |stream|
-        matrix = ChunkyPNG::Canvas.from_rgba_stream(240, 180, stream)
-        matrix.should == reference_canvas('pixelstream_reference')
-      end
-    end
-  end
-  
-  describe '#to_rgba_stream' do
-    before { File.open(resource_file('pixelstream.rgba'), 'rb') { |f| @reference_data = f.read } }
-    
-    it "should load an image correctly from a datastream" do
-      reference_canvas('pixelstream_reference').to_rgba_stream.should == @reference_data
-    end
-  end
-
-  describe '#to_rgb_stream' do
-    before { File.open(resource_file('pixelstream.rgb'), 'rb') { |f| @reference_data = f.read } }
-    
-    it "should load an image correctly from a datastream" do
-      reference_canvas('pixelstream_reference').to_rgb_stream.should == @reference_data
-    end
-  end
-  
   describe '#size' do
     it "should return the dimensions as two-item array" do
       ChunkyPNG::Canvas.new(12, 34).size.should == [12, 34]
     end
   end
-  
+
   describe '#include_xy?' do
     before { @canvas = ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::TRANSPARENT) }
 
