@@ -41,6 +41,11 @@ describe ChunkyPNG::Canvas::Drawing do
       canvas.line(-5, -5, 0, 0, ChunkyPNG::Color::BLACK)
       canvas.pixels.should == [ChunkyPNG::Color::BLACK, ChunkyPNG::Color::WHITE]
     end
+    
+    it "should return itself to allow chaining" do
+      canvas = ChunkyPNG::Canvas.new(16, 16, ChunkyPNG::Color::WHITE)
+      canvas.line(1, 1, 10, 10, ChunkyPNG::Color::BLACK).should equal(canvas)
+    end
   end
   
   describe '#rect' do
@@ -55,6 +60,18 @@ describe ChunkyPNG::Canvas::Drawing do
       canvas = ChunkyPNG::Canvas.new(16, 16, ChunkyPNG::Color::WHITE)
       canvas.rect(1, 1, 10, 10).should equal(canvas)
     end
+    
+    it "should draw partial rectangles if the coordinates are partially out of bounds" do
+      canvas = ChunkyPNG::Canvas.new(1, 1)
+      canvas.rect(0, 0, 10, 10, ChunkyPNG::Color::BLACK, ChunkyPNG::Color::WHITE)
+      canvas[0, 0].should == ChunkyPNG::Color::BLACK
+    end
+    
+    it "should draw the rectangle fill only if the coordinates are fully out of bounds" do
+      canvas = ChunkyPNG::Canvas.new(1, 1)
+      canvas.rect(-10, -10, 10, 10, ChunkyPNG::Color::BLACK, ChunkyPNG::Color::WHITE)
+      canvas[0, 0].should == ChunkyPNG::Color::WHITE
+    end    
   end
   
   describe '#circle' do
