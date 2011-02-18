@@ -97,17 +97,35 @@ module ChunkyPNG
     # @param [Integer] x The x-coordinate of the pixel (column)
     # @param [Integer] y The y-coordinate of the pixel (row)
     # @param [ChunkyPNG::Color] pixel The new pixel for the provided coordinates.
-    # @return [Integer] the new pixel value, i.e. <tt>color</tt>.
-    # @raise [ChunkyPNG::OutOfBounds] when the coordinates are outside of the image's dimensions.
+    # @return [Integer] the new pixel value, i.e. <tt>color</tt>. 
+    # @raise [ChunkyPNG::OutOfBounds] when the coordinates are outside of the image's dimensions.        
     def []=(x, y, color)
       assert_xy!(x, y)
       @pixels[y * width + x] = color
     end
 
     # Replaces a single pixel in this canvas, without bounds checking.
-    # @param (see #[]=)
+    #
+    # This method return value and effects are undefined for coordinates 
+    # out of bounds of the canvas.
+    #
+    # @param [Integer] x The x-coordinate of the pixel (column)
+    # @param [Integer] y The y-coordinate of the pixel (row)
+    # @param [ChunkyPNG::Color] pixel The new pixel for the provided coordinates.
     # @return [Integer] the new pixel value, i.e. <tt>color</tt>.
     def set_pixel(x, y, color)
+      @pixels[y * width + x] = color
+    end
+   
+    # Replaces a single pixel in this canvas, with bounds checking. It will do
+    # noting if the provided coordinates are out of bounds.
+    # @param [Integer] x The x-coordinate of the pixel (column)
+    # @param [Integer] y The y-coordinate of the pixel (row)
+    # @param [ChunkyPNG::Color] pixel The new pixel for the provided coordinates.
+    # @return [Integer] the new pixel value, i.e. <tt>color</tt>. <tt>nil</tt> if
+    #  the coordinates are out of bounds.
+    def set_pixel_in_bounds(x, y, color)
+      return unless include_xy?(x, y)
       @pixels[y * width + x] = color
     end
 
@@ -121,7 +139,8 @@ module ChunkyPNG
       @pixels[y * width + x]
     end
 
-    # Returns a single pixel from this canvas, without checking bounds.
+    # Returns a single pixel from this canvas, without checking bounds. The return value for
+    # this method is undefined if the coordinates are out of bounds.
     # @param (see #[])
     # @return [ChunkyPNG::Color] The current pixel at the provided coordinates.
     def get_pixel(x, y)
