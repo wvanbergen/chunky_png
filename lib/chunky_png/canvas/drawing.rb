@@ -5,6 +5,7 @@ module ChunkyPNG
       
       # Sets a point on the canvas by composing a pixel with its background color.
       def point(x, y, color)
+        return unless include_xy?(x, y)
         set_pixel(x, y, ChunkyPNG::Color.compose(color, get_pixel(x, y)))
       end
       
@@ -65,21 +66,67 @@ module ChunkyPNG
       
       alias_method :line, :line_xiaolin_wu
       
-      def rect(x0, y0, x1, y1, line_color, fill_color = ChunkyPNG::Color::TRANSPARENT)
+      # 
+      def rect_naive(x0, y0, x1, y1, stroke = ChunkyPNG::Color::BLACK, brush = ChunkyPNG::Color::TRANSPARENT)
       
         # Fill
-        [x0, x1].min.upto([x0, x1].max) do |x|
-          [y0, y1].min.upto([y0, y1].max) do |y|
-            point(x, y, fill_color)
+        unless brush == ChunkyPNG::Color::TRANSPARENT
+          [x0, x1].min.upto([x0, x1].max) do |x|
+            [y0, y1].min.upto([y0, y1].max) do |y|
+              point(x, y, brush)
+            end
           end
         end
         
         # Stroke
-        line(x0, y0, x0, y1, line_color)
-        line(x0, y1, x1, y1, line_color)
-        line(x1, y1, x1, y0, line_color)
-        line(x1, y0, x0, y0, line_color)
+        line(x0, y0, x0, y1, stroke)
+        line(x0, y1, x1, y1, stroke)
+        line(x1, y1, x1, y0, stroke)
+        line(x1, y0, x0, y0, stroke)
         
+        return self
+      end
+      
+      alias_method :rect, :rect_naive
+      
+      #
+      def circle(x0, y0, radius, stroke = ChunkyPNG::Color::BLACK, brush = ChunkyPNG::Color::TRANSPARENT)
+        
+        # TODO: brush
+        raise ChunkyPNG::NotSupported, "Circle fill brushes are not yet supported" unless brush == ChunkyPNG::Color::TRANSPARENT
+        
+        f = 1 - radius
+        ddF_x = 1
+        ddF_y = -2 * radius
+        x = 0
+        y = radius
+
+        point(x0, y0 + radius, stroke)
+        point(x0, y0 - radius, stroke)
+        point(x0 + radius, y0, stroke)
+        point(x0 - radius, y0, stroke)
+        
+        while x < y
+          
+          if f >= 0
+            y -= 1
+            ddF_y += 2
+            f += ddF_y
+          end
+
+          x += 1
+          ddF_x += 2
+          f += ddF_x
+          
+          point(x0 + x, y0 + y, stroke)
+          point(x0 - x, y0 + y, stroke)
+          point(x0 + x, y0 - y, stroke)
+          point(x0 - x, y0 - y, stroke)
+          point(x0 + y, y0 + x, stroke)
+          point(x0 - y, y0 + x, stroke)
+          point(x0 + y, y0 - x, stroke)
+          point(x0 - y, y0 - x, stroke)
+        end
         return self
       end
     end
