@@ -61,6 +61,21 @@ describe ChunkyPNG::Color do
     end
   end
   
+  describe '#html_color' do
+    it "should find the correct color value" do
+      html_color(:springgreen).should   == 0x00ff7fff
+      html_color(:spring_green).should  == 0x00ff7fff
+      html_color('springgreen').should  == 0x00ff7fff
+      html_color('spring green').should == 0x00ff7fff
+      html_color('SpringGreen').should  == 0x00ff7fff
+      html_color('SPRING_GREEN').should == 0x00ff7fff
+    end
+    
+    it "should return nil for an unkown color name" do
+      html_color(:nonsense).should be_nil
+    end
+  end
+  
   describe '#opaque?' do
     it "should correctly check for opaqueness" do
       opaque?(@white).should be_true
