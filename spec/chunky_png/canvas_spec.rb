@@ -10,145 +10,125 @@ describe ChunkyPNG::Canvas do
 
   describe '#size' do
     it "should return the dimensions as two-item array" do
-      ChunkyPNG::Canvas.new(12, 34).size.should == [12, 34]
+      subject.size.should == [1, 1]
     end
   end
 
   describe '#include_xy?' do
-    before { @canvas = ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::TRANSPARENT) }
-
     it "should return true if the coordinates are within bounds, false otherwise" do
-      @canvas.include_xy?( 0,  0).should be_true
+      subject.include_xy?( 0,  0).should be_true
       
-      @canvas.include_xy?(-1,  0).should be_false
-      @canvas.include_xy?( 1,  0).should be_false
-      @canvas.include_xy?( 0, -1).should be_false
-      @canvas.include_xy?( 0,  1).should be_false
-      @canvas.include_xy?(-1, -1).should be_false
-      @canvas.include_xy?(-1,  1).should be_false
-      @canvas.include_xy?( 1, -1).should be_false
-      @canvas.include_xy?( 1,  1).should be_false
+      subject.include_xy?(-1,  0).should be_false
+      subject.include_xy?( 1,  0).should be_false
+      subject.include_xy?( 0, -1).should be_false
+      subject.include_xy?( 0,  1).should be_false
+      subject.include_xy?(-1, -1).should be_false
+      subject.include_xy?(-1,  1).should be_false
+      subject.include_xy?( 1, -1).should be_false
+      subject.include_xy?( 1,  1).should be_false
     end
   end
   
   describe '#include_x?' do
-    before { @canvas = ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::TRANSPARENT) }
-
     it "should return true if the x-coordinate is within bounds, false otherwise" do
-      @canvas.include_x?( 0).should be_true
-      @canvas.include_x?(-1).should be_false
-      @canvas.include_x?( 1).should be_false
+      subject.include_x?( 0).should be_true
+      subject.include_x?(-1).should be_false
+      subject.include_x?( 1).should be_false
     end
   end
   
   describe '#include_y?' do
-    before { @canvas = ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::TRANSPARENT) }
-
     it "should return true if the y-coordinate is within bounds, false otherwise" do
-      @canvas.include_y?( 0).should be_true
-      @canvas.include_y?(-1).should be_false
-      @canvas.include_y?( 1).should be_false
+      subject.include_y?( 0).should be_true
+      subject.include_y?(-1).should be_false
+      subject.include_y?( 1).should be_false
     end
   end
   
   describe '#assert_xy!' do
-    before { @canvas = ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::TRANSPARENT) }
-
     it "should not raise an exception if the coordinates are within bounds" do
-      @canvas.should_receive(:include_xy?).with(0, 0).and_return(true)
-      lambda { @canvas.send(:assert_xy!, 0, 0) }.should_not raise_error
+      subject.should_receive(:include_xy?).with(0, 0).and_return(true)
+      lambda { subject.send(:assert_xy!, 0, 0) }.should_not raise_error
     end
     
     it "should raise an exception if the coordinates are out of bounds bounds" do
-      @canvas.should_receive(:include_xy?).with(0, -1).and_return(false)
-      lambda { @canvas.send(:assert_xy!, 0, -1) }.should raise_error(ChunkyPNG::OutOfBounds)
+      subject.should_receive(:include_xy?).with(0, -1).and_return(false)
+      lambda { subject.send(:assert_xy!, 0, -1) }.should raise_error(ChunkyPNG::OutOfBounds)
     end
   end
   
   describe '#assert_x!' do
-    before { @canvas = ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::TRANSPARENT) }
-
     it "should not raise an exception if the x-coordinate is within bounds" do
-      @canvas.should_receive(:include_x?).with(0).and_return(true)
-      lambda { @canvas.send(:assert_x!, 0) }.should_not raise_error
+      subject.should_receive(:include_x?).with(0).and_return(true)
+      lambda { subject.send(:assert_x!, 0) }.should_not raise_error
     end
     
     it "should raise an exception if the x-coordinate is out of bounds bounds" do
-      @canvas.should_receive(:include_y?).with(-1).and_return(false)
-      lambda { @canvas.send(:assert_y!, -1) }.should raise_error(ChunkyPNG::OutOfBounds)
+      subject.should_receive(:include_y?).with(-1).and_return(false)
+      lambda { subject.send(:assert_y!, -1) }.should raise_error(ChunkyPNG::OutOfBounds)
     end
   end
   
   describe '#[]' do
-    before { @canvas = ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::WHITE) }
-    
     it "should return the pixel value if the coordinates are within bounds" do
-      @canvas[0, 0].should == ChunkyPNG::Color::WHITE
+      subject[0, 0].should == ChunkyPNG::Color::WHITE
     end
     
     it "should assert the coordinates to be within bounds" do
-      @canvas.should_receive(:assert_xy!).with(0, 0)
-      @canvas[0, 0]
+      subject.should_receive(:assert_xy!).with(0, 0)
+      subject[0, 0]
     end
   end
   
   describe '#get_pixel' do
-    before { @canvas = ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::WHITE) }
-    
     it "should return the pixel value if the coordinates are within bounds" do
-      @canvas.get_pixel(0, 0).should == ChunkyPNG::Color::WHITE
+      subject.get_pixel(0, 0).should == ChunkyPNG::Color::WHITE
     end
     
     it "should not assert nor check the coordinates" do
-      @canvas.should_not_receive(:assert_xy!)
-      @canvas.should_not_receive(:include_xy?)
-      @canvas.get_pixel(0, 0)
+      subject.should_not_receive(:assert_xy!)
+      subject.should_not_receive(:include_xy?)
+      subject.get_pixel(0, 0)
     end
   end
   
   describe '#[]=' do
-    before { @canvas = ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::TRANSPARENT) }
-
     it "should change the pixel's color value" do
-      lambda { @canvas[0, 0] = ChunkyPNG::Color::BLACK }.should change { @canvas[0, 0] }.from(ChunkyPNG::Color::TRANSPARENT).to(ChunkyPNG::Color::BLACK)
+      lambda { subject[0, 0] = ChunkyPNG::Color::BLACK }.should change { subject[0, 0] }.from(ChunkyPNG::Color::WHITE).to(ChunkyPNG::Color::BLACK)
     end
     
     it "should assert the bounds of the image" do
-      @canvas.should_receive(:assert_xy!).with(0, 0)
-      @canvas[0, 0] = ChunkyPNG::Color::BLACK
+      subject.should_receive(:assert_xy!).with(0, 0)
+      subject[0, 0] = ChunkyPNG::Color::BLACK
     end
   end
   
   describe 'set_pixel' do
-    before { @canvas = ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::TRANSPARENT) }
-
     it "should change the pixel's color value" do
-      lambda { @canvas.set_pixel(0, 0, ChunkyPNG::Color::BLACK) }.should change { @canvas[0, 0] }.from(ChunkyPNG::Color::TRANSPARENT).to(ChunkyPNG::Color::BLACK)
+      lambda { subject.set_pixel(0, 0, ChunkyPNG::Color::BLACK) }.should change { subject[0, 0] }.from(ChunkyPNG::Color::WHITE).to(ChunkyPNG::Color::BLACK)
     end
     
     it "should not assert or check the bounds of the image" do
-      @canvas.should_not_receive(:assert_xy!)
-      @canvas.should_not_receive(:include_xy?)
-      @canvas.set_pixel(0, 0, ChunkyPNG::Color::BLACK)
+      subject.should_not_receive(:assert_xy!)
+      subject.should_not_receive(:include_xy?)
+      subject.set_pixel(0, 0, ChunkyPNG::Color::BLACK)
     end
   end
   
   describe '#set_pixel_in_bounds' do
-    before { @canvas = ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::TRANSPARENT) }
-    
     it "should change the pixel's color value" do
-      lambda { @canvas.set_pixel_in_bounds(0, 0, ChunkyPNG::Color::BLACK) }.should change { @canvas[0, 0] }.from(ChunkyPNG::Color::TRANSPARENT).to(ChunkyPNG::Color::BLACK)
+      lambda { subject.set_pixel_in_bounds(0, 0, ChunkyPNG::Color::BLACK) }.should change { subject[0, 0] }.from(ChunkyPNG::Color::WHITE).to(ChunkyPNG::Color::BLACK)
     end
 
     it "should not assert, but only check the coordinates" do
-      @canvas.should_not_receive(:assert_xy!)
-      @canvas.should_receive(:include_xy?).with(0, 0)
-      @canvas.set_pixel_in_bounds(0, 0, ChunkyPNG::Color::BLACK)
+      subject.should_not_receive(:assert_xy!)
+      subject.should_receive(:include_xy?).with(0, 0)
+      subject.set_pixel_in_bounds(0, 0, ChunkyPNG::Color::BLACK)
     end
 
     it "should do nothing if the coordinates are out of bounds" do
-      @canvas.set_pixel_in_bounds(-1, 1, ChunkyPNG::Color::BLACK).should be_nil
-      @canvas[0, 0].should == ChunkyPNG::Color::TRANSPARENT
+      subject.set_pixel_in_bounds(-1, 1, ChunkyPNG::Color::BLACK).should be_nil
+      subject[0, 0].should == ChunkyPNG::Color::WHITE
     end
   end
   
