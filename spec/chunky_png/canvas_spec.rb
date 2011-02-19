@@ -2,6 +2,12 @@ require 'spec_helper'
 
 describe ChunkyPNG::Canvas do
 
+  subject { ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::WHITE) }
+
+  it { should respond_to(:width) }
+  it { should respond_to(:height) }
+  it { should respond_to(:pixels) }
+
   describe '#size' do
     it "should return the dimensions as two-item array" do
       ChunkyPNG::Canvas.new(12, 34).size.should == [12, 34]
