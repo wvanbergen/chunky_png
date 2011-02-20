@@ -23,7 +23,10 @@ module ChunkyPNG
         return [] if source.empty?
         if source.first.kind_of?(Numeric) || source.first =~ /^\d+$/
           raise ChunkyPNG::ExpectationFailed, "The points array is expected to have an even number of items!" if source.length % 2 != 0
-          [].tap { |points| source.each_slice(2) { |x, y| points << new(x, y) } }
+
+          points = []
+          source.each_slice(2) { |x, y| points << new(x, y) }
+          return points
         else
           source.map { |p| single(p) }
         end

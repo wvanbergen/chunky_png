@@ -251,12 +251,12 @@ module ChunkyPNG
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_truecolor_alpha_16bit(stream, pos, width)
-        [].tap do |pixels|
-          stream.unpack("@#{pos + 1}n#{width * 4}").each_slice(4) do |r, g, b, a|
-            pixels << ChunkyPNG::Color.rgba(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g),
-                                            decode_png_resample_16bit_value(b), decode_png_resample_16bit_value(a))
-          end
+        pixels = []
+        stream.unpack("@#{pos + 1}n#{width * 4}").each_slice(4) do |r, g, b, a|
+          pixels << ChunkyPNG::Color.rgba(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g),
+                                          decode_png_resample_16bit_value(b), decode_png_resample_16bit_value(a))
         end
+        return pixels
       end
       
       # Decodes a scanline of an 8-bit, true color image into a row of pixels.
@@ -270,11 +270,11 @@ module ChunkyPNG
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_truecolor_16bit(stream, pos, width)
-        [].tap do |pixels|
-          stream.unpack("@#{pos + 1}n#{width * 3}").each_slice(3) do |r, g, b|
-            pixels << ChunkyPNG::Color.rgb(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(b))
-          end
+        pixels = []
+        stream.unpack("@#{pos + 1}n#{width * 3}").each_slice(3) do |r, g, b|
+          pixels << ChunkyPNG::Color.rgb(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(b))
         end
+        return pixels
       end
 
       # Decodes a scanline of an 8-bit, grayscale image with transparency into a row of pixels.
@@ -288,11 +288,11 @@ module ChunkyPNG
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_grayscale_alpha_16bit(stream, pos, width)
-        [].tap do |pixels|
-          stream.unpack("@#{pos + 1}n#{width * 2}").each_slice(2) do |g, a|
-            pixels << ChunkyPNG::Color.grayscale_alpha(decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(a))
-          end
+        pixels = []
+        stream.unpack("@#{pos + 1}n#{width * 2}").each_slice(2) do |g, a|
+          pixels << ChunkyPNG::Color.grayscale_alpha(decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(a))
         end
+        return pixels
       end
 
       # Decodes a scanline of a 1-bit, grayscale image into a row of pixels.

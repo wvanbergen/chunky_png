@@ -163,11 +163,11 @@ module ChunkyPNG
       #
       # @return [ChunkyPNG::Canvas] The flipped image
       def flip_horizontally
-        self.class.new(width, height).tap do |flipped|
-          for y in 0...height do
-            flipped.replace_row!(height - (y + 1), row(y))
-          end
+        flipped = self.class.new(width, height)
+        for y in 0...height do
+          flipped.replace_row!(height - (y + 1), row(y))
         end
+        return flipped
       end
       
       # Flips the image horizontally.
@@ -178,11 +178,11 @@ module ChunkyPNG
       #
       # @return [ChunkyPNG::Canvas] The flipped image
       def flip_vertically
-        self.class.new(width, height).tap do |flipped|
-          for x in 0...width do
-            flipped.replace_column!(width - (x + 1), column(x))
-          end
+        flipped = self.class.new(width, height)
+        for x in 0...width do
+          flipped.replace_column!(width - (x + 1), column(x))
         end
+        return flipped
       end
 
       # Rotates the image 90 degrees clockwise.
@@ -190,11 +190,11 @@ module ChunkyPNG
       #
       # @return [ChunkyPNG::Canvas] The rotated image
       def rotate_right
-        self.class.new(height, width).tap do |rotated|
-          for i in 0...width do
-            rotated.replace_row!(i, column(i).reverse)
-          end
+        rotated = self.class.new(height, width)
+        for i in 0...width do
+          rotated.replace_row!(i, column(i).reverse)
         end
+        return rotated
       end
       
       # Rotates the image 90 degrees counter-clockwise.
@@ -202,11 +202,11 @@ module ChunkyPNG
       #
       # @return [ChunkyPNG::Canvas] The rotated image.
       def rotate_left
-        self.class.new(height, width).tap do |rotated|
-          for i in 0...width do
-            rotated.replace_row!(width - (i + 1), column(i))
-          end
+        rotated = self.class.new(height, width)
+        for i in 0...width do
+          rotated.replace_row!(width - (i + 1), column(i))
         end
+        return rotated
       end
       
       # Rotates the image 180 degrees.
@@ -214,11 +214,11 @@ module ChunkyPNG
       #
       # @return [ChunkyPNG::Canvas] The rotated image.
       def rotate_180
-        self.class.new(width, height).tap do |flipped|
-          for y in 0...height do
-            flipped.replace_row!(height - (y + 1), row(y).reverse)
-          end
+        rotated = self.class.new(width, height)
+        for y in 0...height do
+          rotated.replace_row!(height - (y + 1), row(y).reverse)
         end
+        return rotated
       end
 
       protected
