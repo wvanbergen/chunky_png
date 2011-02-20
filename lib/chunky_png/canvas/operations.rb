@@ -34,7 +34,7 @@ module ChunkyPNG
         end
         self
       end
-
+      
       # Replaces pixels on this image by pixels from another pixels, on a given offset.
       #
       # This will completely replace the pixels of the background image. If you want to blend
@@ -155,7 +155,7 @@ module ChunkyPNG
         self
       end
       
-      # Flips the image horizontally.
+      # Flips the image horizontally, leaving the original intact.
       #
       # This will flip the image on its horizontal axis, e.g. pixels on the top will now
       # be pixels on the bottom. Chaining this method twice will return the original canvas.
@@ -163,14 +163,30 @@ module ChunkyPNG
       #
       # @return [ChunkyPNG::Canvas] The flipped image
       def flip_horizontally
-        flipped = self.class.new(width, height)
-        for y in 0...height do
-          flipped.replace_row!(height - (y + 1), row(y))
-        end
-        return flipped
+        dup.flip_horizontally!
       end
       
-      # Flips the image horizontally.
+      # Flips the image horizontally in place.
+      #
+      # This will flip the image on its horizontal axis, e.g. pixels on the top will now
+      # be pixels on the bottom. Chaining this method twice will return the original canvas.
+      # This method will leave the original object intact and return a new canvas.
+      #
+      # @return [ChunkyPNG::Canvas] Itself, but flipped
+      def flip_horizontally!
+        for y in 0..((height - 1) >> 1) do
+          other_y   = height - (y + 1)
+          other_row = row(other_y)
+          replace_row!(other_y, row(y))
+          replace_row!(y, other_row)
+        end
+        return self
+      end
+      
+      alias_method :flip!, :flip_horizontally!
+      alias_method :flip,  :flip_horizontally
+      
+      # Flips the image vertically, leaving the orginial intact.
       #
       # This will flip the image on its vertical axis, e.g. pixels on the left will now
       # be pixels on the right. Chaining this method twice will return the original canvas.
@@ -178,12 +194,25 @@ module ChunkyPNG
       #
       # @return [ChunkyPNG::Canvas] The flipped image
       def flip_vertically
-        flipped = self.class.new(width, height)
-        for x in 0...width do
-          flipped.replace_column!(width - (x + 1), column(x))
-        end
-        return flipped
+        dup.flip_vertically!
       end
+
+      # Flips the image vertically in place.
+      #
+      # This will flip the image on its vertical axis, e.g. pixels on the left will now
+      # be pixels on the right. Chaining this method twice will return the original canvas.
+      # This method will leave the original object intact and return a new canvas.
+      #
+      # @return [ChunkyPNG::Canvas] Itself, but flipped
+      def flip_vertically!
+        for y in 0...height do
+          replace_row!(y, row(y).reverse)
+        end
+        return self
+      end
+      
+      alias_method :mirror!, :flip_vertically!
+      alias_method :mirror,  :flip_vertically
 
       # Rotates the image 90 degrees clockwise.
       # This method will leave the original object intact and return a new canvas.
@@ -208,19 +237,23 @@ module ChunkyPNG
         end
         return rotated
       end
-      
+
       # Rotates the image 180 degrees.
       # This method will leave the original object intact and return a new canvas.
       #
       # @return [ChunkyPNG::Canvas] The rotated image.
       def rotate_180
-        rotated = self.class.new(width, height)
-        for y in 0...height do
-          rotated.replace_row!(height - (y + 1), row(y).reverse)
-        end
-        return rotated
+        dup.rotate_180!
       end
-
+      
+      # Rotates the image 180 degrees in place.
+      #
+      # @return [ChunkyPNG::Canvas] Itself, but rotated 180 degrees.
+      def rotate_180!
+        pixels.reverse!
+        return self
+      end
+      
       protected
       
       # Checks whether another image has the correct dimension to be used for an operation

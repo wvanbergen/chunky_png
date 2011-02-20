@@ -103,71 +103,117 @@ describe ChunkyPNG::Canvas::Operations do
 end
 
 describe ChunkyPNG::Canvas::Operations do
+  subject { ChunkyPNG::Canvas.new(2, 3, [1, 2, 3, 4, 5, 6]) }
   before { @stubbed = reference_canvas('clock_stubbed') }
+
+  describe '#flip_horizontally!' do
+    it "should flip the pixels horizontally in place" do
+      subject.flip_horizontally!
+      subject.should == ChunkyPNG::Canvas.new(2, 3, [5, 6, 3, 4, 1, 2])
+    end
+    
+    it "should return itself" do
+      subject.flip_horizontally!.should equal(subject)
+    end
+  end
 
   describe '#flip_horizontally' do
     it "should flip the pixels horizontally" do
-      @stubbed.flip_horizontally.should == reference_canvas('clock_flip_horizontally')
+      subject.flip_horizontally.should == ChunkyPNG::Canvas.new(2, 3, [5, 6, 3, 4, 1, 2])
     end
     
-    it "should return itself when applied twice" do
-      @stubbed.flip_horizontally.flip_horizontally.should == @stubbed
+    it "should not return itself" do
+      subject.flip_horizontally.should_not equal(subject)
+    end
+    
+    it "should return a copy of itself when applied twice" do
+      subject.flip_horizontally.flip_horizontally.should == subject
+    end
+  end
+  
+  describe '#flip_vertically!' do
+    it "should flip the pixels vertically" do
+      subject.flip_vertically!
+      subject.should == ChunkyPNG::Canvas.new(2, 3, [2, 1, 4, 3, 6, 5])
+    end
+    
+    it "should return itself" do
+      subject.flip_horizontally!.should equal(subject)
     end
   end
 
   describe '#flip_vertically' do
     it "should flip the pixels vertically" do
-      @stubbed.flip_vertically.should == reference_canvas('clock_flip_vertically')
+      subject.flip_vertically.should == ChunkyPNG::Canvas.new(2, 3, [2, 1, 4, 3, 6, 5])
     end
     
-    it "should return itself when applied twice" do
-      @stubbed.flip_vertically.flip_vertically.should == @stubbed
+    it "should not return itself" do
+      subject.flip_horizontally.should_not equal(subject)
+    end
+    
+    it "should return a copy of itself when applied twice" do
+      subject.flip_vertically.flip_vertically.should == subject
     end
   end
 
   describe '#rotate_left' do
     it "should rotate the pixels 90 degrees counter-clockwise" do
-      @stubbed.rotate_left.should == reference_canvas('clock_rotate_left')
+      subject.rotate_left.should == ChunkyPNG::Canvas.new(3, 2, [2, 4, 6, 1, 3, 5] )
     end
     
     it "it should rotate 180 degrees when applied twice" do
-      @stubbed.rotate_left.rotate_left.should == reference_canvas('clock_rotate_180')
+      subject.rotate_left.rotate_left.should == subject.rotate_180
     end
     
     it "it should rotate right when applied three times" do
-      @stubbed.rotate_left.rotate_left.rotate_left.should == reference_canvas('clock_rotate_right')
+      subject.rotate_left.rotate_left.rotate_left.should == subject.rotate_right
     end
     
     it "should return itself when applied four times" do
-      @stubbed.rotate_left.rotate_left.rotate_left.rotate_left.should == @stubbed
+      subject.rotate_left.rotate_left.rotate_left.rotate_left.should == subject
     end
   end
 
   describe '#rotate_right' do
     it "should rotate the pixels 90 degrees clockwise" do
-      @stubbed.rotate_right.should == reference_canvas('clock_rotate_right')
+      subject.rotate_right.should == ChunkyPNG::Canvas.new(3, 2, [5, 3, 1, 6, 4, 2] )
     end
     
     it "it should rotate 180 degrees when applied twice" do
-      @stubbed.rotate_right.rotate_right.should == reference_canvas('clock_rotate_180')
+      subject.rotate_right.rotate_right.should == subject.rotate_180
     end
     
     it "it should rotate left when applied three times" do
-      @stubbed.rotate_right.rotate_right.rotate_right.should == reference_canvas('clock_rotate_left')
+      subject.rotate_right.rotate_right.rotate_right.should == subject.rotate_left
     end
     
     it "should return itself when applied four times" do
-      @stubbed.rotate_right.rotate_right.rotate_right.rotate_right.should == @stubbed
+      subject.rotate_right.rotate_right.rotate_right.rotate_right.should == subject
     end
   end
 
   describe '#rotate_180' do
     it "should rotate the pixels 180 degrees" do
-      @stubbed.rotate_180.should == reference_canvas('clock_rotate_180')
+      subject.rotate_180.should == ChunkyPNG::Canvas.new(2, 3, [6, 5, 4, 3, 2, 1])
     end
     
-    it "should return itself when applied twice" do
-      @stubbed.rotate_180.rotate_180.should == @stubbed
+    it "should return not itself" do
+      subject.rotate_180.should_not equal(subject)
+    end
+    
+    it "should return a copy of itself when applied twice" do
+      subject.rotate_180.rotate_180.should == subject
+    end
+  end
+  
+  describe '#rotate_180!' do
+    it "should rotate the pixels 180 degrees" do
+      subject.rotate_180!
+      subject.should == ChunkyPNG::Canvas.new(2, 3, [6, 5, 4, 3, 2, 1])
+    end
+    
+    it "should return itself" do
+      subject.rotate_180!.should equal(subject)
     end
   end
 end
