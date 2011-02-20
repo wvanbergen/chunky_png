@@ -17,7 +17,7 @@ require 'chunky_png/color'
 
 # Geometry
 require 'chunky_png/point'
-require 'chunky_png/path'
+require 'chunky_png/vector'
 require 'chunky_png/dimension'
 
 # Canvas / Image classes
