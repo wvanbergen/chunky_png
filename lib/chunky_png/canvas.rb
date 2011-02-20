@@ -261,29 +261,29 @@ module ChunkyPNG
     
     # Throws an exception if the x-coordinate is out of bounds.
     def assert_x!(x)
-      raise ChunkyPNG::OutOfBounds, "Column index out of bounds!" unless include_x?(x)
+      raise ChunkyPNG::OutOfBounds, "Column index #{x} out of bounds!" unless include_x?(x)
       return true
     end
     
     # Throws an exception if the y-coordinate is out of bounds.
     def assert_y!(y)
-      raise ChunkyPNG::OutOfBounds, "Row index out of bounds!" unless include_y?(y)
+      raise ChunkyPNG::OutOfBounds, "Row index #{y} out of bounds!" unless include_y?(y)
       return true
     end
     
     # Throws an exception if the x- or y-coordinate is out of bounds.
     def assert_xy!(x, y)
-      raise ChunkyPNG::OutOfBounds, "Coordinates out of bounds!" unless include_xy?(x, y)
+      raise ChunkyPNG::OutOfBounds, "Coordinates (#{x},#{y}) out of bounds!" unless include_xy?(x, y)
       return true
     end
     
     def assert_height!(vector_length)
-      raise ChunkyPNG::ExpectationFailed, "The length of the vector does not match the canvas height!" if height != vector_length
+      raise ChunkyPNG::ExpectationFailed, "The length of the vector (#{vector_length}) does not match the canvas height (#{height})!" if height != vector_length
       return true
     end
     
     def assert_width!(vector_length)
-      raise ChunkyPNG::ExpectationFailed, "The length of the vector does not match the canvas width!" if width != vector_length
+      raise ChunkyPNG::ExpectationFailed, "The length of the vector (#{vector_length}) does not match the canvas width (#{width})!" if width != vector_length
       return true
     end
     
