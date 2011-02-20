@@ -103,8 +103,8 @@ describe ChunkyPNG::Canvas::Operations do
 end
 
 describe ChunkyPNG::Canvas::Operations do
+  
   subject { ChunkyPNG::Canvas.new(2, 3, [1, 2, 3, 4, 5, 6]) }
-  before { @stubbed = reference_canvas('clock_stubbed') }
 
   describe '#flip_horizontally!' do
     it "should flip the pixels horizontally in place" do
