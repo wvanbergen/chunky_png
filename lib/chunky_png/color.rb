@@ -1,4 +1,30 @@
 module ChunkyPNG
+  
+  # Convenience method to return a color, based on the arguments given.
+  #
+  # - When given 1 argument, it can either be a color integer, which is returned as is,
+  #   or it can be a HTML named color or a color in hex notation.
+  # - When given 2 arguments, the 1st argument is parsed as color value and the second
+  #   argument is used as opacity value (range: 0-255)
+  # - When given 3 argumens, they are interpreted as RGB values. 
+  # - When given 4 argumens, they are interpreted as RGBA values.
+  #
+  # @return [Integer] The color value
+  def self.Color(*args)
+    case args.length
+      when 4; ChunkyPNG::Color.rgba(*args)
+      when 3; ChunkyPNG::Color.rgb(*args)
+      when 2; (ChunkyPNG::Color(args[0]) & 0xffffff00) | args[1].to_i
+      when 1
+        case source = args.first
+          when Integer; source
+          when ChunkyPNG::Color::HEX_COLOR_REGEXP;  ChunkyPNG::Color.from_hex(source)
+          when ChunkyPNG::Color::HTML_COLOR_REGEXP; ChunkyPNG::Color.html_color(source)
+          else raise ChunkyPNG::ExpectationFailed; "Don't know how to create a color from #{source.inspect}!"
+        end
+      else raise ChunkyPNG::ExpectationFailed; "Don't know how to create a color from #{args.inspect}!"
+    end
+  end
 
   # The Color module defines methods for handling colors. Within the ChunkyPNG
   # library, the concepts of pixels and colors are both used, and they are
@@ -18,7 +44,9 @@ module ChunkyPNG
 
     # The maximum value of each color component.
     MAX = 0xff
-
+    HEX_COLOR_REGEXP  = /^(?:#|0x)?([0-9a-f]{6})([0-9a-f]{2})?$/i
+    HTML_COLOR_REGEXP = /^([a-z][a-z_ ]+[a-z])(?:\ ?\@\ ?(1\.0|0\.\d+))?$/i
+    
     ####################################################################
     # CONSTRUCTING COLOR VALUES
     ####################################################################
@@ -78,11 +106,13 @@ module ChunkyPNG
     #
     # @param [String] str The color in hex notation. @return [Integer] The
     # converted color value.
-    def from_hex(str)
-      case str
-        when /^(?:#|0x)?([0-9a-f]{6})$/i; ($1.hex << 8) | 0xff
-        when /^(?:#|0x)?([0-9a-f]{8})$/i; $1.hex
-        else raise ChunkyPNG::ExpectationFailed, "Not a valid hex color notation: #{str.inspect}!"
+    def from_hex(str, opacity = nil)
+      if HEX_COLOR_REGEXP =~ str
+        base_color = $1.hex << 8
+        opacity  ||= $2 ? $2.hex : 0xff
+        base_color | opacity
+      else 
+        raise ChunkyPNG::ExpectationFailed, "Not a valid hex color notation: #{str.inspect}!"
       end
     end
 
@@ -525,10 +555,16 @@ module ChunkyPNG
       :transparent => 0x00000000
     }
     
-    def html_color(color_name, opacity = 0xff)
-      base_color = PREDEFINED_COLORS[color_name.to_s.gsub(/[^a-z]+/i, '').downcase.to_sym]
-      raise ChunkyPNG::Exception, "Unknown color name #{color_name}!" if base_color.nil?
-      base_color | opacity
+    def html_color(color_name, opacity = nil)
+      if color_name.to_s =~ HTML_COLOR_REGEXP
+        opacity ||= $2 ? ($2.to_f * 255.0).round : 0xff
+        base_color_name = $1.gsub(/[^a-z]+/i, '').downcase.to_sym
+        
+        if PREDEFINED_COLORS.has_key?(base_color_name)
+          return PREDEFINED_COLORS[base_color_name] | opacity
+        end
+      end
+      raise ChunkyPNG::Exception, "Unknown color name #{color_name}!"
     end
     
     alias_method :[], :html_color

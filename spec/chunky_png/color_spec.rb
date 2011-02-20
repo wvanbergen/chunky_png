@@ -10,6 +10,26 @@ describe ChunkyPNG::Color do
     @non_opaque        = 0x0a649664
     @fully_transparent = 0x0a649600
   end
+  
+  it "should interpret 4 arguments as RGBA values" do
+    ChunkyPNG::Color(1, 2, 3, 4).should == ChunkyPNG::Color.rgba(1, 2, 3, 4)
+  end
+  
+  it "should interpret 3 arguments as RGBA values" do
+    ChunkyPNG::Color(1, 2, 3).should == ChunkyPNG::Color.rgb(1, 2, 3)
+  end
+  
+  it "should interpret a hex string correctly" do
+    ChunkyPNG::Color('0x0a649664').should == ChunkyPNG::Color.from_hex('#0a649664')
+    ChunkyPNG::Color('0x0a649664', 0xff).should == ChunkyPNG::Color.from_hex('#0a6496', 0xff)
+  end
+  
+  it "should interpret a color name correctly" do
+    ChunkyPNG::Color('spring green').should          == 0x00ff7fff
+    ChunkyPNG::Color('spring green @ 0.6666').should == 0x00ff7faa
+    ChunkyPNG::Color('spring green', 0xaa).should == 0x00ff7faa
+    ChunkyPNG::Color('spring green @ 0.6666', 0xff).should == 0x00ff7fff
+  end
 
   describe '#pixel_bytesize' do
     it "should return the normal amount of bytes with a bit depth of 8" do
@@ -59,6 +79,11 @@ describe ChunkyPNG::Color do
       from_hex('#0a6496').should    == @opaque
       from_hex('0x0a6496').should   == @opaque
     end
+    
+    it "should allow setting opacity explicitely" do
+      from_hex('0x0a6496', 0x64).should == @non_opaque
+      from_hex('#0a6496', 0x64).should  == @non_opaque
+    end
   end
   
   describe '#html_color' do
@@ -71,10 +96,16 @@ describe ChunkyPNG::Color do
       html_color('SPRING_GREEN').should == 0x00ff7fff
     end
     
-    it "should set the opacity level" do
+    it "should set the opacity level explicitely" do
       html_color(:springgreen, 0xff).should == 0x00ff7fff
       html_color(:springgreen, 0xaa).should == 0x00ff7faa
       html_color(:springgreen, 0x00).should == 0x00ff7f00
+    end
+    
+    it "should set opacity levels from the color name" do
+      html_color('Spring green @ 1.0').should   == 0x00ff7fff
+      html_color('Spring green @ 0.666').should == 0x00ff7faa
+      html_color('Spring green @ 0.0').should   == 0x00ff7f00
     end
     
     it "should raise for an unkown color name" do
