@@ -20,15 +20,7 @@ require 'chunky_png/point'
 require 'chunky_png/path'
 require 'chunky_png/dimension'
 
-# Canvas
-require 'chunky_png/canvas/png_encoding'
-require 'chunky_png/canvas/png_decoding'
-require 'chunky_png/canvas/adam7_interlacing'
-require 'chunky_png/canvas/stream_exporting'
-require 'chunky_png/canvas/stream_importing'
-require 'chunky_png/canvas/operations'
-require 'chunky_png/canvas/drawing'
-require 'chunky_png/canvas/resampling'
+# Canvas / Image classes
 require 'chunky_png/canvas'
 require 'chunky_png/image'
 

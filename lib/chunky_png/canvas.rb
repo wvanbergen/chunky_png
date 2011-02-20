@@ -1,3 +1,13 @@
+require 'chunky_png/canvas/png_encoding'
+require 'chunky_png/canvas/png_decoding'
+require 'chunky_png/canvas/adam7_interlacing'
+require 'chunky_png/canvas/stream_exporting'
+require 'chunky_png/canvas/stream_importing'
+require 'chunky_png/canvas/operations'
+require 'chunky_png/canvas/drawing'
+require 'chunky_png/canvas/resampling'
+require 'chunky_png/canvas/masking'
+
 module ChunkyPNG
 
   # The ChunkPNG::Canvas class represents a raster image as a matrix of
@@ -31,6 +41,7 @@ module ChunkyPNG
     include Operations
     include Drawing
     include Resampling
+    include Masking
 
     # @return [Integer] The number of columns in this canvas
     attr_reader :width
