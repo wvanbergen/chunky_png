@@ -3,20 +3,26 @@ require 'spec_helper'
 describe ChunkyPNG::Canvas::Drawing do
   
   describe '#point' do
-    before { @canvas = ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color.rgb(200, 150, 100)) }
+    subject { ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color.rgb(200, 150, 100)) }
     
     it "should compose colors correctly" do
-      @canvas.point(0,0, ChunkyPNG::Color.rgba(100, 150, 200, 128))
-      @canvas[0,0].should == ChunkyPNG::Color.rgb(150, 150, 150)
+      subject.point(0,0, ChunkyPNG::Color.rgba(100, 150, 200, 128))
+      subject['0,0'].should == ChunkyPNG::Color.rgb(150, 150, 150)
     end
     
     it "should return the composed color" do
-      @canvas.point(0,0, ChunkyPNG::Color.rgba(100, 150, 200, 128)).should == ChunkyPNG::Color.rgb(150, 150, 150)
+      subject.point(0, 0, ChunkyPNG::Color.rgba(100, 150, 200, 128)).should == ChunkyPNG::Color.rgb(150, 150, 150)
+    end
+    
+    it "should accept point-like arguments as well" do
+      lambda { subject.point('0,0', ChunkyPNG::Color.rgba(100, 150, 200, 128)) }.should change { subject['0,0'] }
+      lambda { subject.point({:x => 0, :y => 0}, ChunkyPNG::Color.rgba(100, 150, 200, 128)) }.should change { subject['0,0'] }
+      lambda { subject.point(ChunkyPNG::Point.new(0, 0), ChunkyPNG::Color.rgba(100, 150, 200, 128)) } .should change { subject['0,0'] }
     end
     
     it "should do nothing when the coordinates are out of bounds" do
-      @canvas.point(1, -1, ChunkyPNG::Color::BLACK).should be_nil
-      lambda { @canvas.point(1, -1, ChunkyPNG::Color::BLACK) }.should_not change { @canvas[0,0] }
+      subject.point(1, -1, ChunkyPNG::Color::BLACK).should be_nil
+      lambda { subject.point(1, -1, ChunkyPNG::Color::BLACK) }.should_not change { subject['0,0'] }
     end
   end
   
@@ -71,30 +77,30 @@ describe ChunkyPNG::Canvas::Drawing do
       canvas = ChunkyPNG::Canvas.new(1, 1)
       canvas.rect(-10, -10, 10, 10, ChunkyPNG::Color::BLACK, ChunkyPNG::Color::WHITE)
       canvas[0, 0].should == ChunkyPNG::Color::WHITE
-    end    
+    end
   end
   
   describe '#circle' do
-    before { @canvas = ChunkyPNG::Canvas.new(32, 32, ChunkyPNG::Color.rgba(0, 0, 255, 128)) } 
+    subject { ChunkyPNG::Canvas.new(32, 32, ChunkyPNG::Color.rgba(0, 0, 255, 128)) } 
     
     it "should draw circles" do
-      @canvas.circle(11, 11, 10, ChunkyPNG::Color.rgba(255, 0, 0, 128))
-      @canvas.circle(21, 21, 10, ChunkyPNG::Color.rgba(0, 255, 0, 128))
-      @canvas.should == reference_canvas('circles')
+      subject.circle(11, 11, 10, ChunkyPNG::Color.rgba(255, 0, 0, 128))
+      subject.circle(21, 21, 10, ChunkyPNG::Color.rgba(0, 255, 0, 128))
+      subject.should == reference_canvas('circles')
     end
     
     it "should draw partial circles when going of the canvas bounds" do
-      @canvas.circle(0, 0, 10)
-      @canvas.circle(31, 16, 10)
-      @canvas.should == reference_canvas('partial_circles')
+      subject.circle(0, 0, 10)
+      subject.circle(31, 16, 10)
+      subject.should == reference_canvas('partial_circles')
     end
     
     it "should raise an exception when a brush is used" do
-      lambda { @canvas.circle(21, 21, 10, ChunkyPNG::Color::BLACK, ChunkyPNG::Color::BLACK) }.should raise_error(ChunkyPNG::NotSupported)
+      lambda { subject.circle(21, 21, 10, ChunkyPNG::Color::BLACK, ChunkyPNG::Color::BLACK) }.should raise_error(ChunkyPNG::NotSupported)
     end
     
     it "should return itself to allow chaining" do
-      @canvas.circle(10, 10, 5).should equal(@canvas)
+      subject.circle(10, 10, 5).should equal(subject)
     end
   end
 end

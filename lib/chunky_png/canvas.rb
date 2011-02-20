@@ -104,10 +104,11 @@ module ChunkyPNG
     # @param [Integer] y The y-coordinate of the pixel (row)
     # @param [ChunkyPNG::Color] pixel The new pixel for the provided coordinates.
     # @return [Integer] the new pixel value, i.e. <tt>color</tt>. 
-    # @raise [ChunkyPNG::OutOfBounds] when the coordinates are outside of the image's dimensions.        
-    def []=(x, y, color)
-      assert_xy!(x, y)
-      @pixels[y * width + x] = color
+    # @raise [ChunkyPNG::OutOfBounds] when the coordinates are outside of the image's dimensions.
+    def []=(x_or_point, y_or_color, color = nil)
+      point = color.nil? ? ChunkyPNG::Point(x_or_point) : ChunkyPNG::Point(x_or_point, y_or_color)
+      assert_xy!(point.x, point.y)
+      @pixels[point.y * width + point.x] = color || y_or_color
     end
 
     # Replaces a single pixel in this canvas, without bounds checking.
@@ -140,9 +141,10 @@ module ChunkyPNG
     # @param [Integer] y The y-coordinate of the pixel (row)
     # @return [ChunkyPNG::Color] The current pixel at the provided coordinates.
     # @raise [ChunkyPNG::OutOfBounds] when the coordinates are outside of the image's dimensions.
-    def [](x, y)
-      assert_xy!(x, y)
-      @pixels[y * width + x]
+    def [](*args)
+      point = ChunkyPNG::Point(*args)
+      assert_xy!(point.x, point.y)
+      @pixels[point.y * width + point.x]
     end
 
     # Returns a single pixel from this canvas, without checking bounds. The return value for
