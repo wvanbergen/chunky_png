@@ -14,7 +14,7 @@ describe ChunkyPNG::Canvas do
     end
   end
 
-  describe '#include_xy?' do
+  describe '#include?' do
     it "should return true if the coordinates are within bounds, false otherwise" do
       subject.include_xy?( 0,  0).should be_true
       
@@ -26,6 +26,17 @@ describe ChunkyPNG::Canvas do
       subject.include_xy?(-1,  1).should be_false
       subject.include_xy?( 1, -1).should be_false
       subject.include_xy?( 1,  1).should be_false
+    end
+    
+    it "should accept strings, arrays, hashes and points as well" do
+      subject.should     include('0, 0')
+      subject.should_not include('0, 1')
+      subject.should     include([0, 0])
+      subject.should_not include([0, 1])
+      subject.should     include(:y => 0, :x => 0)
+      subject.should_not include(:y => 1, :x => 0)
+      subject.should     include(ChunkyPNG::Point.new(0, 0))
+      subject.should_not include(ChunkyPNG::Point.new(0, 1))
     end
   end
   
@@ -115,19 +126,19 @@ describe ChunkyPNG::Canvas do
     end
   end
   
-  describe '#set_pixel_in_bounds' do
+  describe '#set_pixel_if_within_bounds' do
     it "should change the pixel's color value" do
-      lambda { subject.set_pixel_in_bounds(0, 0, ChunkyPNG::Color::BLACK) }.should change { subject[0, 0] }.from(ChunkyPNG::Color::WHITE).to(ChunkyPNG::Color::BLACK)
+      lambda { subject.set_pixel_if_within_bounds(0, 0, ChunkyPNG::Color::BLACK) }.should change { subject[0, 0] }.from(ChunkyPNG::Color::WHITE).to(ChunkyPNG::Color::BLACK)
     end
 
     it "should not assert, but only check the coordinates" do
       subject.should_not_receive(:assert_xy!)
       subject.should_receive(:include_xy?).with(0, 0)
-      subject.set_pixel_in_bounds(0, 0, ChunkyPNG::Color::BLACK)
+      subject.set_pixel_if_within_bounds(0, 0, ChunkyPNG::Color::BLACK)
     end
 
     it "should do nothing if the coordinates are out of bounds" do
-      subject.set_pixel_in_bounds(-1, 1, ChunkyPNG::Color::BLACK).should be_nil
+      subject.set_pixel_if_within_bounds(-1, 1, ChunkyPNG::Color::BLACK).should be_nil
       subject[0, 0].should == ChunkyPNG::Color::WHITE
     end
   end

@@ -21,8 +21,8 @@ describe ChunkyPNG::Point do
     
     it "should create a point from a point-like string" do
       ChunkyPNG::Point['1,2'].should     == subject
-      ChunkyPNG::Point['1   2'].should     == subject      
-      ChunkyPNG::Point['(1 , 2)'].should  == ChunkyPNG::Point.new(1, 2)
+      ChunkyPNG::Point['1   2'].should   == subject
+      ChunkyPNG::Point['(1 , 2)'].should == ChunkyPNG::Point.new(1, 2)
       ChunkyPNG::Point["{1,\t2}"].should == ChunkyPNG::Point.new(1, 2)
       ChunkyPNG::Point["[1,2}"].should   == ChunkyPNG::Point.new(1, 2)
     end
@@ -51,11 +51,18 @@ describe ChunkyPNG::Point do
     end
     
     it "should return a list of points given a string of numerics" do
-      ChunkyPNG::Point.multiple('1 2 3 4').should == [ChunkyPNG::Point.new(1, 2), ChunkyPNG::Point.new(3, 4)]
-      ChunkyPNG::Point.multiple('1, 2, 3, 4').should == [ChunkyPNG::Point.new(1, 2), ChunkyPNG::Point.new(3, 4)]
-      ChunkyPNG::Point.multiple('1,2 3,4').should == [ChunkyPNG::Point.new(1, 2), ChunkyPNG::Point.new(3, 4)]
+      ChunkyPNG::Point.multiple('1 2 3 4').should         == [ChunkyPNG::Point.new(1, 2), ChunkyPNG::Point.new(3, 4)]
+      ChunkyPNG::Point.multiple('1, 2, 3, 4').should      == [ChunkyPNG::Point.new(1, 2), ChunkyPNG::Point.new(3, 4)]
+      ChunkyPNG::Point.multiple('1,2 3,4').should         == [ChunkyPNG::Point.new(1, 2), ChunkyPNG::Point.new(3, 4)]
       ChunkyPNG::Point.multiple('(1 , 2) [3 , 4}').should == [ChunkyPNG::Point.new(1, 2), ChunkyPNG::Point.new(3, 4)]
     end
+  end
+  
+  describe '#within_bounds?' do
+    it { should     be_within_bounds(2, 3) }
+    it { should_not be_within_bounds(1, 3) }
+    it { should_not be_within_bounds(2, 2) }
+    it { should_not be_within_bounds(1, 2) }
   end
   
   describe '#<=>' do

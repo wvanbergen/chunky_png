@@ -5,7 +5,9 @@ module ChunkyPNG
 
     class << self
       
-      def single(source)
+      def single(source, y = nil)
+        return new(source, y) if y
+        
         case source
           when ChunkyPNG::Point; source
           when Array; new(source[0], source[1])
@@ -50,20 +52,26 @@ module ChunkyPNG
       @x, @y = x.to_i, y.to_i
     end
     
-    def in_bounds?(canvas)
-      canvas.include_xy?(x, y)
-    end
-    
     # Checks whether 2 points are identical.
     # @return [true, false] <tt>true</tt> iff the x and y coordinates match
     def eql?(other)
       other.x == x && other.y == y
     end
     
-    alias :== :eql?
+    alias_method :==, :eql?
     
     def <=>(other)
       ((y <=> other.y) == 0) ? x <=> other.x : y <=> other.y
+    end
+    
+    def to_a
+      [x, y]
+    end
+    
+    alias_method :to_ary, :to_a
+    
+    def within_bounds?(width, height)
+      x >= 0 && x < width && y >= 0 && y < height
     end
   end
 end

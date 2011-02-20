@@ -124,7 +124,7 @@ module ChunkyPNG
     # @param [ChunkyPNG::Color] pixel The new pixel for the provided coordinates.
     # @return [Integer] the new pixel value, i.e. <tt>color</tt>. <tt>nil</tt> if
     #  the coordinates are out of bounds.
-    def set_pixel_in_bounds(x, y, color)
+    def set_pixel_if_within_bounds(x, y, color)
       return unless include_xy?(x, y)
       @pixels[y * width + x] = color
     end
@@ -182,15 +182,20 @@ module ChunkyPNG
     end
 
     # Checks whether the given coordinates are in the range of the canvas
-    # @param [Integer] x The x-coordinate of the pixel (column)
-    # @param [Integer] y The y-coordinate of the pixel (row)
-    # @return [true, false] True if the x and y coordinate are in the range 
-    #    of this canvas.
-    def include_xy?(x, y)
-      include_x?(x) && include_y?(y)
+    # @param [ChunkyPNG::Point, Array, Hash, String] point_like The point to check.
+    # @return [true, false] True if the x and y coordinates of the point are  
+    #    within the limits of this canvas.
+    # @see ChunkyPNG::Point.single
+    def include_point?(*point_like)
+      ChunkyPNG::Point[*point_like].within_bounds?(width, height)
     end
     
-    alias_method :include?, :include_xy?
+    alias_method :include?,    :include_point?
+    alias_method :include_xy?, :include_point?
+    
+    def include_all?(points)
+      ChunkyPNG::Point.multiple(points).all? { |p| p.within_bounds?(x, y) }
+    end
 
     # Checks whether the given y-coordinate is in the range of the canvas
     # @param [Integer] y The y-coordinate of the pixel (row)
