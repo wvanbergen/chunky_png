@@ -11,10 +11,11 @@ module ChunkyPNG
     # @see ChunkyPNG::Canvas
     module Operations
       
-      # Composes another image onto this image using alpha blending.
+      # Composes another image onto this image using alpha blending. This will modify
+      # the current canvas.
       #
       # If you simply want to replace pixels or when the other image does not have
-      # transparency, it is faster to use {#replace}.
+      # transparency, it is faster to use {#replace!}.
       #
       # @param [ChunkyPNG::Canvas] other The foreground canvas to compose on the
       #     current canvas, using alpha compositing.
@@ -22,9 +23,10 @@ module ChunkyPNG
       # @param [Integer] offset_y The y-offset to apply the new forgeround on.
       # @return [ChunkyPNG::Canvas] Returns itself, but with the other canvas composed onto it.
       # @raise [ChunkyPNG::OutOfBounds] when the other canvas doesn't fit on this one,
-      #     given the offset and size of the other canavs.
-      # @see #replace
-      def compose(other, offset_x = 0, offset_y = 0)
+      #     given the offset and size of the other canvas.
+      # @see #replace!
+      # @see #compose
+      def compose!(other, offset_x = 0, offset_y = 0)
         check_size_constraints!(other, offset_x, offset_y)
 
         for y in 0...other.height do
@@ -35,22 +37,59 @@ module ChunkyPNG
         self
       end
       
+      # Composes another image onto this image using alpha blending. This will return
+      # a new canvas and leave the original intact.
+      #
+      # If you simply want to replace pixels or when the other image does not have
+      # transparency, it is faster to use {#replace}.
+      #
+      # @param (see #compose!)
+      # @return [ChunkyPNG::Canvas] Returns the new canvas, composed of the other 2.
+      # @raise [ChunkyPNG::OutOfBounds] when the other canvas doesn't fit on this one,
+      #     given the offset and size of the other canvas.
+      # @see #compose! 
+      # @see #replace
+      def compose(other, offset_x = 0, offset_y = 0)
+        dup.compose!(other, offset_x, offset_y)
+      end
+      
       # Replaces pixels on this image by pixels from another pixels, on a given offset.
+      # This method will modify the current canvas.
       #
       # This will completely replace the pixels of the background image. If you want to blend
-      # them with semi-transparent pixels from the foreground image, see {#compose}.
+      # them with semi-transparent pixels from the foreground image, see {#compose!}.
       #
-      # @return [ChunkyPNG::Canvas] Returns itself, but with the other canvas composed onto it.
+      # @param [ChunkyPNG::Canvas] other The foreground canvas to get the pixels from.
+      # @param [Integer] offset_x The x-offset to apply the new forgeround on.
+      # @param [Integer] offset_y The y-offset to apply the new forgeround on.
+      # @return [ChunkyPNG::Canvas] Returns itself, but with the other canvas placed onto it.
       # @raise [ChunkyPNG::OutOfBounds] when the other canvas doesn't fit on this one,
-      #     given the offset and size of the other canavs.
-      # @see #compose
-      def replace(other, offset_x = 0, offset_y = 0)
+      #     given the offset and size of the other canvas.
+      # @see #compose!
+      # @see #replace
+      def replace!(other, offset_x = 0, offset_y = 0)
         check_size_constraints!(other, offset_x, offset_y)
 
         for y in 0...other.height do
           pixels[(y + offset_y) * width + offset_x, other.width] = other.pixels[y * other.width, other.width]
         end
         self
+      end
+
+      # Replaces pixels on this image by pixels from another pixels, on a given offset.
+      # This method will modify the current canvas.
+      #
+      # This will completely replace the pixels of the background image. If you want to blend
+      # them with semi-transparent pixels from the foreground image, see {#compose!}.
+      #
+      # @param (see #replace!)
+      # @return [ChunkyPNG::Canvas] Returns a new, combined canvas.
+      # @raise [ChunkyPNG::OutOfBounds] when the other canvas doesn't fit on this one,
+      #     given the offset and size of the other canvas.
+      # @see #compose 
+      # @see #replace!
+      def replace(other, offset_x = 0, offset_y = 0)
+        dup.replace!(other, offset_x, offset_y)
       end
 
       # Crops an image, given the coordinates and size of the image that needs to be cut out.
