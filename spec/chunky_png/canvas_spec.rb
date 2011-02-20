@@ -8,10 +8,17 @@ describe ChunkyPNG::Canvas do
   it { should respond_to(:height) }
   it { should respond_to(:pixels) }
 
-  describe '#size' do
-    it "should return the dimensions as two-item array" do
-      subject.size.should == [1, 1]
+  describe '#dimension' do
+    it "should return the dimensions as a Dimension instance" do
+      subject.dimension.should == ChunkyPNG::Dimension('1x1')
     end
+  end
+  
+  describe '#area' do
+    it "should return the dimensions as two-item array" do
+      subject.area.should == ChunkyPNG::Dimension('1x1').area
+    end
+    
   end
 
   describe '#include?' do

@@ -61,10 +61,10 @@ module ChunkyPNG
 
       if initial.kind_of?(Integer)
         @pixels = Array.new(width * height, initial)
-      elsif initial.kind_of?(Array) && initial.size == width * height
+      elsif initial.kind_of?(Array) && initial.length == width * height
         @pixels = initial
       else
-        raise ChunkyPNG::ExpectationFailed, "Cannot use this value as initial canvas: #{initial.inspect}!"
+        raise ChunkyPNG::ExpectationFailed, "Cannot use this value as initial #{width}x#{height} canvas: #{initial.inspect}!"
       end
     end
     
@@ -87,10 +87,16 @@ module ChunkyPNG
     # PROPERTIES
     #################################################################
 
-    # Returns the size ([width, height]) for this canvas.
-    # @return Array An array with the width and height of this canvas as elements.
-    def size
-      [@width, @height]
+    # Returns the dimension (width x height) for this canvas.
+    # @return [ChunkyPNG::Dimension] A dimension instante with the width and height set for this canvas.
+    def dimension
+      @dimension ||= ChunkyPNG::Dimension.new(width, height)
+    end
+    
+    # Returns the area of this canvas in number of pixels.
+    # @return [Integer] The number of pixels in this canvas
+    def area
+      pixels.length
     end
 
     # Replaces a single pixel in this canvas.
@@ -187,14 +193,14 @@ module ChunkyPNG
     #    within the limits of this canvas.
     # @see ChunkyPNG::Point.single
     def include_point?(*point_like)
-      ChunkyPNG::Point[*point_like].within_bounds?(width, height)
+      dimension.include?(ChunkyPNG::Point(*point_like))
     end
     
     alias_method :include?,    :include_point?
     alias_method :include_xy?, :include_point?
     
     def include_all?(points)
-      ChunkyPNG::Point.multiple(points).all? { |p| p.within_bounds?(x, y) }
+      ChunkyPNG::Point.multiple(points).all? { |p| dimension.include?(p) }
     end
 
     # Checks whether the given y-coordinate is in the range of the canvas
