@@ -28,6 +28,7 @@ require 'chunky_png/canvas/stream_exporting'
 require 'chunky_png/canvas/stream_importing'
 require 'chunky_png/canvas/operations'
 require 'chunky_png/canvas/drawing'
+require 'chunky_png/canvas/resampling'
 require 'chunky_png/canvas'
 require 'chunky_png/image'
 

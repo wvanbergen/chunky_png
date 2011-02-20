@@ -30,6 +30,7 @@ module ChunkyPNG
 
     include Operations
     include Drawing
+    include Resampling
 
     # @return [Integer] The number of columns in this canvas
     attr_reader :width
