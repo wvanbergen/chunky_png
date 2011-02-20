@@ -71,8 +71,14 @@ describe ChunkyPNG::Color do
       html_color('SPRING_GREEN').should == 0x00ff7fff
     end
     
-    it "should return nil for an unkown color name" do
-      html_color(:nonsense).should be_nil
+    it "should set the opacity level" do
+      html_color(:springgreen, 0xff).should == 0x00ff7fff
+      html_color(:springgreen, 0xaa).should == 0x00ff7faa
+      html_color(:springgreen, 0x00).should == 0x00ff7f00
+    end
+    
+    it "should raise for an unkown color name" do
+      lambda { html_color(:nonsense) }.should raise_error(ChunkyPNG::Exception)
     end
   end
   
