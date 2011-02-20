@@ -1,23 +1,27 @@
 module ChunkyPNG
   
+  def self.Point(*args)
+    ChunkyPNG::Point.single(*args)
+  end
+  
   # Helper class to deal with points on a canvas
   class Point
 
     class << self
       
-      def single(source, y = nil)
-        return new(source, y) if y
-        
-        case source
-          when ChunkyPNG::Point; source
-          when Array; new(source[0], source[1])
-          when Hash; new((source[:x] || source['x']), (source[:y] || source['y']))
-          when /^[\(\[\{]?(\d+)\s*,?\s*(\d+)[\)\]\}]?$/; new($1.to_i, $2.to_i)
-          else raise ChunkyPNG::ExpectationFailed, "Don't know how to construct a point from #{source.inspect}!"
+      def single(*args)
+        case args.length
+          when 2; new(*args)
+          when 1; case source = args.first
+              when ChunkyPNG::Point; source
+              when Array; new(source[0], source[1])
+              when Hash; new((source[:x] || source['x']), (source[:y] || source['y']))
+              when /^[\(\[\{]?(\d+)\s*[,x]?\s*(\d+)[\)\]\}]?$/; new($1.to_i, $2.to_i)
+              else raise ChunkyPNG::ExpectationFailed, "Don't know how to construct a point from #{source.inspect}!"
+            end
+          else raise ChunkyPNG::ExpectationFailed, "Don't know how to construct a point from #{args.inspect}!"
         end
       end
-    
-      alias_method :[], :single
     
       def multiple_from_array(source)
         return [] if source.empty?
@@ -33,14 +37,14 @@ module ChunkyPNG
       end
       
       def multiple_from_string(source)
-        multiple_from_array(source.to_s.scan(/[\(\[\{]?(\d+)\s*,?\s*(\d+)[\)\]\}]?/))
+        multiple_from_array(source.scan(/[\(\[\{]?(\d+)\s*[,x]?\s*(\d+)[\)\]\}]?/))
       end
     
-      def multiple(source)
-        case source
-          when Array;  multiple_from_array(source)
-          when String; multiple_from_string(source)
-          else raise ChunkyPNG::ExpectationFailed, "Cannot parse multiple points from #{source.inspect}!"
+      def multiple(*source)
+        if source.length == 1 && source.first.respond_to?(:scan)
+          multiple_from_string(source.first)
+        else
+          multiple_from_array(source)
         end
       end
     end
@@ -73,8 +77,8 @@ module ChunkyPNG
     
     alias_method :to_ary, :to_a
     
-    def within_bounds?(width, height)
-      x >= 0 && x < width && y >= 0 && y < height
+    def within_bounds?(*args)
+      ChunkyPNG::Dimension(*args).include?(self)
     end
   end
 end

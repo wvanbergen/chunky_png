@@ -1,14 +1,26 @@
+# Basic requirements from standard library
 require 'set'
 require 'zlib'
 require 'stringio'
 require 'enumerator'
 
+# Ruby 1.8 / 1.9 compatibility
 require 'chunky_png/compatibility'
+
+# PNG file structure
 require 'chunky_png/datastream'
 require 'chunky_png/chunk'
+
+# Colors
 require 'chunky_png/palette'
 require 'chunky_png/color'
+
+# Geometry
 require 'chunky_png/point'
+require 'chunky_png/path'
+require 'chunky_png/dimension'
+
+# Canvas
 require 'chunky_png/canvas/png_encoding'
 require 'chunky_png/canvas/png_decoding'
 require 'chunky_png/canvas/adam7_interlacing'
