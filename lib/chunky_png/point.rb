@@ -36,15 +36,15 @@ module ChunkyPNG
         end
       end
       
-      def multiple_from_string(source)
-        multiple_from_array(source.scan(/[\(\[\{]?(\d+)\s*[,x]?\s*(\d+)[\)\]\}]?/))
+      def multiple_from_string(source_str)
+        multiple_from_array(source_str.scan(/[\(\[\{]?(\d+)\s*[,x]?\s*(\d+)[\)\]\}]?/))
       end
     
       def multiple(*source)
         if source.length == 1 && source.first.respond_to?(:scan)
-          multiple_from_string(source.first)
+          multiple_from_string(source.first) # e.g. ['1,1 2,2 3,3']
         else
-          multiple_from_array(source)
+          multiple_from_array(source) # e.g. [[1,1], [2,2], [3,3]] or [1,1,2,2,3,3]
         end
       end
     end

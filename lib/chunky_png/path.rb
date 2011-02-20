@@ -13,13 +13,23 @@ module ChunkyPNG
     end
     
     def each_edge
-      raise ChunkyPNG::ExpectationFailed, "Not enough points in this path to draw an edge!" if points < 2
+      raise ChunkyPNG::ExpectationFailed, "Not enough points in this path to draw an edge!" if length < 2
       points.each_cons(2) { |a, b| yield(a, b) }
-      yield(point.last, points.first)
+      yield(points.last, points.first)
     end
     
     def edges
       Enumerable::Enumerator.new(self, :each_edge)
     end
+    
+    def length
+      points.length
+    end
+    
+    def eql?(other)
+      other.points == points
+    end
+    
+    alias_method :==, :eql?
   end
 end
