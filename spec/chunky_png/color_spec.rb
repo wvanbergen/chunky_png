@@ -25,7 +25,8 @@ describe ChunkyPNG::Color do
   end
   
   it "should interpret a color name correctly" do
-    ChunkyPNG::Color('spring green').should          == 0x00ff7fff
+    ChunkyPNG::Color(:spring_green).should == 0x00ff7fff
+    ChunkyPNG::Color('spring green').should == 0x00ff7fff
     ChunkyPNG::Color('spring green @ 0.6666').should == 0x00ff7faa
     ChunkyPNG::Color('spring green', 0xaa).should == 0x00ff7faa
     ChunkyPNG::Color('spring green @ 0.6666', 0xff).should == 0x00ff7fff

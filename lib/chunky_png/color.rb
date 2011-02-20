@@ -16,8 +16,8 @@ module ChunkyPNG
       when 3; ChunkyPNG::Color.rgb(*args)
       when 2; (ChunkyPNG::Color(args[0]) & 0xffffff00) | args[1].to_i
       when 1
-        case source = args.first
-          when Integer; source
+        case source = args.first.to_s
+          when Integer, /^\d+$/; source.to_i
           when ChunkyPNG::Color::HEX_COLOR_REGEXP;  ChunkyPNG::Color.from_hex(source)
           when ChunkyPNG::Color::HTML_COLOR_REGEXP; ChunkyPNG::Color.html_color(source)
           else raise ChunkyPNG::ExpectationFailed; "Don't know how to create a color from #{source.inspect}!"
