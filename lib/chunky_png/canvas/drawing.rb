@@ -35,7 +35,7 @@ module ChunkyPNG
           
         elsif dy > dx  # vertical displacement
           point(x0, y0, color)
-          e_acc = 0          
+          e_acc = 0
           e = ((dx << 16) / dy.to_f).round
           (y0...y1-1).each do |i|
             e_acc_temp, e_acc = e_acc, (e_acc + e) & 0xffff
@@ -92,10 +92,7 @@ module ChunkyPNG
       
       #
       def circle(x0, y0, radius, stroke = ChunkyPNG::Color::BLACK, brush = ChunkyPNG::Color::TRANSPARENT)
-        
-        # TODO: brush
-        raise ChunkyPNG::NotSupported, "Circle fill brushes are not yet supported" unless brush == ChunkyPNG::Color::TRANSPARENT
-        
+
         f = 1 - radius
         ddF_x = 1
         ddF_y = -2 * radius
@@ -106,9 +103,11 @@ module ChunkyPNG
         point(x0, y0 - radius, stroke)
         point(x0 + radius, y0, stroke)
         point(x0 - radius, y0, stroke)
-        
+
+        lines = [radius - 1] unless brush == ChunkyPNG::Color::TRANSPARENT
+
         while x < y
-          
+
           if f >= 0
             y -= 1
             ddF_y += 2
@@ -118,16 +117,32 @@ module ChunkyPNG
           x += 1
           ddF_x += 2
           f += ddF_x
-          
+
+          unless brush == ChunkyPNG::Color::TRANSPARENT
+            lines[y] = lines[y] ? [lines[y], x - 1].min : x - 1
+            lines[x] = lines[x] ? [lines[x], y - 1].min : y - 1
+          end
+
           point(x0 + x, y0 + y, stroke)
           point(x0 - x, y0 + y, stroke)
           point(x0 + x, y0 - y, stroke)
           point(x0 - x, y0 - y, stroke)
-          point(x0 + y, y0 + x, stroke)
-          point(x0 - y, y0 + x, stroke)
-          point(x0 + y, y0 - x, stroke)
-          point(x0 - y, y0 - x, stroke)
+
+          unless x == y
+            point(x0 + y, y0 + x, stroke)
+            point(x0 - y, y0 + x, stroke)
+            point(x0 + y, y0 - x, stroke)
+            point(x0 - y, y0 - x, stroke)
+          end
         end
+
+        unless brush == ChunkyPNG::Color::TRANSPARENT
+          lines.each_with_index do |length, y|
+            line(x0 - length, y0 - y, x0 + length, y0 - y, brush) if length > 0
+            line(x0 - length, y0 + y, x0 + length, y0 + y, brush) if length > 0 && y > 0
+          end
+        end
+
         return self
       end
     end

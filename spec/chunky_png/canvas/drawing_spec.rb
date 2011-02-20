@@ -84,21 +84,17 @@ describe ChunkyPNG::Canvas::Drawing do
     subject { ChunkyPNG::Canvas.new(32, 32, ChunkyPNG::Color.rgba(0, 0, 255, 128)) } 
     
     it "should draw circles" do
-      subject.circle(11, 11, 10, ChunkyPNG::Color.rgba(255, 0, 0, 128))
-      subject.circle(21, 21, 10, ChunkyPNG::Color.rgba(0, 255, 0, 128))
+      subject.circle(11, 11, 10, ChunkyPNG::Color('red @ 0.5'), ChunkyPNG::Color('white @ 0.2'))
+      subject.circle(21, 21, 10, ChunkyPNG::Color('green @ 0.5'))
       subject.should == reference_canvas('circles')
     end
     
     it "should draw partial circles when going of the canvas bounds" do
-      subject.circle(0, 0, 10)
-      subject.circle(31, 16, 10)
+      subject.circle(0, 0, 10, ChunkyPNG::Color(:red))
+      subject.circle(31, 16, 10, ChunkyPNG::Color(:black), ChunkyPNG::Color(:white, 0xaa))
       subject.should == reference_canvas('partial_circles')
     end
-    
-    it "should raise an exception when a brush is used" do
-      lambda { subject.circle(21, 21, 10, ChunkyPNG::Color::BLACK, ChunkyPNG::Color::BLACK) }.should raise_error(ChunkyPNG::NotSupported)
-    end
-    
+
     it "should return itself to allow chaining" do
       subject.circle(10, 10, 5).should equal(subject)
     end
