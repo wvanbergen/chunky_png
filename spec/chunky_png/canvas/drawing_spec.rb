@@ -6,39 +6,40 @@ describe ChunkyPNG::Canvas::Drawing do
     subject { ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color.rgb(200, 150, 100)) }
     
     it "should compose colors correctly" do
-      subject.point(0,0, ChunkyPNG::Color.rgba(100, 150, 200, 128))
+      subject.compose_pixel(0,0, ChunkyPNG::Color.rgba(100, 150, 200, 128))
       subject['0,0'].should == ChunkyPNG::Color.rgb(150, 150, 150)
     end
     
     it "should return the composed color" do
-      subject.point(0, 0, ChunkyPNG::Color.rgba(100, 150, 200, 128)).should == ChunkyPNG::Color.rgb(150, 150, 150)
+      subject.compose_pixel(0, 0, ChunkyPNG::Color.rgba(100, 150, 200, 128)).should == ChunkyPNG::Color.rgb(150, 150, 150)
     end
     
     it "should accept point-like arguments as well" do
-      lambda { subject.point('0,0', ChunkyPNG::Color.rgba(100, 150, 200, 128)) }.should change { subject['0,0'] }
-      lambda { subject.point({:x => 0, :y => 0}, ChunkyPNG::Color.rgba(100, 150, 200, 128)) }.should change { subject['0,0'] }
-      lambda { subject.point(ChunkyPNG::Point.new(0, 0), ChunkyPNG::Color.rgba(100, 150, 200, 128)) } .should change { subject['0,0'] }
+      lambda { subject.compose_pixel('0,0', ChunkyPNG::Color.rgba(100, 150, 200, 128)) }.should change { subject['0,0'] }
+      lambda { subject.compose_pixel({:x => 0, :y => 0}, ChunkyPNG::Color.rgba(100, 150, 200, 128)) }.should change { subject['0,0'] }
+      lambda { subject.compose_pixel(ChunkyPNG::Point.new(0, 0), ChunkyPNG::Color.rgba(100, 150, 200, 128)) } .should change { subject['0,0'] }
     end
     
     it "should do nothing when the coordinates are out of bounds" do
-      subject.point(1, -1, ChunkyPNG::Color::BLACK).should be_nil
-      lambda { subject.point(1, -1, ChunkyPNG::Color::BLACK) }.should_not change { subject['0,0'] }
+      subject.compose_pixel(1, -1, ChunkyPNG::Color::BLACK).should be_nil
+      lambda { subject.compose_pixel(1, -1, ChunkyPNG::Color::BLACK) }.should_not change { subject['0,0'] }
     end
   end
   
   describe '#line' do
     it "should draw lines correctly with anti-aliasing" do
-      canvas = ChunkyPNG::Canvas.new(32, 32, ChunkyPNG::Color::WHITE)
       
-      canvas.line( 0,  0, 31, 31, ChunkyPNG::Color::BLACK)
-      canvas.line( 0, 31, 31,  0, ChunkyPNG::Color::BLACK)
-      canvas.line(15, 31, 15,  0, ChunkyPNG::Color.rgba(200,   0,   0, 128))
-      canvas.line( 0, 15, 31, 15, ChunkyPNG::Color.rgba(200,   0,   0, 128))
-      canvas.line( 0, 15, 31, 31, ChunkyPNG::Color.rgba(  0, 200,   0, 128))
-      canvas.line( 0, 15, 31,  0, ChunkyPNG::Color.rgba(  0, 200,   0, 128))
-      canvas.line(15,  0, 31, 31, ChunkyPNG::Color.rgba(  0,   0, 200, 128))
-      canvas.line(15,  0,  0, 31, ChunkyPNG::Color.rgba(  0,   0, 200, 128))
+      canvas = ChunkyPNG::Canvas.new(31, 31, ChunkyPNG::Color::WHITE)
       
+      canvas.line( 0,  0, 30, 30, ChunkyPNG::Color::BLACK)
+      canvas.line( 0, 30, 30,  0, ChunkyPNG::Color::BLACK)
+      canvas.line(15, 30, 15,  0, ChunkyPNG::Color.rgba(200,   0,   0, 128))
+      canvas.line( 0, 15, 30, 15, ChunkyPNG::Color.rgba(200,   0,   0, 128))
+      canvas.line(30, 30,  0, 15, ChunkyPNG::Color.rgba(  0, 200,   0, 128), false)
+      canvas.line( 0, 15, 30,  0, ChunkyPNG::Color.rgba(  0, 200,   0, 128))
+      canvas.line( 0, 30, 15,  0, ChunkyPNG::Color.rgba(  0,   0, 200, 128), false)
+      canvas.line(15,  0, 30, 30, ChunkyPNG::Color.rgba(  0,   0, 200, 128))
+
       canvas.should == reference_canvas('lines')
     end
     
@@ -57,8 +58,8 @@ describe ChunkyPNG::Canvas::Drawing do
   describe '#rect' do
     it "should draw a rectangle with the correct colors" do
       canvas = ChunkyPNG::Canvas.new(16, 16, ChunkyPNG::Color::WHITE)
-      canvas.rect(1, 1, 10, 10, ChunkyPNG::Color.rgb(0, 255, 0), ChunkyPNG::Color.rgba(255, 0, 0, 100))
-      canvas.rect(5, 5, 14, 14, ChunkyPNG::Color.rgb(0, 0, 255), ChunkyPNG::Color.rgba(255, 255, 0, 100))
+      canvas.rect(1, 1, 10, 10, ChunkyPNG::Color.rgba(0, 255, 0,  80), ChunkyPNG::Color.rgba(255, 0, 0, 100))
+      canvas.rect(5, 5, 14, 14, ChunkyPNG::Color.rgba(0, 0, 255, 160), ChunkyPNG::Color.rgba(255, 255, 0, 100))
       canvas.should == reference_canvas('rect')
     end
     
@@ -97,6 +98,34 @@ describe ChunkyPNG::Canvas::Drawing do
 
     it "should return itself to allow chaining" do
       subject.circle(10, 10, 5).should equal(subject)
+    end
+  end
+  
+  describe '#polygon' do
+    subject { ChunkyPNG::Canvas.new(22, 22) }
+
+    it "should draw an filled triangle when using 3 control points" do
+      subject.polygon('(2,2) (20,5) (5,20)', ChunkyPNG::Color(:black, 0xaa), ChunkyPNG::Color(:red, 0x44))
+      subject.should == reference_canvas('polygon_triangle_filled')
+    end
+
+    it "should draw a unfilled polygon with 6 control points" do
+      subject.polygon('(2,2) (12, 1) (20,5) (18,18) (5,20) (1,12)', ChunkyPNG::Color(:black))
+      subject.should == reference_canvas('polygon_unfilled')
+    end
+    
+    it "should draw a vertically crossed filled polygon with 4 control points" do
+      subject.polygon('(2,2) (21,2) (2,21) (21,21)', ChunkyPNG::Color(:black), ChunkyPNG::Color(:red))
+      subject.should == reference_canvas('polygon_filled_vertical')
+    end
+
+    it "should draw a vertically crossed filled polygon with 4 control points" do
+      subject.polygon('(2,2) (2,21) (21,2) (21,21)', ChunkyPNG::Color(:black), ChunkyPNG::Color(:red))
+      subject.should == reference_canvas('polygon_filled_horizontal')
+    end
+
+    it "should return itself to allow chaining" do
+      subject.polygon('(2,2) (20,5) (5,20)').should equal(subject)
     end
   end
 end
