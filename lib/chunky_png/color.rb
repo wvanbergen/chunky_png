@@ -1,15 +1,33 @@
 module ChunkyPNG
   
-  # Convenience method to return a color, based on the arguments given.
+  # Factory method to return a color value, based on the arguments given.
   #
   # - When given 1 argument, it can either be a color integer, which is returned as is,
   #   or it can be a HTML named color or a color in hex notation.
   # - When given 2 arguments, the 1st argument is parsed as color value and the second
   #   argument is used as opacity value (range: 0-255)
-  # - When given 3 argumens, they are interpreted as RGB values. 
-  # - When given 4 argumens, they are interpreted as RGBA values.
   #
-  # @return [Integer] The color value
+  # @overload Color(r, g, b, a)
+  #   @param (see ChunkyPNG::Color.rgba)
+  #   @return [Integer] The rgba color value.
+  #
+  # @overload Color(r, g, b)
+  #   @param (see ChunkyPNG::Color.rgb)
+  #   @return [Integer] The rgb color value.
+  #
+  # @overload Color(hex_value, opacity = nil)
+  #   @param (see ChunkyPNG::Color.from_hex)
+  #   @return [Integer] The hex color value, with the opacity applied if one was given.
+  #
+  # @overload Color(color_name, opacity = nil)
+  #   @param (see ChunkyPNG::Color.html_color)
+  #   @return [Integer] The hex color value, with the opacity applied if one was given.
+  #
+  # @overload Color(color_value, opacity = nil)
+  #   @param [Integer, :to_i] The color value.
+  #   @return [Integer] The color value, with the opacity applied if one was given.
+  #
+  # @raise [ChunkyPNG::ExpectationFailed] if the arguments weren't understood as a color.
   def self.Color(*args)
     case args.length
       when 4; ChunkyPNG::Color.rgba(*args)
@@ -56,24 +74,34 @@ module ChunkyPNG
     ####################################################################
 
     # Creates a new color using an r, g, b triple and an alpha value.
+    # @param [Integer] r The r-component (0-255)
+    # @param [Integer] g The r-component (0-255)
+    # @param [Integer] b The r-component (0-255)
+    # @param [Integer] a The opacity (0-255)
     # @return [Integer] The newly constructed color value.
     def rgba(r, g, b, a)
       r << 24 | g << 16 | b << 8 | a
     end
 
     # Creates a new color using an r, g, b triple.
+    # @param [Integer] r The r-component (0-255)
+    # @param [Integer] g The r-component (0-255)
+    # @param [Integer] b The r-component (0-255)
     # @return [Integer] The newly constructed color value.
     def rgb(r, g, b)
       r << 24 | g << 16 | b << 8 | 0xff
     end
 
     # Creates a new color using a grayscale teint.
+    # @param [Integer] teint The grayscale teint (0-255), will be used as r, g, and b value.
     # @return [ChunkyPNG::Color] The newly constructed color value.
     def grayscale(teint)
       teint << 24 | teint << 16 | teint << 8 | 0xff
     end
 
     # Creates a new color using a grayscale teint and alpha value.
+    # @param [Integer] teint The grayscale teint (0-255), will be used as r, g, and b value.
+    # @param [Integer] a The opacity (0-255)
     # @return [Integer] The newly constructed color value.
     def grayscale_alpha(teint, a)
       teint << 24 | teint << 16 | teint << 8 | a
@@ -113,13 +141,13 @@ module ChunkyPNG
     # @param [Integer] opacity The opacity value for the color. Overrides any
     #    opacity value given in the hex value if given.
     # @return [Integer] The color value.
-    def from_hex(str, opacity = nil)
-      if HEX_COLOR_REGEXP =~ str
+    def from_hex(hex_value, opacity = nil)
+      if HEX_COLOR_REGEXP =~ hex_value
         base_color = $1.hex << 8
         opacity  ||= $2 ? $2.hex : 0xff
         base_color | opacity
       else 
-        raise ChunkyPNG::ExpectationFailed, "Not a valid hex color notation: #{str.inspect}!"
+        raise ChunkyPNG::ExpectationFailed, "Not a valid hex color notation: #{hex_value.inspect}!"
       end
     end
 
