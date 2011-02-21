@@ -1,54 +1,28 @@
 module ChunkyPNG
   
   def self.Point(*args)
-    ChunkyPNG::Point.single(*args)
+    case args.length
+      when 2; ChunkyPNG::Point.new(*args)
+      when 1; case source = args.first
+          when ChunkyPNG::Point; source
+          when ChunkyPNG::Dimension; ChunkyPNG::Point.new(source.width, source.height)
+          when Array; ChunkyPNG::Point.new(source[0], source[1])
+          when Hash; ChunkyPNG::Point.new(source[:x] || source['x'], source[:y] || source['y'])
+          when /^[\(\[\{]?(\d+)\s*[,]?\s*(\d+)[\)\]\}]?$/; ChunkyPNG::Point.new($1.to_i, $2.to_i)
+          else 
+            if source.respond_to?(:x) && source.respond_to?(:y)
+              ChunkyPNG::Point.new(source.x, source.y)
+            else
+              raise ChunkyPNG::ExpectationFailed, "Don't know how to construct a point from #{source.inspect}!"
+            end
+        end
+      else raise ChunkyPNG::ExpectationFailed, "Don't know how to construct a point from #{args.inspect}!"
+    end
   end
   
   # Helper class to deal with points on a canvas
   class Point
 
-    class << self
-      
-      def single(*args)
-        case args.length
-          when 2; new(*args)
-          when 1; case source = args.first
-              when ChunkyPNG::Point; source
-              when Array; new(source[0], source[1])
-              when Hash; new((source[:x] || source['x']), (source[:y] || source['y']))
-              when /^[\(\[\{]?(\d+)\s*[,x]?\s*(\d+)[\)\]\}]?$/; new($1.to_i, $2.to_i)
-              else raise ChunkyPNG::ExpectationFailed, "Don't know how to construct a point from #{source.inspect}!"
-            end
-          else raise ChunkyPNG::ExpectationFailed, "Don't know how to construct a point from #{args.inspect}!"
-        end
-      end
-    
-      def multiple_from_array(source)
-        return [] if source.empty?
-        if source.first.kind_of?(Numeric) || source.first =~ /^\d+$/
-          raise ChunkyPNG::ExpectationFailed, "The points array is expected to have an even number of items!" if source.length % 2 != 0
-
-          points = []
-          source.each_slice(2) { |x, y| points << new(x, y) }
-          return points
-        else
-          source.map { |p| single(p) }
-        end
-      end
-      
-      def multiple_from_string(source_str)
-        multiple_from_array(source_str.scan(/[\(\[\{]?(\d+)\s*[,x]?\s*(\d+)[\)\]\}]?/))
-      end
-    
-      def multiple(*source)
-        if source.length == 1 && source.first.respond_to?(:scan)
-          multiple_from_string(source.first) # e.g. ['1,1 2,2 3,3']
-        else
-          multiple_from_array(source) # e.g. [[1,1], [2,2], [3,3]] or [1,1,2,2,3,3]
-        end
-      end
-    end
-    
     # @return [Integer] The x-coordinate of the point.
     attr_accessor :x
 

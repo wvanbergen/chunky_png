@@ -12,3 +12,32 @@ describe ChunkyPNG::Dimension do
     end
   end
 end
+
+describe 'ChunkyPNG.Dimension' do
+  subject { ChunkyPNG::Dimension.new(1, 2) }
+  
+  it "should create a point from a 2-item array" do
+    ChunkyPNG::Dimension([1, 2]).should     == subject
+    ChunkyPNG::Dimension(['1', '2']).should == subject
+  end
+  
+  it "should create a point from a hash with x and y keys" do
+    ChunkyPNG::Dimension(:width => 1, :height => 2).should       == subject
+    ChunkyPNG::Dimension('width' => '1', 'height' => '2').should == subject
+  end
+  
+  it "should create a point from a point-like string" do
+    [
+      ChunkyPNG::Dimension('1,2'),
+      ChunkyPNG::Dimension('1   2'),
+      ChunkyPNG::Dimension('(1 , 2)'),
+      ChunkyPNG::Dimension("{1x2}"),
+      ChunkyPNG::Dimension("[1\t2}"),
+    ].all? { |point| point == subject }
+  end
+  
+  it "should raise an exception if the input is not understood" do
+    lambda { ChunkyPNG::Dimension(Object.new) }.should raise_error(ChunkyPNG::ExpectationFailed)
+    lambda { ChunkyPNG::Dimension(1, 2, 3) }.should raise_error(ChunkyPNG::ExpectationFailed)
+  end
+end
