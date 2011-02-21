@@ -4,10 +4,16 @@ module ChunkyPNG
     # The ChunkyPNG::Canvas::Resampling module defines methods to perform image resampling to 
     # a {ChunkyPNG::Canvas}.
     #
+    # Currently, only the nearest neighbor algorithm is implemented. Bilinear and cubic
+    # algorithms may be added later on.
+    #
     # @see ChunkyPNG::Canvas
     module Resampling
       
-      # Resamples an image. This will return a new canvas instance.
+      # Resamples the canvas.
+      # @param [Integer] new_width The width of the resamples canvas.
+      # @param [Integer] new_height The height of the resamples canvas.
+      # @param [ChunkyPNG::Canvas] A new canvas instance with the resamples pixels.
       def resample_nearest_neighbor(new_width, new_height)
         
         resampled_image = self.class.new(new_width.to_i, new_height.to_i)
@@ -23,7 +29,7 @@ module ChunkyPNG
             source_x = (x - 0.5) * width_ratio + 0.5
             input_x  = source_x.to_i
 
-            resampled_image.set_pixel(x - 1, y - 1, self[[input_x - 1, 0].max, [input_y - 1, 0].max])
+            resampled_image.set_pixel(x - 1, y - 1, get_pixel([input_x - 1, 0].max, [input_y - 1, 0].max))
           end
         end
         

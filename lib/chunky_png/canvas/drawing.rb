@@ -6,8 +6,9 @@ module ChunkyPNG
     # All of these methods change the current canvas instance and do not create a new one,
     # even though the method names do not end with a bang.
     #
-    # Drawing operations will not fail when something is drawn outside of the bounds of the
-    # canvas; these pixels will simply be ignored.
+    # @note Drawing operations will not fail when something is drawn outside of the bounds
+    #       of the canvas; these pixels will simply be ignored.
+    # @see ChunkyPNG::Canvas
     module Drawing
       
       # Composes a pixel on the canvas by alpha blending a color with its background color.
@@ -16,7 +17,7 @@ module ChunkyPNG
       #   @param [Integer] y The y-coordinate of the pixel to blend.
       #   @param [Integer] color The foreground color to blend with
       # @overload compose_pixel(point, color)
-      #   @param [ChunkyPNG::Point] point The point on the canvas to blend.
+      #   @param [ChunkyPNG::Point, ...] point The point on the canvas to blend.
       #   @param [Integer] color The foreground color to blend with
       def compose_pixel(*args)
         point = args.length == 2 ? ChunkyPNG::Point(args.first) : ChunkyPNG::Point(args[0], args[1])

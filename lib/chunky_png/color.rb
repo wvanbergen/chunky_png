@@ -42,9 +42,13 @@ module ChunkyPNG
   module Color
     extend self
 
-    # The maximum value of each color component.
+    # @return [Integer] The maximum value of each color component.
     MAX = 0xff
+    
+    # @return [Regexp] The regexp to parse hex color values.
     HEX_COLOR_REGEXP  = /^(?:#|0x)?([0-9a-f]{6})([0-9a-f]{2})?$/i
+    
+    # @return [Regexp] The regexp to parse named color values.
     HTML_COLOR_REGEXP = /^([a-z][a-z_ ]+[a-z])(?:\ ?\@\ ?(1\.0|0\.\d+))?$/i
     
     ####################################################################
@@ -105,7 +109,10 @@ module ChunkyPNG
     # Color strings may include the prefix "0x" or "#".
     #
     # @param [String] str The color in hex notation. @return [Integer] The
-    # converted color value.
+    #   converted color value.
+    # @param [Integer] opacity The opacity value for the color. Overrides any
+    #    opacity value given in the hex value if given.
+    # @return [Integer] The color value.
     def from_hex(str, opacity = nil)
       if HEX_COLOR_REGEXP =~ str
         base_color = $1.hex << 8
@@ -403,7 +410,7 @@ module ChunkyPNG
     # COLOR CONSTANTS
     ####################################################################
 
-    # All the prefined color names for HTML
+    # @return [Hash<Symbol, Integer>] All the prefined color names in HTML.
     PREDEFINED_COLORS = {
       :aliceblue => 0xf0f8ff00,
       :antiquewhite => 0xfaebd700,
@@ -551,31 +558,41 @@ module ChunkyPNG
       :white => 0xffffff00,
       :whitesmoke => 0xf5f5f500,
       :yellow => 0xffff0000,
-      :yellowgreen => 0x9acd3200,
-      :transparent => 0x00000000
+      :yellowgreen => 0x9acd3200
     }
     
+    # Gets a color value based on a HTML color name.
+    # 
+    # The color name is flexible. E.g. <tt>'yellowgreen'</tt>, <tt>'Yellow green'</tt>, 
+    # <tt>'YellowGreen'</tt>, <tt>'YELLOW_GREEN'</tt> and <tt>:yellow_green</tt> will
+    # all return the same color value.
+    #
+    # You can include a opacity level in the color name (e.g. <tt>'red @ 0.5'</tt>) or give
+    # an explit opacity value as second argument. If no opacity value is given, the color
+    # will be fully opaque.
+    #
+    # @param [Symbol, String] color_name The color name. It may include an opacity specifier
+    #   like <tt>@ 0.8</tt> to set the color's opacity.
+    # @param [Integer] opacity The opacity value for the color between 0 and 255. Overrides 
+    #   any opacity value given in the color name.
+    # @return [Integer] The color value.
+    # @raise [ChunkyPNG::Exception] If the color name was not recognized.
     def html_color(color_name, opacity = nil)
       if color_name.to_s =~ HTML_COLOR_REGEXP
         opacity ||= $2 ? ($2.to_f * 255.0).round : 0xff
         base_color_name = $1.gsub(/[^a-z]+/i, '').downcase.to_sym
-        
-        if PREDEFINED_COLORS.has_key?(base_color_name)
-          return PREDEFINED_COLORS[base_color_name] | opacity
-        end
+        return PREDEFINED_COLORS[base_color_name] | opacity if PREDEFINED_COLORS.has_key?(base_color_name)
       end
       raise ChunkyPNG::Exception, "Unknown color name #{color_name}!"
     end
-    
-    alias_method :[], :html_color
 
-    # Black pixel/color
+    # @return [Integer] Black pixel/color
     BLACK = rgb(  0,   0,   0)
 
-    # White pixel/color
+    # @return [Integer] White pixel/color
     WHITE = rgb(255, 255, 255)
 
-    # Fully transparent pixel/color
+    # @return [Integer] Fully transparent pixel/color
     TRANSPARENT = rgba(0, 0, 0, 0)
 
     ####################################################################

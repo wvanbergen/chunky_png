@@ -47,7 +47,10 @@ module ChunkyPNG
       # @return [ChunkyPNG::Canvas] Returns the new canvas, composed of the other 2.
       # @raise [ChunkyPNG::OutOfBounds] when the other canvas doesn't fit on this one,
       #     given the offset and size of the other canvas.
-      # @see #compose! 
+      #
+      # @note API changed since 1.0 - This method now no longer is in place, but returns
+      #     a new canvas and leaves the original intact. Use {#compose!} if you want to
+      #     compose on the canvas in place.
       # @see #replace
       def compose(other, offset_x = 0, offset_y = 0)
         dup.compose!(other, offset_x, offset_y)
@@ -86,8 +89,11 @@ module ChunkyPNG
       # @return [ChunkyPNG::Canvas] Returns a new, combined canvas.
       # @raise [ChunkyPNG::OutOfBounds] when the other canvas doesn't fit on this one,
       #     given the offset and size of the other canvas.
+      #
+      # @note API changed since 1.0 - This method now no longer is in place, but returns
+      #     a new canvas and leaves the original intact. Use {#replace!} if you want to
+      #     replace pixels on the canvas in place.
       # @see #compose 
-      # @see #replace!
       def replace(other, offset_x = 0, offset_y = 0)
         dup.replace!(other, offset_x, offset_y)
       end
@@ -122,6 +128,7 @@ module ChunkyPNG
       # This method will leave the original object intact and return a new canvas.
       #
       # @return [ChunkyPNG::Canvas] The flipped image
+      # @see #flip_horizontally!
       def flip_horizontally
         dup.flip_horizontally!
       end
@@ -133,6 +140,7 @@ module ChunkyPNG
       # This method will leave the original object intact and return a new canvas.
       #
       # @return [ChunkyPNG::Canvas] Itself, but flipped
+      # @see #flip_horizontally
       def flip_horizontally!
         for y in 0..((height - 1) >> 1) do
           other_y   = height - (y + 1)
@@ -153,6 +161,7 @@ module ChunkyPNG
       # This method will leave the original object intact and return a new canvas.
       #
       # @return [ChunkyPNG::Canvas] The flipped image
+      # @see #flip_vertically!
       def flip_vertically
         dup.flip_vertically!
       end
@@ -164,6 +173,7 @@ module ChunkyPNG
       # This method will leave the original object intact and return a new canvas.
       #
       # @return [ChunkyPNG::Canvas] Itself, but flipped
+      # @see #flip_vertically
       def flip_vertically!
         for y in 0...height do
           replace_row!(y, row(y).reverse)
@@ -202,6 +212,7 @@ module ChunkyPNG
       # This method will leave the original object intact and return a new canvas.
       #
       # @return [ChunkyPNG::Canvas] The rotated image.
+      # @see #rotate_180!
       def rotate_180
         dup.rotate_180!
       end
@@ -209,6 +220,7 @@ module ChunkyPNG
       # Rotates the image 180 degrees in place.
       #
       # @return [ChunkyPNG::Canvas] Itself, but rotated 180 degrees.
+      # @see #rotate_180
       def rotate_180!
         pixels.reverse!
         return self
