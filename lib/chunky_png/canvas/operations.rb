@@ -121,6 +121,30 @@ module ChunkyPNG
         ChunkyPNG::Canvas.new(crop_width, crop_height, new_pixels)
       end
       
+      # Crops an image, given the coordinates and size of the image that needs to be cut out.
+      #
+      # This will change the size and content of the current canvas. Use {#crop} if you want to 
+      # have a new canvas returned instead, leaving the current canvas intact.
+      #
+      # @param [Integer] x The x-coordinate of the top left corner of the image to be cropped.
+      # @param [Integer] y The y-coordinate of the top left corner of the image to be cropped.
+      # @param [Integer] crop_width The width of the image to be cropped.
+      # @param [Integer] crop_height The height of the image to be cropped.
+      # @return [ChunkyPNG::Canvas] Returns itself, but cropped. 
+      # @raise [ChunkyPNG::OutOfBounds] when the crop dimensions plus the given coordinates 
+      #     are bigger then the original image.      
+      def crop!(x, y, crop_width, crop_height)
+        
+        raise ChunkyPNG::OutOfBounds, "Image width is too small!" if crop_width + x > width
+        raise ChunkyPNG::OutOfBounds, "Image width is too small!" if crop_height + y > height
+        
+        new_pixels = []
+        for cy in 0...crop_height do
+          new_pixels += pixels.slice((cy + y) * width + x, crop_width)
+        end
+        replace_canvas!(crop_width, crop_height, new_pixels)
+      end
+      
       # Flips the image horizontally, leaving the original intact.
       #
       # This will flip the image on its horizontal axis, e.g. pixels on the top will now

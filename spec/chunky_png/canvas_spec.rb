@@ -18,7 +18,6 @@ describe ChunkyPNG::Canvas do
     it "should return the dimensions as two-item array" do
       subject.area.should == ChunkyPNG::Dimension('1x1').area
     end
-    
   end
 
   describe '#include?' do
@@ -177,6 +176,22 @@ describe ChunkyPNG::Canvas do
       data = @canvas.column(0)
       data.should have(@canvas.height).items
       data.should == [65535, 1114111, 2162687, 3211263, 4259839, 5308415, 6356991, 7405567, 8454143, 9502719, 10551295, 11599871, 12648447, 13697023, 14745599, 15794175]
+    end
+  end
+  
+  describe '#replace_canvas' do
+    it "should change the dimension of the canvas" do
+      lambda { subject.send(:replace_canvas!, 2, 2, [1,2,3,4]) }.should change(subject, :dimension).
+          from(ChunkyPNG::Dimension('1x1')).to(ChunkyPNG::Dimension('2x2'))
+    end
+    
+    it "should change the pixel array" do
+      lambda { subject.send(:replace_canvas!, 2, 2, [1,2,3,4]) }.should change(subject, :pixels).
+          from([ChunkyPNG::Color('white')]).to([1,2,3,4])
+    end
+    
+    it "should return itself" do
+      subject.send(:replace_canvas!, 2, 2, [1,2,3,4]).should equal(subject)
     end
   end
 end

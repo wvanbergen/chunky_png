@@ -289,6 +289,13 @@ module ChunkyPNG
     
     protected
     
+    # Replaces the image, given a new width, new height, and a new pixel array.
+    def replace_canvas!(new_width, new_height, new_pixels)
+      raise ChunkyPNG::ExpectationFailed, "The provided pixel array should have #{new_width * new_height} items" unless new_pixels.length == new_width * new_height
+      @width, @height, @pixels = new_width, new_height, new_pixels
+      return self
+    end
+    
     # Throws an exception if the x-coordinate is out of bounds.
     def assert_x!(x)
       raise ChunkyPNG::OutOfBounds, "Column index #{x} out of bounds!" unless include_x?(x)

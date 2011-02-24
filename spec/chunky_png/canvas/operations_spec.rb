@@ -6,12 +6,40 @@ describe ChunkyPNG::Canvas::Operations do
   
   describe '#crop' do
     it "should crop the right pixels from the original canvas" do
-      cropped = subject.crop(10, 5, 4, 8)
-      cropped.should == reference_canvas('cropped')
+      subject.crop(10, 5, 4, 8).should == reference_canvas('cropped')
+    end
+    
+    it "should not return itself" do
+      subject.crop(10, 5, 4, 8).should_not equal(subject)
+    end
+    
+    it "should not adjust the currnet image" do
+      lambda { subject.crop(10, 5, 4, 8) }.should_not change(subject, :dimension)
     end
     
     it "should raise an exception when the cropped image falls outside the oiginal image" do
       lambda { subject.crop(16, 16, 2, 2) }.should raise_error(ChunkyPNG::OutOfBounds)
+    end
+  end
+  
+  describe '#crop!' do
+    it "should crop the right pixels from the original canvas" do
+      subject.crop!(10, 5, 4, 8)
+      subject.should == reference_canvas('cropped')
+    end
+    
+    it "should have a new width and height" do
+      lambda { subject.crop!(10, 5, 4, 8) }.should change(subject, :dimension).
+          from(ChunkyPNG::Dimension('16x16')).
+          to(ChunkyPNG::Dimension('4x8'))
+    end
+
+    it "should raise an exception when the cropped image falls outside the oiginal image" do
+      lambda { subject.crop!(16, 16, 2, 2) }.should raise_error(ChunkyPNG::OutOfBounds)
+    end
+    
+    it "should return itself" do
+      subject.crop!(10, 5, 4, 8).should equal(subject)
     end
   end
 
