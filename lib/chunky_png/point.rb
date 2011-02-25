@@ -25,7 +25,7 @@ module ChunkyPNG
   #     <tt>'(0 4)'</tt>, <tt>[0,4}'</tt>, etc.
   #   @return [ChunkyPNG::Point] The instantiated point.
   #
-  # @raise [ChunkyPNG::ExpectationFailed] if the arguments weren't understood.
+  # @raise [ArgumentError] if the arguments weren't understood.
   # @see ChunkyPNG::Point
   def self.Point(*args)
     case args.length
@@ -40,10 +40,10 @@ module ChunkyPNG
             if source.respond_to?(:x) && source.respond_to?(:y)
               ChunkyPNG::Point.new(source.x, source.y)
             else
-              raise ChunkyPNG::ExpectationFailed, "Don't know how to construct a point from #{source.inspect}!"
+              raise ArgumentError, "Don't know how to construct a point from #{source.inspect}!"
             end
         end
-      else raise ChunkyPNG::ExpectationFailed, "Don't know how to construct a point from #{args.inspect}!"
+      else raise ArgumentError, "Don't know how to construct a point from #{args.inspect}!"
     end
   end
   

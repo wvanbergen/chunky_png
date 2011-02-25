@@ -12,6 +12,8 @@ module ChunkyPNG
   # @overload Vector(pointlike, pointlike, pointlike, ...)
   #   Creates a vector by converting every argument to a point using {ChunkyPNG.Point}.
   #   @return [ChunkyPNG::Vector] The instantiated vector.
+  #
+  # @raise [ArgumentError] If the given arguments could not be understood as a vector.
   def self.Vector(*args)
     
     return args.first if args.length == 1 && args.first.kind_of?(ChunkyPNG::Vector)
@@ -75,7 +77,7 @@ module ChunkyPNG
     def self.multiple_from_array(source)
       return [] if source.empty?
       if source.first.kind_of?(Numeric) || source.first =~ /^\d+$/
-        raise ChunkyPNG::ExpectationFailed, "The points array is expected to have an even number of items!" if source.length % 2 != 0
+        raise ArgumentError, "The points array is expected to have an even number of items!" if source.length % 2 != 0
 
         points = []
         source.each_slice(2) { |x, y| points << ChunkyPNG::Point.new(x, y) }

@@ -41,7 +41,7 @@ describe 'ChunkyPNG.Vector' do
   end
 
   it "should raise an error when an odd number of numerics is given" do
-    lambda { ChunkyPNG::Vector(1, 2, 3) }.should raise_error(ChunkyPNG::ExpectationFailed)
+    lambda { ChunkyPNG::Vector(1, 2, 3) }.should raise_error(ArgumentError)
   end
 
   it "should create a vector from a string" do

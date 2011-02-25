@@ -67,6 +67,8 @@ module ChunkyPNG
     #
     #    * If an array of pixels is provided, these pixels will be used as initial value. Note
     #      that the amount of pixels in this array should equal +width * height+.
+    #
+    # @raise [ArgumentError] If the initial value is not understood.
     def initialize(width, height, initial = ChunkyPNG::Color::TRANSPARENT)
 
       @width, @height = width, height
@@ -76,7 +78,7 @@ module ChunkyPNG
       elsif initial.kind_of?(Array) && initial.length == width * height
         @pixels = initial
       else
-        raise ChunkyPNG::ExpectationFailed, "Cannot use this value as initial #{width}x#{height} canvas: #{initial.inspect}!"
+        raise ArgumentError, "Cannot use this value as initial #{width}x#{height} canvas: #{initial.inspect}!"
       end
     end
     
@@ -291,7 +293,7 @@ module ChunkyPNG
     
     # Replaces the image, given a new width, new height, and a new pixel array.
     def replace_canvas!(new_width, new_height, new_pixels)
-      raise ChunkyPNG::ExpectationFailed, "The provided pixel array should have #{new_width * new_height} items" unless new_pixels.length == new_width * new_height
+      raise ArgumentError, "The provided pixel array should have #{new_width * new_height} items" unless new_pixels.length == new_width * new_height
       @width, @height, @pixels = new_width, new_height, new_pixels
       return self
     end

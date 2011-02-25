@@ -2,11 +2,6 @@ module ChunkyPNG
   
   # Factory method to return a color value, based on the arguments given.
   #
-  # - When given 1 argument, it can either be a color integer, which is returned as is,
-  #   or it can be a HTML named color or a color in hex notation.
-  # - When given 2 arguments, the 1st argument is parsed as color value and the second
-  #   argument is used as opacity value (range: 0-255)
-  #
   # @overload Color(r, g, b, a)
   #   @param (see ChunkyPNG::Color.rgba)
   #   @return [Integer] The rgba color value.
@@ -27,7 +22,7 @@ module ChunkyPNG
   #   @param [Integer, :to_i] The color value.
   #   @return [Integer] The color value, with the opacity applied if one was given.
   #
-  # @raise [ChunkyPNG::ExpectationFailed] if the arguments weren't understood as a color.
+  # @raise [ArgumentError] if the arguments weren't understood as a color.
   def self.Color(*args)
     case args.length
       when 4; ChunkyPNG::Color.rgba(*args)
@@ -38,9 +33,9 @@ module ChunkyPNG
           when Integer, /^\d+$/; source.to_i
           when ChunkyPNG::Color::HEX_COLOR_REGEXP;  ChunkyPNG::Color.from_hex(source)
           when ChunkyPNG::Color::HTML_COLOR_REGEXP; ChunkyPNG::Color.html_color(source)
-          else raise ChunkyPNG::ExpectationFailed; "Don't know how to create a color from #{source.inspect}!"
+          else raise ArgumentError, "Don't know how to create a color from #{source.inspect}!"
         end
-      else raise ChunkyPNG::ExpectationFailed; "Don't know how to create a color from #{args.inspect}!"
+      else raise ArgumentError, "Don't know how to create a color from #{args.inspect}!"
     end
   end
 
@@ -141,13 +136,14 @@ module ChunkyPNG
     # @param [Integer] opacity The opacity value for the color. Overrides any
     #    opacity value given in the hex value if given.
     # @return [Integer] The color value.
+    # @raise [ArgumentError] if the value given is not a hex color notation.
     def from_hex(hex_value, opacity = nil)
       if HEX_COLOR_REGEXP =~ hex_value
         base_color = $1.hex << 8
         opacity  ||= $2 ? $2.hex : 0xff
         base_color | opacity
       else 
-        raise ChunkyPNG::ExpectationFailed, "Not a valid hex color notation: #{hex_value.inspect}!"
+        raise ArgumentError, "Not a valid hex color notation: #{hex_value.inspect}!"
       end
     end
 

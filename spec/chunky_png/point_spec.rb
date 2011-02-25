@@ -64,8 +64,13 @@ describe 'ChunkyPNG.Point' do
     ].all? { |point| point == subject }
   end
   
+  it "should create a point from an object that responds to x and y" do
+    mock_object = mock('Some object with x and y', :x => 1, :y => 2)
+    ChunkyPNG::Point(mock_object).should == subject
+  end
+  
   it "should raise an exception if the input is not understood" do
-    lambda { ChunkyPNG::Point(Object.new) }.should raise_error(ChunkyPNG::ExpectationFailed)
-    lambda { ChunkyPNG::Point(1, 2, 3) }.should raise_error(ChunkyPNG::ExpectationFailed)
+    lambda { ChunkyPNG::Point(Object.new) }.should raise_error(ArgumentError)
+    lambda { ChunkyPNG::Point(1, 2, 3) }.should raise_error(ArgumentError)
   end
 end

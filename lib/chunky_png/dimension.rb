@@ -24,6 +24,7 @@ module ChunkyPNG
   #      width.
   #   @return [ChunkyPNG::Dimension] The instantiated dimension.
   #
+  # @raise [ArgumentError] If the argument(s) given where not understood as a dimension.
   # @see ChunkyPNG::Dimension
   def self.Dimension(*args)
 
@@ -39,10 +40,10 @@ module ChunkyPNG
             if source.respond_to?(:width) && source.respond_to?(:height)
               ChunkyPNG::Dimension.new(source.width, source.height)
             else
-              raise ChunkyPNG::ExpectationFailed, "Don't know how to construct a point from #{source.inspect}!"
+              raise ArgumentError, "Don't know how to construct a point from #{source.inspect}!"
             end
         end
-      else raise ChunkyPNG::ExpectationFailed, "Don't know how to construct a point from #{args.inspect}!"
+      else raise ArgumentError, "Don't know how to construct a point from #{args.inspect}!"
     end
   end
   
