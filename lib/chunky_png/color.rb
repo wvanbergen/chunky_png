@@ -75,8 +75,8 @@ module ChunkyPNG
 
     # Creates a new color using an r, g, b triple and an alpha value.
     # @param [Integer] r The r-component (0-255)
-    # @param [Integer] g The r-component (0-255)
-    # @param [Integer] b The r-component (0-255)
+    # @param [Integer] g The g-component (0-255)
+    # @param [Integer] b The b-component (0-255)
     # @param [Integer] a The opacity (0-255)
     # @return [Integer] The newly constructed color value.
     def rgba(r, g, b, a)
@@ -85,8 +85,8 @@ module ChunkyPNG
 
     # Creates a new color using an r, g, b triple.
     # @param [Integer] r The r-component (0-255)
-    # @param [Integer] g The r-component (0-255)
-    # @param [Integer] b The r-component (0-255)
+    # @param [Integer] g The g-component (0-255)
+    # @param [Integer] b The b-component (0-255)
     # @return [Integer] The newly constructed color value.
     def rgb(r, g, b)
       r << 24 | g << 16 | b << 8 | 0xff
@@ -94,7 +94,7 @@ module ChunkyPNG
 
     # Creates a new color using a grayscale teint.
     # @param [Integer] teint The grayscale teint (0-255), will be used as r, g, and b value.
-    # @return [ChunkyPNG::Color] The newly constructed color value.
+    # @return [Integer] The newly constructed color value.
     def grayscale(teint)
       teint << 24 | teint << 16 | teint << 8 | 0xff
     end
