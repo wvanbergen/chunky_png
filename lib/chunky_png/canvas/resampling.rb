@@ -14,13 +14,14 @@ module ChunkyPNG
       # @param [Integer] new_width The width of the resamples canvas.
       # @param [Integer] new_height The height of the resamples canvas.
       # @param [ChunkyPNG::Canvas] A new canvas instance with the resamples pixels.
-      def resample_nearest_neighbor(new_width, new_height)
+      def resample_nearest_neighbor!(new_width, new_height)
         
         resampled_image = self.class.new(new_width.to_i, new_height.to_i)
         
         width_ratio  = width.to_f / new_width.to_f
         height_ratio = height.to_f / new_height.to_f
 
+        pixels = []
         for y in 1..new_height do
           source_y   = (y - 0.5) * height_ratio + 0.5
           input_y    = source_y.to_i
@@ -29,14 +30,19 @@ module ChunkyPNG
             source_x = (x - 0.5) * width_ratio + 0.5
             input_x  = source_x.to_i
 
-            resampled_image.set_pixel(x - 1, y - 1, get_pixel([input_x - 1, 0].max, [input_y - 1, 0].max))
+            pixels << get_pixel([input_x - 1, 0].max, [input_y - 1, 0].max)
           end
         end
         
-        return resampled_image
+        replace_canvas!(new_width.to_i, new_height.to_i, pixels)
+      end
+      
+      def resample_nearest_neighbor(new_width, new_height)
+        dup.resample_nearest_neighbor!(new_width, new_height)
       end
       
       alias_method :resample, :resample_nearest_neighbor
+      alias_method :resize, :resample
     end
   end
 end

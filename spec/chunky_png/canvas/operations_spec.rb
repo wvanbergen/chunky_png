@@ -182,6 +182,14 @@ describe ChunkyPNG::Canvas::Operations do
       subject.rotate_left.should == ChunkyPNG::Canvas.new(3, 2, [2, 4, 6, 1, 3, 5] )
     end
     
+    it "should not return itself" do
+      subject.rotate_left.should_not equal(subject)
+    end
+    
+    it "should not change the image dimensions" do
+      lambda { subject.rotate_left }.should_not change(subject, :dimension)
+    end
+    
     it "it should rotate 180 degrees when applied twice" do
       subject.rotate_left.rotate_left.should == subject.rotate_180
     end
@@ -194,10 +202,33 @@ describe ChunkyPNG::Canvas::Operations do
       subject.rotate_left.rotate_left.rotate_left.rotate_left.should == subject
     end
   end
+  
+  describe '#rotate_left!' do
+    it "should rotate the pixels 90 degrees clockwise" do
+      subject.rotate_left!
+      subject.should == ChunkyPNG::Canvas.new(3, 2, [2, 4, 6, 1, 3, 5] )
+    end
+    
+    it "should return itself" do
+      subject.rotate_left!.should equal(subject)
+    end
+    
+    it "should change the image dimensions" do
+      lambda { subject.rotate_left! }.should change(subject, :dimension).from(ChunkyPNG::Dimension('2x3')).to(ChunkyPNG::Dimension('3x2'))
+    end
+  end
 
   describe '#rotate_right' do
     it "should rotate the pixels 90 degrees clockwise" do
       subject.rotate_right.should == ChunkyPNG::Canvas.new(3, 2, [5, 3, 1, 6, 4, 2] )
+    end
+    
+    it "should not return itself" do
+      subject.rotate_right.should_not equal(subject)
+    end
+    
+    it "should not change the image dimensions" do
+      lambda { subject.rotate_right }.should_not change(subject, :dimension)
     end
     
     it "it should rotate 180 degrees when applied twice" do
@@ -210,6 +241,21 @@ describe ChunkyPNG::Canvas::Operations do
     
     it "should return itself when applied four times" do
       subject.rotate_right.rotate_right.rotate_right.rotate_right.should == subject
+    end
+  end
+  
+  describe '#rotate_right!' do
+    it "should rotate the pixels 90 degrees clockwise" do
+      subject.rotate_right!
+      subject.should == ChunkyPNG::Canvas.new(3, 2, [5, 3, 1, 6, 4, 2] )
+    end
+    
+    it "should return itself" do
+      subject.rotate_right!.should equal(subject)
+    end
+    
+    it "should change the image dimensions" do
+      lambda { subject.rotate_right! }.should change(subject, :dimension).from(ChunkyPNG::Dimension('2x3')).to(ChunkyPNG::Dimension('3x2'))
     end
   end
 

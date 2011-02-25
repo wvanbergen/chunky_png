@@ -110,15 +110,7 @@ module ChunkyPNG
       # @raise [ChunkyPNG::OutOfBounds] when the crop dimensions plus the given coordinates 
       #     are bigger then the original image.
       def crop(x, y, crop_width, crop_height)
-        
-        raise ChunkyPNG::OutOfBounds, "Image width is too small!" if crop_width + x > width
-        raise ChunkyPNG::OutOfBounds, "Image width is too small!" if crop_height + y > height
-        
-        new_pixels = []
-        for cy in 0...crop_height do
-          new_pixels += pixels.slice((cy + y) * width + x, crop_width)
-        end
-        ChunkyPNG::Canvas.new(crop_width, crop_height, new_pixels)
+        dup.crop!(x, y, crop_width, crop_height)
       end
       
       # Crops an image, given the coordinates and size of the image that needs to be cut out.
@@ -208,30 +200,58 @@ module ChunkyPNG
       alias_method :mirror!, :flip_vertically!
       alias_method :mirror,  :flip_vertically
 
-      # Rotates the image 90 degrees clockwise.
-      # This method will leave the original object intact and return a new canvas.
+      # Returns a new canvas instance that is rotated 90 degrees clockwise.
       #
-      # @return [ChunkyPNG::Canvas] The rotated image
+      # This method will change the current canvas. See {#rotate_right!} for
+      # the in place version
+      #
+      # @return [ChunkyPNG::Canvas] Itself, but rotated clockwise.
       def rotate_right
-        rotated = self.class.new(height, width)
-        for i in 0...width do
-          rotated.replace_row!(i, column(i).reverse)
-        end
-        return rotated
-      end
-      
-      # Rotates the image 90 degrees counter-clockwise.
-      # This method will leave the original object intact and return a new canvas.
-      #
-      # @return [ChunkyPNG::Canvas] The rotated image.
-      def rotate_left
-        rotated = self.class.new(height, width)
-        for i in 0...width do
-          rotated.replace_row!(width - (i + 1), column(i))
-        end
-        return rotated
+        dup.rotate_right!
       end
 
+      # Rotates the image 90 degrees clockwise in place.
+      #
+      # This method will change the current canvas. See {#rotate_right} for
+      # a version that leaves th current canvas intact
+      #
+      # @return [ChunkyPNG::Canvas] Itself, but rotated clockwise.
+      def rotate_right!
+        rotated = self.class.new(height, width)
+        new_pixels = []
+        0.upto(width - 1) { |i| new_pixels += column(i).reverse }
+        replace_canvas!(height, width, new_pixels)
+      end
+      
+      alias_method :rotate_clockwise,  :rotate_right
+      alias_method :rotate_clockwise!, :rotate_right!
+      
+      # Returns an image that is rotated 90 degrees counter-clockwise.
+      #
+      # This method will leave the original object intact and return a new canvas.
+      # See {#rotate_left!} for the in place version.
+      #
+      # @return [ChunkyPNG::Canvas] A rotated copy of itself.
+      def rotate_left
+        dup.rotate_left!
+      end
+      
+      # Rotates the image 90 degrees counter-clockwise in place.
+      #
+      # This method will change the original canvas. See {#rotate_left} for a
+      # version that leaves the canvas intact and returns a new rototed canvas
+      # instead.
+      #
+      # @return [ChunkyPNG::Canvas] Itself, but rotated.
+      def rotate_left!
+        new_pixels = []
+        (width - 1).downto(0) { |i| new_pixels += column(i) }
+        replace_canvas!(height, width, new_pixels)
+      end
+      
+      alias_method :rotate_counter_clockwise,  :rotate_left
+      alias_method :rotate_counter_clockwise!, :rotate_left!
+      
       # Rotates the image 180 degrees.
       # This method will leave the original object intact and return a new canvas.
       #
