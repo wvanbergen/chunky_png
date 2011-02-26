@@ -202,10 +202,10 @@ module ChunkyPNG
 
       # Returns a new canvas instance that is rotated 90 degrees clockwise.
       #
-      # This method will change the current canvas. See {#rotate_right!} for
-      # the in place version
+      # This method will return a new canvas and leaves the original intact. 
+      # See {#rotate_right!} for the in place version.
       #
-      # @return [ChunkyPNG::Canvas] Itself, but rotated clockwise.
+      # @return [ChunkyPNG::Canvas] A clockwise-rotated copy.
       def rotate_right
         dup.rotate_right!
       end
