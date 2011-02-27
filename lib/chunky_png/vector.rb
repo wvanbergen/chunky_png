@@ -142,13 +142,13 @@ module ChunkyPNG
     # Returns the width of the minimal bounding box of all the points in this vector.
     # @return [Integer] The x-distance between the points that are farthest from each other.
     def width
-      1 + (x_max - x_min)
+      1 + (max_x - min_x)
     end
 
     # Returns the height of the minimal bounding box of all the points in this vector.
     # @return [Integer] The y-distance between the points that are farthest from each other.
     def height
-      1 + (y_max - y_min)
+      1 + (max_y - min_y)
     end
     
     # Returns the dimension of the minimal bounding rectangle of the points in this vector.
