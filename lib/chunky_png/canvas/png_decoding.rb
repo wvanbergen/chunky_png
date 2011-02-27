@@ -409,7 +409,7 @@ module ChunkyPNG
       #     if this is the first scanline of the image.
       # @param [Integer] line_length The number of bytes in the scanline, discounting the filter method byte.
       # @param [Integer] pixel_size The number of bytes used per pixel, based on the color mode.
-      # @return [nil]
+      # @return [void]
       def decode_png_str_scanline(stream, pos, prev_pos, line_length, pixel_size)
         case stream.getbyte(pos)
           when ChunkyPNG::FILTER_NONE;    # noop
@@ -423,7 +423,7 @@ module ChunkyPNG
 
       # Decodes a scanline that wasn't encoded using filtering. This is a no-op.
       # @params (see #decode_png_str_scanline)
-      # @return [nil]
+      # @return [void]
       def decode_png_str_scanline_sub_none(stream, pos, prev_pos, line_length, pixel_size)
         # noop - this method shouldn't get called.
       end
@@ -431,7 +431,7 @@ module ChunkyPNG
       # Decodes a scanline in a pxielstream that was encoded using SUB filtering.
       # This will chnage the pixelstream to have unfiltered values.
       # @params (see #decode_png_str_scanline)
-      # @return [nil]
+      # @return [void]
       def decode_png_str_scanline_sub(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
           stream.setbyte(pos + i, (stream.getbyte(pos + i) + (i > pixel_size ? stream.getbyte(pos + i - pixel_size) : 0)) & 0xff)
@@ -441,7 +441,7 @@ module ChunkyPNG
       # Decodes a scanline in a pxielstream that was encoded using UP filtering.
       # This will chnage the pixelstream to have unfiltered values.
       # @params (see #decode_png_str_scanline)
-      # @return [nil]
+      # @return [void]
       def decode_png_str_scanline_up(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
           up = prev_pos ? stream.getbyte(prev_pos + i) : 0
@@ -452,7 +452,7 @@ module ChunkyPNG
       # Decodes a scanline in a pxielstream that was encoded using AVERAGE filtering.
       # This will chnage the pixelstream to have unfiltered values.
       # @params (see #decode_png_str_scanline)
-      # @return [nil]
+      # @return [void]
       def decode_png_str_scanline_average(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
           a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
@@ -464,7 +464,7 @@ module ChunkyPNG
       # Decodes a scanline in a pxielstream that was encoded using PAETH filtering.
       # This will chnage the pixelstream to have unfiltered values.
       # @params (see #decode_png_str_scanline)
-      # @return [nil]
+      # @return [void]
       def decode_png_str_scanline_paeth(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
           cur_pos = pos + i

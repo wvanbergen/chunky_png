@@ -24,6 +24,7 @@ module ChunkyPNG
   #      width.
   #   @return [ChunkyPNG::Dimension] The instantiated dimension.
   #
+  # @return [ChunkyPNG::Dimension] The dimension created by this factory method.
   # @raise [ArgumentError] If the argument(s) given where not understood as a dimension.
   # @see ChunkyPNG::Dimension
   def self.Dimension(*args)
@@ -74,6 +75,7 @@ module ChunkyPNG
     # Checks whether a point is within bounds of this dimension.
     # @param [ChunkyPNG::Point, ...] A point-like to bounds-check.
     # @return [true, false] True iff the the x and y coordinate fall in this dimension.
+    # @see ChunkyPNG.Point
     def include?(*point_like)
       point = ChunkyPNG::Point(*point_like)
       point.x >= 0 && point.x < width && point.y >= 0 && point.y < height

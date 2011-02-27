@@ -30,6 +30,7 @@ module ChunkyPNG
       # Writes the canvas to an IO stream, encoded as a PNG image.
       # @param [IO] io The output stream to write to.
       # @param constraints (see ChunkyPNG::Canvas::PNGEncoding#to_datastream)
+      # @return [void]
       def write(io, constraints = {})
         to_datastream(constraints).write(io)
       end
@@ -37,6 +38,7 @@ module ChunkyPNG
       # Writes the canvas to a file, encoded as a PNG image.
       # @param [String] filname The file to save the PNG image to.
       # @param constraints (see ChunkyPNG::Canvas::PNGEncoding#to_datastream)
+      # @return [void]
       def save(filename, constraints = {})
         File.open(filename, 'wb') { |io| write(io, constraints) }
       end
@@ -379,14 +381,14 @@ module ChunkyPNG
       # @param [Integer] line_width The number of bytes in this scanline, without counting the filtering
       #     method byte.
       # @param [Integer] pixel_size The number of bytes used per pixel.
-      # @return [nil]
+      # @return [void]
       def encode_png_str_scanline_none(stream, pos, prev_pos, line_width, pixel_size)
         # noop - this method shouldn't get called at all.
       end
 
       # Encodes a scanline of a pixelstream using SUB filtering. This will modify the stream.
       # @param (see #encode_png_str_scanline_none)
-      # @return [nil]
+      # @return [void]
       def encode_png_str_scanline_sub(stream, pos, prev_pos, line_width, pixel_size)
         line_width.downto(1) do |i|
           a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
@@ -397,7 +399,7 @@ module ChunkyPNG
 
       # Encodes a scanline of a pixelstream using UP filtering. This will modify the stream.
       # @param (see #encode_png_str_scanline_none)
-      # @return [nil]
+      # @return [void]
       def encode_png_str_scanline_up(stream, pos, prev_pos, line_width, pixel_size)
         line_width.downto(1) do |i|
           b = prev_pos ? stream.getbyte(prev_pos + i) : 0
@@ -408,7 +410,7 @@ module ChunkyPNG
       
       # Encodes a scanline of a pixelstream using AVERAGE filtering. This will modify the stream.
       # @param (see #encode_png_str_scanline_none)
-      # @return [nil]
+      # @return [void]
       def encode_png_str_scanline_average(stream, pos, prev_pos, line_width, pixel_size)
         line_width.downto(1) do |i|
           a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
@@ -420,7 +422,7 @@ module ChunkyPNG
       
       # Encodes a scanline of a pixelstream using PAETH filtering. This will modify the stream.
       # @param (see #encode_png_str_scanline_none)
-      # @return [nil]
+      # @return [void]
       def encode_png_str_scanline_paeth(stream, pos, prev_pos, line_width, pixel_size)
         line_width.downto(1) do |i|
           a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0

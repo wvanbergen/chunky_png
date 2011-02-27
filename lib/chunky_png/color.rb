@@ -22,7 +22,9 @@ module ChunkyPNG
   #   @param [Integer, :to_i] The color value.
   #   @return [Integer] The color value, with the opacity applied if one was given.
   #
+  # @return [Integer] The determined color value as RGBA integer.
   # @raise [ArgumentError] if the arguments weren't understood as a color.
+  # @see ChunkyPNG::Color
   def self.Color(*args)
     case args.length
       when 4; ChunkyPNG::Color.rgba(*args)
@@ -58,9 +60,11 @@ module ChunkyPNG
     # @return [Integer] The maximum value of each color component.
     MAX = 0xff
     
+    # @private
     # @return [Regexp] The regexp to parse hex color values.
     HEX_COLOR_REGEXP  = /^(?:#|0x)?([0-9a-f]{6})([0-9a-f]{2})?$/i
-    
+
+    # @private
     # @return [Regexp] The regexp to parse named color values.
     HTML_COLOR_REGEXP = /^([a-z][a-z_ ]+[a-z])(?:\ ?\@\ ?(1\.0|0\.\d+))?$/i
     
@@ -329,7 +333,7 @@ module ChunkyPNG
     # @param [Integer] mask The opauqe variant of the color that was being composed
     # @param [Integer] bg The background color on which the color was composed.
     # @param [Integer] tolerance The decomposition tolerance level, a value between 0 and 255.
-    # @return [Integer] The decomposed alpha channel value, between 0 and 255.
+    # @return [Boolean] True of the alpha component can be composed successfully.
     # @see #decompose_alpha
     def alpha_decomposable?(color, mask, bg, tolerance = 1)
       components = decompose_alpha_components(color, mask, bg)
@@ -356,11 +360,11 @@ module ChunkyPNG
     end
     
     # Decomposes an alpha channel for either the r, g or b color channel.
-    # @param [:r, :g, :b] The channel to decompose the alpha channel from.
+    # @param [:r, :g, :b] channel The channel to decompose the alpha channel from.
     # @param [Integer] color The color that was the result of compositing.
-    # @param [Integer] mask The opauqe variant of the color that was being composed
+    # @param [Integer] mask The opaqe variant of the color that was being composed
     # @param [Integer] bg The background color on which the color was composed.
-    # @param [Integer] The decomposed alpha value for the channel.
+    # @return [Integer] The decomposed alpha value for the channel.
     def decompose_alpha_component(channel, color, mask, bg)
       ((send(channel, bg) - send(channel, color)).to_f / 
           (send(channel, bg) - send(channel, mask)).to_f * MAX).round

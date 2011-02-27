@@ -25,6 +25,7 @@ module ChunkyPNG
   #     <tt>'(0 4)'</tt>, <tt>[0,4}'</tt>, etc.
   #   @return [ChunkyPNG::Point] The instantiated point.
   #
+  # @return [ChunkyPNG::Point]
   # @raise [ArgumentError] if the arguments weren't understood.
   # @see ChunkyPNG::Point
   def self.Point(*args)

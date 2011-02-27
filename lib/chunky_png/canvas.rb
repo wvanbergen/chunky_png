@@ -84,6 +84,8 @@ module ChunkyPNG
     
     # Initializes a new Canvas instances when being cloned.
     # @param [ChunkyPNG::Canvas] other The canvas to duplicate
+    # @return [void]
+    # @private
     def initialize_copy(other)
       @width, @height = other.width, other.height
       @pixels = other.pixels.dup
@@ -186,7 +188,7 @@ module ChunkyPNG
     # Returns a single pixel from this canvas, without checking bounds. The return value for
     # this method is undefined if the coordinates are out of bounds.
     # @param (see #[])
-    # @return [ChunkyPNG::Color] The current pixel at the provided coordinates.
+    # @return [Integer] The current pixel at the provided coordinates.
     def get_pixel(x, y)
       @pixels[y * width + x]
     end
@@ -210,6 +212,7 @@ module ChunkyPNG
     # Replaces a row of pixels on this canvas.
     # @param [Integer] y The 0-based row index.
     # @param [Array<Integer>] vector The vector of pixels to replace the row with.
+    # @return [void]
     def replace_row!(y, vector)
       assert_y!(y) && assert_width!(vector.length)
       pixels[y * width, width] = vector
@@ -218,6 +221,7 @@ module ChunkyPNG
     # Replaces a column of pixels on this canvas.
     # @param [Integer] x The 0-based column index.
     # @param [Array<Integer>] vector The vector of pixels to replace the column with.
+    # @return [void]
     def replace_column!(x, vector)
       assert_x!(x) && assert_height!(vector.length)
       for y in 0...height do
@@ -229,7 +233,7 @@ module ChunkyPNG
     # @param [ChunkyPNG::Point, Array, Hash, String] point_like The point to check.
     # @return [true, false] True if the x and y coordinates of the point are  
     #    within the limits of this canvas.
-    # @see ChunkyPNG::Point.single
+    # @see ChunkyPNG.Point
     def include_point?(*point_like)
       dimension.include?(ChunkyPNG::Point(*point_like))
     end
@@ -281,6 +285,7 @@ module ChunkyPNG
     
     # Alternative implementation of the inspect method.
     # @return [String] A nicely formatted string representation of this canvas.
+    # @private
     def inspect
       inspected = "<#{self.class.name} #{width}x#{height} ["
       for y in 0...height
