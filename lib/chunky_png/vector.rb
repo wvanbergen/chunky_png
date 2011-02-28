@@ -29,7 +29,7 @@ module ChunkyPNG
   
   # Class that represents a vector of points, i.e. a list of {ChunkyPNG::Point} instances.
   #
-  # Vectors can be created quite flexibly. See the {ChunkyPNG.Vector} factory methods more 
+  # Vectors can be created quite flexibly. See the {ChunkyPNG.Vector} factory methods for 
   # more information on how to construct vectors.
   class Vector
     

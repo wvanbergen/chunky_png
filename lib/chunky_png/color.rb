@@ -333,7 +333,7 @@ module ChunkyPNG
     # @param [Integer] mask The opauqe variant of the color that was being composed
     # @param [Integer] bg The background color on which the color was composed.
     # @param [Integer] tolerance The decomposition tolerance level, a value between 0 and 255.
-    # @return [Boolean] True of the alpha component can be composed successfully.
+    # @return [Boolean] True if the alpha component can be decomposed successfully.
     # @see #decompose_alpha
     def alpha_decomposable?(color, mask, bg, tolerance = 1)
       components = decompose_alpha_components(color, mask, bg)

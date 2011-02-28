@@ -4,7 +4,7 @@ require 'zlib'
 require 'stringio'
 require 'enumerator'
 
-# ChunkyPNG - the pury ruby library to access PNG files.
+# ChunkyPNG - the pure ruby library to access PNG files.
 #
 # The ChunkyPNG module defines some constants that are used in the
 # PNG specification, specifies some exception classes, and serves as 
@@ -12,7 +12,7 @@ require 'enumerator'
 #
 # {ChunkyPNG::Image}::      class to represent PNG images, including metadata.
 # {ChunkyPNG::Canvas}::     class to represent the image's canvas.
-# {ChunkyPNG::Color}::      module to wortk with color values.
+# {ChunkyPNG::Color}::      module to work with color values.
 # {ChunkyPNG::Palette}::    represents the palette of colors used on a {ChunkyPNG::Canvas}.
 # {ChunkyPNG::Datastream}:: represents the internal structure of a PNG {ChunkyPNG::Image}.
 # {ChunkyPNG::Color}::      represents one chunk of data within a {ChunkyPNG::Datastream}.
