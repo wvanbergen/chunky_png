@@ -22,7 +22,8 @@ module ChunkyPNG
       def compose_pixel(*args)
         point = args.length == 2 ? ChunkyPNG::Point(args.first) : ChunkyPNG::Point(args[0], args[1])
         return unless include?(point)
-        set_pixel(point.x, point.y, ChunkyPNG::Color.compose(args.last, get_pixel(point.x, point.y)))
+        color = ChunkyPNG::Color(args.last)
+        set_pixel(point.x, point.y, ChunkyPNG::Color.compose(color, get_pixel(point.x, point.y)))
       end
       
       # Draws an anti-aliased line using Xiaolin Wu's algorithm.
@@ -36,6 +37,9 @@ module ChunkyPNG
       #    Set to false when drawing multiplelines in a path.
       # @return [ChunkyPNG::Canvas] Itself, with the line drawn.
       def line_xiaolin_wu(x0, y0, x1, y1, stroke_color, inclusive = true)
+        
+        stroke_color = ChunkyPNG::Color(stroke_color)
+        
         dx = x1 - x0
         sx = dx < 0 ? -1 : 1
         dx *= sx
@@ -105,6 +109,9 @@ module ChunkyPNG
         vector = ChunkyPNG::Vector(*path)
         raise ArgumentError, "A polygon requires at least 3 points" if path.length < 3
 
+        stroke_color = ChunkyPNG::Color(stroke_color)
+        fill_color   = ChunkyPNG::Color(fill_color)
+
         # Fill
         unless fill_color == ChunkyPNG::Color::TRANSPARENT
           vector.y_range.each do |y|
@@ -143,6 +150,9 @@ module ChunkyPNG
       # @return [ChunkyPNG::Canvas] Itself, with the rectangle drawn.
       def rect(x0, y0, x1, y1, stroke_color = ChunkyPNG::Color::BLACK, fill_color = ChunkyPNG::Color::TRANSPARENT)
       
+        stroke_color = ChunkyPNG::Color(stroke_color)
+        fill_color   = ChunkyPNG::Color(fill_color)
+      
         # Fill
         unless fill_color == ChunkyPNG::Color::TRANSPARENT
           [x0, x1].min.upto([x0, x1].max) do |x|
@@ -170,6 +180,9 @@ module ChunkyPNG
       # @param [Integer] fill_color The color to use that fills the circle.
       # @return [ChunkyPNG::Canvas] Itself, with the circle drawn.
       def circle(x0, y0, radius, stroke_color = ChunkyPNG::Color::BLACK, fill_color = ChunkyPNG::Color::TRANSPARENT)
+
+        stroke_color = ChunkyPNG::Color(stroke_color)
+        fill_color   = ChunkyPNG::Color(fill_color)
 
         f = 1 - radius
         ddF_x = 1
