@@ -36,7 +36,7 @@ module ChunkyPNG
           when ChunkyPNG::Dimension; ChunkyPNG::Point.new(source.width, source.height)
           when Array; ChunkyPNG::Point.new(source[0], source[1])
           when Hash; ChunkyPNG::Point.new(source[:x] || source['x'], source[:y] || source['y'])
-          when /^[\(\[\{]?(\d+)\s*[,]?\s*(\d+)[\)\]\}]?$/; ChunkyPNG::Point.new($1.to_i, $2.to_i)
+          when ChunkyPNG::Point::POINT_REGEXP; ChunkyPNG::Point.new($1.to_i, $2.to_i)
           else 
             if source.respond_to?(:x) && source.respond_to?(:y)
               ChunkyPNG::Point.new(source.x, source.y)
@@ -55,6 +55,10 @@ module ChunkyPNG
   #
   # @see ChunkyPNG.Point
   class Point
+    
+    # @return [Regexp] The regexp to parse points from a string.
+    # @private
+    POINT_REGEXP = /^[\(\[\{]?(\d+)\s*[,]?\s*(\d+)[\)\]\}]?$/
 
     # @return [Integer] The x-coordinate of the point.
     attr_accessor :x

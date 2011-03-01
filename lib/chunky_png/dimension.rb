@@ -36,7 +36,7 @@ module ChunkyPNG
           when ChunkyPNG::Point; ChunkyPNG::Dimension.new(source.x, source.y)
           when Array; ChunkyPNG::Dimension.new(source[0], source[1])
           when Hash;  ChunkyPNG::Dimension.new(source[:width] || source['width'], source[:height] || source['height'])
-          when /^[\(\[\{]?(\d+)\s*[x,]?\s*(\d+)[\)\]\}]?$/; ChunkyPNG::Dimension.new($1, $2)
+          when ChunkyPNG::Dimension::DIMENSION_REGEXP; ChunkyPNG::Dimension.new($1, $2)
           else
             if source.respond_to?(:width) && source.respond_to?(:height)
               ChunkyPNG::Dimension.new(source.width, source.height)
@@ -52,6 +52,10 @@ module ChunkyPNG
   #
   # This class contains some methods to simplify performing dimension related checks.
   class Dimension
+
+    # @return [Regexp] The regexp to parse dimensions from a string.
+    # @private
+    DIMENSION_REGEXP = /^[\(\[\{]?(\d+)\s*[x,]?\s*(\d+)[\)\]\}]?$/
 
     # @return [Integer] The width-compontent of this dimension.
     attr_accessor :width
