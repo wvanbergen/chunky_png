@@ -112,20 +112,10 @@ module ChunkyPNG
     end
 
     # Replaces a single pixel in this canvas.
-    #
-    # @overload []=(x, y, color)
-    #   Sets the color value of a pixel given a x- and y-coordinate
-    #   @param [Integer] x The x-coordinate of the pixel (column)
-    #   @param [Integer] y The y-coordinate of the pixel (row)
-    #   @param [Integer] color The new color for the provided coordinates.
-    #   @return [Integer] The new color value for this pixel, i.e. <tt>color</tt>. 
-    #
-    # @overload []=(point, color)
-    #   Sets the color value of a pixel given point-like value.
-    #   @param [ChunkyPNG::Point, ...] point The point on the canvas to replace.
-    #   @param [Integer] color The new color for the provided coordinates.
-    #   @return [Integer] The new color value for this pixel, i.e. <tt>color</tt>. 
-    #
+    # @param [Integer] x The x-coordinate of the pixel (column)
+    # @param [Integer] y The y-coordinate of the pixel (row)
+    # @param [Integer] color The new color for the provided coordinates.
+    # @return [Integer] The new color value for this pixel, i.e. <tt>color</tt>. 
     # @raise [ChunkyPNG::OutOfBounds] when the coordinates are outside of the image's dimensions.
     # @see #set_pixel
     def []=(x, y, color)
@@ -160,18 +150,9 @@ module ChunkyPNG
     end
 
     # Returns a single pixel's color value from this canvas.
-    #
-    # @overload [](point)
-    #   Returns the color value given a point-like value.
-    #   @param [ChunkyPNG::Point, ...] point The coordinates of the pixel as point.
-    #   @return [Integer] The current color value at the provided coordinates.
-    #
-    # @overload [](x, y)
-    #   Returns the color value given a x- and y-coordinate.
-    #   @param [Integer] x The x-coordinate of the pixel (column)
-    #   @param [Integer] y The y-coordinate of the pixel (row)
-    #   @return [Integer] The current color value at the provided coordinates.
-    #
+    # @param [Integer] x The x-coordinate of the pixel (column)
+    # @param [Integer] y The y-coordinate of the pixel (row)
+    # @return [Integer] The current color value at the provided coordinates.
     # @raise [ChunkyPNG::OutOfBounds] when the coordinates are outside of the image's dimensions.
     # @see #get_pixel
     def [](x, y)
