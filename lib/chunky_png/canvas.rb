@@ -74,7 +74,7 @@ module ChunkyPNG
       if initial.kind_of?(Array) && initial.length == width * height
         @pixels = initial
       else
-        @pixels = Array.new(width * height, ChunkyPNG::Color(initial))
+        @pixels = Array.new(width * height, ChunkyPNG::Color.parse(initial))
       end
     end
     
@@ -128,10 +128,9 @@ module ChunkyPNG
     #
     # @raise [ChunkyPNG::OutOfBounds] when the coordinates are outside of the image's dimensions.
     # @see #set_pixel
-    def []=(*args)
-      point = args.length == 2 ? ChunkyPNG::Point(args.first) : ChunkyPNG::Point(args[0], args[1])
-      assert_xy!(point.x, point.y)
-      @pixels[point.y * width + point.x] = args.last
+    def []=(x, y, color)
+      assert_xy!(x, y)
+      @pixels[y * width + x] = ChunkyPNG::Color.parse(color)
     end
 
     # Replaces a single pixel in this canvas, without bounds checking.
@@ -175,10 +174,9 @@ module ChunkyPNG
     #
     # @raise [ChunkyPNG::OutOfBounds] when the coordinates are outside of the image's dimensions.
     # @see #get_pixel
-    def [](*args)
-      point = ChunkyPNG::Point(*args)
-      assert_xy!(point.x, point.y)
-      @pixels[point.y * width + point.x]
+    def [](x, y)
+      assert_xy!(x, y)
+      @pixels[y * width + x]
     end
 
     # Returns a single pixel from this canvas, without checking bounds. The return value for
@@ -235,7 +233,14 @@ module ChunkyPNG
     end
     
     alias_method :include?,    :include_point?
-    alias_method :include_xy?, :include_point?
+    
+    # Checks whether the given x- and y-coordinate are in the range of the canvas
+    # @param [Integer] x The x-coordinate of the pixel (column)
+    # @param [Integer] y The y-coordinate of the pixel (row)
+    # @return [true, false] True if the x- and y-coordinate is in the range of this canvas.
+    def include_xy?(x, y)
+      y >= 0 && y < height && x >= 0 && x < width
+    end
     
     # Checks whether the given y-coordinate is in the range of the canvas
     # @param [Integer] y The y-coordinate of the pixel (row)

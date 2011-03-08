@@ -12,18 +12,21 @@ module ChunkyPNG
     module Drawing
       
       # Composes a pixel on the canvas by alpha blending a color with its background color.
-      # @overload compose_pixel(x, y, color)
-      #   @param [Integer] x The x-coordinate of the pixel to blend.
-      #   @param [Integer] y The y-coordinate of the pixel to blend.
-      #   @param [Integer] color The foreground color to blend with
-      # @overload compose_pixel(point, color)
-      #   @param [ChunkyPNG::Point, ...] point The point on the canvas to blend.
-      #   @param [Integer] color The foreground color to blend with
-      def compose_pixel(*args)
-        point = args.length == 2 ? ChunkyPNG::Point(args.first) : ChunkyPNG::Point(args[0], args[1])
-        return unless include?(point)
-        color = ChunkyPNG::Color(args.last)
-        set_pixel(point.x, point.y, ChunkyPNG::Color.compose(color, get_pixel(point.x, point.y)))
+      # @param [Integer] x The x-coordinate of the pixel to blend.
+      # @param [Integer] y The y-coordinate of the pixel to blend.
+      # @param [Integer] color The foreground color to blend with
+      # @return [Integer] The composed color.
+      def compose_pixel(x, y, color)
+        return unless include_xy?(x, y)
+        compose_pixel_unsafe(x, y, ChunkyPNG::Color.parse(color))
+      end
+      
+      # Composes a pixel on the canvas by alpha blending a color with its background color,
+      # without bounds checking.
+      # @param (see #compose_pixel)
+      # @return [Integer] The composed color.
+      def compose_pixel_unsafe(x, y, color)
+        set_pixel(x, y, ChunkyPNG::Color.compose(color, get_pixel(x, y)))
       end
       
       # Draws an anti-aliased line using Xiaolin Wu's algorithm.
@@ -38,7 +41,7 @@ module ChunkyPNG
       # @return [ChunkyPNG::Canvas] Itself, with the line drawn.
       def line_xiaolin_wu(x0, y0, x1, y1, stroke_color, inclusive = true)
         
-        stroke_color = ChunkyPNG::Color(stroke_color)
+        stroke_color = ChunkyPNG::Color.parse(stroke_color)
         
         dx = x1 - x0
         sx = dx < 0 ? -1 : 1
@@ -109,8 +112,8 @@ module ChunkyPNG
         vector = ChunkyPNG::Vector(*path)
         raise ArgumentError, "A polygon requires at least 3 points" if path.length < 3
 
-        stroke_color = ChunkyPNG::Color(stroke_color)
-        fill_color   = ChunkyPNG::Color(fill_color)
+        stroke_color = ChunkyPNG::Color.parse(stroke_color)
+        fill_color   = ChunkyPNG::Color.parse(fill_color)
 
         # Fill
         unless fill_color == ChunkyPNG::Color::TRANSPARENT
@@ -150,8 +153,8 @@ module ChunkyPNG
       # @return [ChunkyPNG::Canvas] Itself, with the rectangle drawn.
       def rect(x0, y0, x1, y1, stroke_color = ChunkyPNG::Color::BLACK, fill_color = ChunkyPNG::Color::TRANSPARENT)
       
-        stroke_color = ChunkyPNG::Color(stroke_color)
-        fill_color   = ChunkyPNG::Color(fill_color)
+        stroke_color = ChunkyPNG::Color.parse(stroke_color)
+        fill_color   = ChunkyPNG::Color.parse(fill_color)
       
         # Fill
         unless fill_color == ChunkyPNG::Color::TRANSPARENT
@@ -181,8 +184,8 @@ module ChunkyPNG
       # @return [ChunkyPNG::Canvas] Itself, with the circle drawn.
       def circle(x0, y0, radius, stroke_color = ChunkyPNG::Color::BLACK, fill_color = ChunkyPNG::Color::TRANSPARENT)
 
-        stroke_color = ChunkyPNG::Color(stroke_color)
-        fill_color   = ChunkyPNG::Color(fill_color)
+        stroke_color = ChunkyPNG::Color.parse(stroke_color)
+        fill_color   = ChunkyPNG::Color.parse(fill_color)
 
         f = 1 - radius
         ddF_x = 1

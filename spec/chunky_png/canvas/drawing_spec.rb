@@ -2,27 +2,21 @@ require 'spec_helper'
 
 describe ChunkyPNG::Canvas::Drawing do
   
-  describe '#point' do
+  describe '#compose_pixel' do
     subject { ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color.rgb(200, 150, 100)) }
     
     it "should compose colors correctly" do
       subject.compose_pixel(0,0, ChunkyPNG::Color(100, 150, 200, 128))
-      subject['0,0'].should == ChunkyPNG::Color(150, 150, 150)
+      subject[0, 0].should == ChunkyPNG::Color(150, 150, 150)
     end
     
     it "should return the composed color" do
       subject.compose_pixel(0, 0, ChunkyPNG::Color.rgba(100, 150, 200, 128)).should == ChunkyPNG::Color.rgb(150, 150, 150)
     end
     
-    it "should accept point-like arguments as well" do
-      lambda { subject.compose_pixel('0,0', ChunkyPNG::Color.rgba(100, 150, 200, 128)) }.should change { subject['0,0'] }
-      lambda { subject.compose_pixel({:x => 0, :y => 0}, ChunkyPNG::Color.rgba(100, 150, 200, 128)) }.should change { subject['0,0'] }
-      lambda { subject.compose_pixel(ChunkyPNG::Point.new(0, 0), ChunkyPNG::Color.rgba(100, 150, 200, 128)) } .should change { subject['0,0'] }
-    end
-    
     it "should do nothing when the coordinates are out of bounds" do
       subject.compose_pixel(1, -1, :black).should be_nil
-      lambda { subject.compose_pixel(1, -1, :black) }.should_not change { subject['0,0'] }
+      lambda { subject.compose_pixel(1, -1, :black) }.should_not change { subject[0, 0] }
     end
   end
   

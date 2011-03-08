@@ -1,5 +1,25 @@
 require 'spec_helper'
 
+describe 'ChunyPNG.Color' do
+  it "should interpret 4 arguments as RGBA values" do
+    ChunkyPNG::Color(1, 2, 3, 4).should == ChunkyPNG::Color.rgba(1, 2, 3, 4)
+  end
+  
+  it "should interpret 3 arguments as RGBA values" do
+    ChunkyPNG::Color(1, 2, 3).should == ChunkyPNG::Color.rgb(1, 2, 3)
+  end
+  
+  it "should interpret 2 arguments as a color to parse and an opacity value" do
+    ChunkyPNG::Color('0x0a649664', 0xaa).should == 0x0a6496aa
+    ChunkyPNG::Color('spring green @ 0.6666', 0xff).should == 0x00ff7fff
+  end
+  
+  it "should interpret 1 argument as a color to parse" do
+    ChunkyPNG::Color.should_receive(:parse).with('0x0a649664')
+    ChunkyPNG::Color('0x0a649664')
+  end
+end
+
 describe ChunkyPNG::Color do
   include ChunkyPNG::Color
 
@@ -11,25 +31,21 @@ describe ChunkyPNG::Color do
     @fully_transparent = 0x0a649600
   end
   
-  it "should interpret 4 arguments as RGBA values" do
-    ChunkyPNG::Color(1, 2, 3, 4).should == ChunkyPNG::Color.rgba(1, 2, 3, 4)
-  end
-  
-  it "should interpret 3 arguments as RGBA values" do
-    ChunkyPNG::Color(1, 2, 3).should == ChunkyPNG::Color.rgb(1, 2, 3)
-  end
-  
-  it "should interpret a hex string correctly" do
-    ChunkyPNG::Color('0x0a649664').should == ChunkyPNG::Color.from_hex('#0a649664')
-    ChunkyPNG::Color('0x0a649664', 0xff).should == ChunkyPNG::Color.from_hex('#0a6496', 0xff)
-  end
-  
-  it "should interpret a color name correctly" do
-    ChunkyPNG::Color(:spring_green).should == 0x00ff7fff
-    ChunkyPNG::Color('spring green').should == 0x00ff7fff
-    ChunkyPNG::Color('spring green @ 0.6666').should == 0x00ff7faa
-    ChunkyPNG::Color('spring green', 0xaa).should == 0x00ff7faa
-    ChunkyPNG::Color('spring green @ 0.6666', 0xff).should == 0x00ff7fff
+  describe '#parse' do
+    it "should interpret a hex string correctly" do
+      parse('0x0a649664').should == ChunkyPNG::Color.from_hex('#0a649664')
+    end
+
+    it "should interpret a color name correctly" do
+      parse(:spring_green).should == 0x00ff7fff
+      parse('spring green').should == 0x00ff7fff
+      parse('spring green @ 0.6666').should == 0x00ff7faa
+    end
+    
+    it "should return numbers as is" do
+      parse('12345').should == 12345
+      parse(12345).should == 12345
+    end
   end
 
   describe '#pixel_bytesize' do

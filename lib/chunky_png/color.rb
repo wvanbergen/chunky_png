@@ -25,18 +25,13 @@ module ChunkyPNG
   # @return [Integer] The determined color value as RGBA integer.
   # @raise [ArgumentError] if the arguments weren't understood as a color.
   # @see ChunkyPNG::Color
+  # @see ChunkyPNG::Color.parse
   def self.Color(*args)
     case args.length
-      when 4; ChunkyPNG::Color.rgba(*args)
+      when 1; ChunkyPNG::Color.parse(args.first)
+      when 2; (ChunkyPNG::Color.parse(args.first) & 0xffffff00) | args[1].to_i
       when 3; ChunkyPNG::Color.rgb(*args)
-      when 2; (ChunkyPNG::Color(args[0]) & 0xffffff00) | args[1].to_i
-      when 1
-        case source = args.first.to_s
-          when Integer, /^\d+$/; source.to_i
-          when ChunkyPNG::Color::HEX_COLOR_REGEXP;  ChunkyPNG::Color.from_hex(source)
-          when ChunkyPNG::Color::HTML_COLOR_REGEXP; ChunkyPNG::Color.html_color(source)
-          else raise ArgumentError, "Don't know how to create a color from #{source.inspect}!"
-        end
+      when 4; ChunkyPNG::Color.rgba(*args)
       else raise ArgumentError, "Don't know how to create a color from #{args.inspect}!"
     end
   end
@@ -71,6 +66,22 @@ module ChunkyPNG
     ####################################################################
     # CONSTRUCTING COLOR VALUES
     ####################################################################
+
+    # Parses a color value given a numeric or string argument.
+    #
+    # It supports color numbers, colors in hex notation and named HTML colors.
+    #
+    # @param [Integer, String] The color value.
+    # @return [Integer] The color value, with the opacity applied if one was given.
+    def parse(source)
+      return source if source.kind_of?(Integer)
+      case source.to_s
+        when /^\d+$/; source.to_s.to_i
+        when ChunkyPNG::Color::HEX_COLOR_REGEXP;  ChunkyPNG::Color.from_hex(source.to_s)
+        when ChunkyPNG::Color::HTML_COLOR_REGEXP; ChunkyPNG::Color.html_color(source.to_s)
+        else raise ArgumentError, "Don't know how to create a color from #{source.inspect}!"
+      end
+    end
 
     # Creates a new color using an r, g, b triple and an alpha value.
     # @param [Integer] r The r-component (0-255)
