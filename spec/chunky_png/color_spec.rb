@@ -126,7 +126,7 @@ describe ChunkyPNG::Color do
     end
     
     it "should raise for an unkown color name" do
-      lambda { html_color(:nonsense) }.should raise_error(ChunkyPNG::Exception)
+      lambda { html_color(:nonsense) }.should raise_error(ArgumentError)
     end
   end
   
