@@ -622,7 +622,7 @@ module ChunkyPNG
         base_color_name = $1.gsub(/[^a-z]+/i, '').downcase.to_sym
         return PREDEFINED_COLORS[base_color_name] | opacity if PREDEFINED_COLORS.has_key?(base_color_name)
       end
-      raise ChunkyPNG::Exception, "Unknown color name #{color_name}!"
+      raise ArgumentError, "Unknown color name #{color_name}!"
     end
 
     # @return [Integer] Black pixel/color

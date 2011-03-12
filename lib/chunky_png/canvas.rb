@@ -58,20 +58,25 @@ module ChunkyPNG
     # CONSTRUCTORS
     #################################################################
 
-    # Initializes a new Canvas instance
-    # @param [Integer] width The width in pixels of this canvas
-    # @param [Integer] height The height in pixels of this canvas
-    # @param [ChunkyPNG::Pixel, Array<ChunkyPNG::Color>] initial The initial value of the pixels:
+    # Initializes a new Canvas instance.
     #
-    #    * If a color is passed to this parameter, this color will be used as background color.
+    # @overload initialize(width, height, background_color)
+    #   @param [Integer] width The width in pixels of this canvas
+    #   @param [Integer] height The height in pixels of this canvas
+    #   @param [Integer, ...] background_color The initial background color of this canvas.
+    #      This can be a color value or any value that {ChunkyPNG::Color.parse} can handle.
     #
-    #    * If an array of pixels is provided, these pixels will be used as initial value. Note
-    #      that the amount of pixels in this array should equal +width * height+.
+    # @overload initialize(width, height, initial)
+    #   @param [Integer] width The width in pixels of this canvas
+    #   @param [Integer] height The height in pixels of this canvas
+    #   @param [Array<Integer>] initial The initial pizel values. Must be an array with 
+    #     <tt>width * height</tt> elements.
     def initialize(width, height, initial = ChunkyPNG::Color::TRANSPARENT)
 
       @width, @height = width, height
 
-      if initial.kind_of?(Array) && initial.length == width * height
+      if initial.kind_of?(Array)
+        raise ArgumentError, "The initial array should have #{width}x#{height} = #{width*height} elements!" unless initial.length == width * height
         @pixels = initial
       else
         @pixels = Array.new(width * height, ChunkyPNG::Color.parse(initial))

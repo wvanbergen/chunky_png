@@ -8,6 +8,35 @@ describe ChunkyPNG::Canvas do
   it { should respond_to(:height) }
   it { should respond_to(:pixels) }
 
+  describe '#initialize' do
+    it "should accept a single color value as background color" do
+      canvas = ChunkyPNG::Canvas.new(2, 2, 'red @ 0.8')
+      canvas[1, 0].should == ChunkyPNG::Color.parse('red @ 0.8')
+    end
+    
+    it "should raise an error if the color value is not understood" do
+      lambda { ChunkyPNG::Canvas.new(2, 2, :nonsense) }.should raise_error(ArgumentError)
+    end
+    
+    it "should accept an array as initial pixel values" do
+      canvas = ChunkyPNG::Canvas.new(2, 2, [1,2,3,4])
+      canvas[0, 0].should == 1
+      canvas[1, 0].should == 2
+      canvas[0, 1].should == 3
+      canvas[1, 1].should == 4
+    end
+    
+    it "should raise an ArgumentError if the initial array does not have the correct number of elements" do
+      lambda { ChunkyPNG::Canvas.new(2, 2, [1,2,3]) }.should raise_error(ArgumentError)
+      lambda { ChunkyPNG::Canvas.new(2, 2, [1,2,3,4,5]) }.should raise_error(ArgumentError)      
+    end
+    
+    it "should use a transparent background by default" do
+      canvas = ChunkyPNG::Canvas.new(1, 1)
+      canvas[0,0].should == ChunkyPNG::Color::TRANSPARENT
+    end
+  end
+
   describe '#dimension' do
     it "should return the dimensions as a Dimension instance" do
       subject.dimension.should == ChunkyPNG::Dimension('1x1')
