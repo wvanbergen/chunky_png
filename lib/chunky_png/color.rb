@@ -40,7 +40,7 @@ module ChunkyPNG
   # library, the concepts of pixels and colors are both used, and they are
   # both represented by a Integer.
   #
-  # Pixels/colors are represented in RGBA componetns. Each of the four
+  # Pixels/colors are represented in RGBA components. Each of the four
   # components is stored with a depth of 8 bits (maximum value = 255 =
   # {ChunkyPNG::Color::MAX}). Together, these components are stored in a 4-byte
   # Integer.
@@ -208,7 +208,7 @@ module ChunkyPNG
     
     # Returns the opaque value of this color by removing the alpha channel.
     # @param [Integer] value The color to transform.
-    # @return [Integer] The opauq color
+    # @return [Integer] The opaque color
     def opaque!(value)
       value | 0x000000ff
     end
@@ -320,7 +320,7 @@ module ChunkyPNG
     # operation if alpha composition.
     #
     # If the color cannot be decomposed, this method will return the fully
-    # transparentvariant of the mask color.
+    # transparent variant of the mask color.
     #
     # @param [Integer] color The color that was the result of compositing.
     # @param [Integer] mask The opaque variant of the color that was being composed
@@ -341,7 +341,7 @@ module ChunkyPNG
     # all of which should be opaque. 
     #
     # @param [Integer] color The color that was the result of compositing.
-    # @param [Integer] mask The opauqe variant of the color that was being composed
+    # @param [Integer] mask The opaque variant of the color that was being composed
     # @param [Integer] bg The background color on which the color was composed.
     # @param [Integer] tolerance The decomposition tolerance level, a value between 0 and 255.
     # @return [Boolean] True if the alpha component can be decomposed successfully.
@@ -361,7 +361,7 @@ module ChunkyPNG
     # value of this method is undefined.
     #
     # @param [Integer] color The color that was the result of compositing.
-    # @param [Integer] mask The opauqe variant of the color that was being composed
+    # @param [Integer] mask The opaque variant of the color that was being composed
     # @param [Integer] bg The background color on which the color was composed.
     # @return [Integer] The best fitting alpha channel, a value between 0 and 255.
     # @see #alpha_decomposable?
@@ -373,7 +373,7 @@ module ChunkyPNG
     # Decomposes an alpha channel for either the r, g or b color channel.
     # @param [:r, :g, :b] channel The channel to decompose the alpha channel from.
     # @param [Integer] color The color that was the result of compositing.
-    # @param [Integer] mask The opaqe variant of the color that was being composed
+    # @param [Integer] mask The opaque variant of the color that was being composed
     # @param [Integer] bg The background color on which the color was composed.
     # @return [Integer] The decomposed alpha value for the channel.
     def decompose_alpha_component(channel, color, mask, bg)
@@ -383,7 +383,7 @@ module ChunkyPNG
     
     # Decomposes the alpha channels for the r, g and b color channel.
     # @param [Integer] color The color that was the result of compositing.
-    # @param [Integer] mask The opauqe variant of the color that was being composed
+    # @param [Integer] mask The opaque variant of the color that was being composed
     # @param [Integer] bg The background color on which the color was composed.    
     # @return [Array<Integer>] The decomposed alpha values for the r, g and b channels.
     def decompose_alpha_components(color, mask, bg)
@@ -449,7 +449,7 @@ module ChunkyPNG
     # COLOR CONSTANTS
     ####################################################################
 
-    # @return [Hash<Symbol, Integer>] All the prefined color names in HTML.
+    # @return [Hash<Symbol, Integer>] All the predefined color names in HTML.
     PREDEFINED_COLORS = {
       :aliceblue => 0xf0f8ff00,
       :antiquewhite => 0xfaebd700,
@@ -607,7 +607,7 @@ module ChunkyPNG
     # all return the same color value.
     #
     # You can include a opacity level in the color name (e.g. <tt>'red @ 0.5'</tt>) or give
-    # an explit opacity value as second argument. If no opacity value is given, the color
+    # an explicit opacity value as second argument. If no opacity value is given, the color
     # will be fully opaque.
     #
     # @param [Symbol, String] color_name The color name. It may include an opacity specifier

@@ -19,8 +19,8 @@ module ChunkyPNG
       #
       # @param [ChunkyPNG::Canvas] other The foreground canvas to compose on the
       #     current canvas, using alpha compositing.
-      # @param [Integer] offset_x The x-offset to apply the new forgeround on.
-      # @param [Integer] offset_y The y-offset to apply the new forgeround on.
+      # @param [Integer] offset_x The x-offset to apply the new foreground on.
+      # @param [Integer] offset_y The y-offset to apply the new foreground on.
       # @return [ChunkyPNG::Canvas] Returns itself, but with the other canvas composed onto it.
       # @raise [ChunkyPNG::OutOfBounds] when the other canvas doesn't fit on this one,
       #     given the offset and size of the other canvas.
@@ -63,8 +63,8 @@ module ChunkyPNG
       # them with semi-transparent pixels from the foreground image, see {#compose!}.
       #
       # @param [ChunkyPNG::Canvas] other The foreground canvas to get the pixels from.
-      # @param [Integer] offset_x The x-offset to apply the new forgeround on.
-      # @param [Integer] offset_y The y-offset to apply the new forgeround on.
+      # @param [Integer] offset_x The x-offset to apply the new foreground on.
+      # @param [Integer] offset_y The y-offset to apply the new foreground on.
       # @return [ChunkyPNG::Canvas] Returns itself, but with the other canvas placed onto it.
       # @raise [ChunkyPNG::OutOfBounds] when the other canvas doesn't fit on this one,
       #     given the offset and size of the other canvas.
@@ -170,7 +170,7 @@ module ChunkyPNG
       alias_method :flip!, :flip_horizontally!
       alias_method :flip,  :flip_horizontally
       
-      # Flips the image vertically, leaving the orginial intact.
+      # Flips the image vertically, leaving the original intact.
       #
       # This will flip the image on its vertical axis, e.g. pixels on the left will now
       # be pixels on the right. Chaining this method twice will return the original canvas.
@@ -239,7 +239,7 @@ module ChunkyPNG
       # Rotates the image 90 degrees counter-clockwise in place.
       #
       # This method will change the original canvas. See {#rotate_left} for a
-      # version that leaves the canvas intact and returns a new rototed canvas
+      # version that leaves the canvas intact and returns a new rotated canvas
       # instead.
       #
       # @return [ChunkyPNG::Canvas] Itself, but rotated.

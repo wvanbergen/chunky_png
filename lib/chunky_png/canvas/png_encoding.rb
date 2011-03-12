@@ -15,7 +15,7 @@ module ChunkyPNG
     #   IEND chunk and possibly a PLTE chunk.
     #
     # For interlaced images, the initial image is first split into 7 subimages.
-    # These images get encoded exectly as above, and the result gets combined 
+    # These images get encoded exactly as above, and the result gets combined
     # before the compression step.
     #
     # @see ChunkyPNG::Canvas::PNGDecoding
@@ -36,7 +36,7 @@ module ChunkyPNG
       end
 
       # Writes the canvas to a file, encoded as a PNG image.
-      # @param [String] filname The file to save the PNG image to.
+      # @param [String] filename The file to save the PNG image to.
       # @param constraints (see ChunkyPNG::Canvas::PNGEncoding#to_datastream)
       # @return [void]
       def save(filename, constraints = {})
@@ -112,7 +112,7 @@ module ChunkyPNG
           else raise ChunkyPNG::Exception, "Unknown encoding preset: #{constraints.inspect}"
         end
 
-        # Do not create a pallete when the encoding is given and does not require a palette.
+        # Do not create a palette when the encoding is given and does not require a palette.
         if encoding[:color_mode]
           if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
             self.encoding_palette = self.palette
@@ -178,7 +178,7 @@ module ChunkyPNG
       # Encodes the canvas according to the PNG format specification with a given color 
       # mode and Adam7 interlacing.
       #
-      # This method will split the original canva in 7 smaller canvases and encode them 
+      # This method will split the original canvas in 7 smaller canvases and encode them
       # one by one, concatenating the resulting strings.
       #
       # @param [Integer] color_mode The color mode to use for encoding.

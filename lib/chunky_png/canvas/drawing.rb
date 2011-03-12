@@ -37,7 +37,7 @@ module ChunkyPNG
       # @param [Integer] y1 The y-coordinate of the second control point.
       # @param [Integer] stroke_color The color to use for this line.
       # @param [true, false] inclusive Whether to draw the last pixel. 
-      #    Set to false when drawing multiplelines in a path.
+      #    Set to false when drawing multiple lines in a path.
       # @return [ChunkyPNG::Canvas] Itself, with the line drawn.
       def line_xiaolin_wu(x0, y0, x1, y1, stroke_color, inclusive = true)
         

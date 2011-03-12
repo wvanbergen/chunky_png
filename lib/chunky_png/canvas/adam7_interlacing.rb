@@ -3,7 +3,7 @@ module ChunkyPNG
     
     # Methods for decoding and encoding Adam7 interlacing.
     #
-    # Adam7 interlacing extractg 7 pass images out of a single image, that can be encoded to a 
+    # Adam7 interlacing extracts 7 pass images out of a single image, that can be encoded to a
     # stream separately so the image can be built up progressively. The module is included into
     # ChunkyPNG canvas and is used to extract the pass images from the original image, or to
     # reconstruct an original image from separate pass images.

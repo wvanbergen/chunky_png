@@ -2,7 +2,7 @@ module ChunkyPNG
   class Canvas
     
     # The ChunkyPNG::Canvas::Masking module defines methods to perform masking
-    # and theming oeprations on a {ChunkyPNG::Canvas}. The module is included into the Canvas class so all
+    # and theming operations on a {ChunkyPNG::Canvas}. The module is included into the Canvas class so all
     # these methods are available on every canvas.
     #
     # @see ChunkyPNG::Canvas
@@ -20,7 +20,7 @@ module ChunkyPNG
       #
       # @param [Integer] old_theme_color The original theme color in this image.
       # @param [Integer] new_theme_color The color to replace the old theme color with.
-      # @param [Integer] The backrgound color opn which the theme colored pixels are placed.
+      # @param [Integer] The background color on which the theme colored pixels are placed.
       # @param [Integer] tolerance The tolerance level to use when extracting the mask image. Five is 
       #    the default; increase this if the masked image does not extract all the required pixels, 
       #    decrease it if too many pixels get extracted.
@@ -45,7 +45,7 @@ module ChunkyPNG
       # {#change_theme_color!} will perform this in one go.
       #
       # @param [Integer] mask_color The current theme color.
-      # @param [Integer] bg_color The background color on which the theme colored pxiels are applied.
+      # @param [Integer] bg_color The background color on which the theme colored pixels are applied.
       # @param [Integer] tolerance The tolerance level to use when extracting the mask image. Five is 
       #    the default; increase this if the masked image does not extract all the required pixels, 
       #    decrease it if too many pixels get extracted.
@@ -72,7 +72,7 @@ module ChunkyPNG
       
       # Changes the color of a mask image.
       #
-      # This method works on acanavs extracte out of another image using the {#extract_mask} method.
+      # This method works on a canvas extracted out of another image using the {#extract_mask} method.
       # It can then be applied on the extracted base image. See {#change_theme_color!} to perform
       # these operations in one go.
       #

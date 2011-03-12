@@ -1,7 +1,7 @@
 module ChunkyPNG
 
   # The Datastream class represents a PNG formatted datastream. It supports
-  # both reading from and writing to strings, stremas and files.
+  # both reading from and writing to strings, streams and files.
   #
   # A PNG datastream begins with the PNG signature, and than contains multiple
   # chunks, starting with a header (IHDR) chunk and finishing with an end
@@ -113,7 +113,7 @@ module ChunkyPNG
     # This will iterate over the chunks using the order in which the chunks
     # should appear in the PNG file.
     #
-    # @yield [chunk] Yields the chunks in this datastrean, one by one in the correct order.
+    # @yield [chunk] Yields the chunks in this datastream, one by one in the correct order.
     # @yieldparam [ChunkyPNG::Chunk::Base] chunk A chunk in this datastream.
     # @see ChunkyPNG::Datastream#chunks
     def each_chunk

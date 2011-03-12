@@ -15,8 +15,8 @@ module ChunkyPNG
 
     # Builds a new palette given a set (Enumerable instance) of colors.
     #
-    # @param [Enumerbale<Integer>] enum The set of colors to include in this palette.
-    #   This Enumerbale can contains duplicates.
+    # @param [Enumerable<Integer>] enum The set of colors to include in this palette.
+    #   This Enumerable can contains duplicates.
     # @param [Array] decoding_map An array of colors in the exact order at which
     #   they appeared in the palette chunk, so that this array can be used for decoding.
     def initialize(enum, decoding_map = nil)
@@ -173,7 +173,7 @@ module ChunkyPNG
     end
 
     # Determines the most suitable colormode for this palette.
-    # @return [Integer] The colormode which would create the smalles possible
+    # @return [Integer] The colormode which would create the smallest possible
     #    file for images that use this exact palette.
     def best_color_settings
       if black_and_white?

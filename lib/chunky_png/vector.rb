@@ -40,7 +40,7 @@ module ChunkyPNG
     
     # Initializes a vector based on a list of Point instances.
     #
-    # You usually do not want to use this method directy, but call {ChunkyPNG.Vector} instead.
+    # You usually do not want to use this method directly, but call {ChunkyPNG.Vector} instead.
     #
     # @param [Array<ChunkyPNG::Point>] points
     # @see ChunkyPNG.Vector
