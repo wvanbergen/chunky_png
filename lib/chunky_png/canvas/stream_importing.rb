@@ -1,7 +1,7 @@
 module ChunkyPNG
   class Canvas
 
-    # Methods to quikcly load a canvas from a stream, encoded in RGB, RGBA, BGR or ABGR format.
+    # Methods to quickly load a canvas from a stream, encoded in RGB, RGBA, BGR or ABGR format.
     module StreamImporting
 
       # Creates a canvas by reading pixels from an RGB formatted stream with a

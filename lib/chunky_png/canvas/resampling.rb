@@ -11,9 +11,9 @@ module ChunkyPNG
     module Resampling
       
       # Resamples the canvas.
-      # @param [Integer] new_width The width of the resamples canvas.
-      # @param [Integer] new_height The height of the resamples canvas.
-      # @param [ChunkyPNG::Canvas] A new canvas instance with the resamples pixels.
+      # @param [Integer] new_width The width of the resampled canvas.
+      # @param [Integer] new_height The height of the resampled canvas.
+      # @return [ChunkyPNG::Canvas] A new canvas instance with the resampled pixels.
       def resample_nearest_neighbor!(new_width, new_height)
         
         resampled_image = self.class.new(new_width.to_i, new_height.to_i)

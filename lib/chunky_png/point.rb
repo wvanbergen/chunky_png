@@ -3,7 +3,7 @@ module ChunkyPNG
   # Factory method to create {ChunkyPNG::Point} instances.
   # 
   # This method tries to be as flexible as possible with regards to the given input: besides 
-  # explit coordinates, this method also accepts arrays, hashes, strings, {ChunkyPNG::Dimension}
+  # explicit coordinates, this method also accepts arrays, hashes, strings, {ChunkyPNG::Dimension}
   # instances and anything that responds to <tt>:x</tt> and <tt>:y</tt>.
   # 
   # @overload Point(x, y)
@@ -81,11 +81,11 @@ module ChunkyPNG
     
     alias_method :==, :eql?
     
-    # Comparses 2 points.
+    # Compares 2 points.
     #
     # It will first compare the y coordinate, and it only takes the x-coordinate into
     # account if the y-coordinates of the points are identical. This way, an array of
-    # points will be sorted into the order in which thet would occur in the pixels
+    # points will be sorted into the order in which they would occur in the pixels
     # array returned by {ChunkyPNG::Canvas#pixels}.
     #
     # @param [ChunkyPNG::Point] other The point to compare this point with.

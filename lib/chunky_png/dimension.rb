@@ -57,15 +57,15 @@ module ChunkyPNG
     # @private
     DIMENSION_REGEXP = /^[\(\[\{]?(\d+)\s*[x,]?\s*(\d+)[\)\]\}]?$/
 
-    # @return [Integer] The width-compontent of this dimension.
+    # @return [Integer] The width-component of this dimension.
     attr_accessor :width
     
-    # @return [Integer] The height-compontent of this dimension.
+    # @return [Integer] The height-component of this dimension.
     attr_accessor :height
     
     # Initializes a new dimension instance.
-    # @param [Integer] width The width-compontent of the new dimension.
-    # @param [Integer] height The height-compontent of the new dimension.
+    # @param [Integer] width The width-component of the new dimension.
+    # @param [Integer] height The height-component of the new dimension.
     def initialize(width, height)
       @width, @height = width.to_i, height.to_i
     end
@@ -78,7 +78,7 @@ module ChunkyPNG
     
     # Checks whether a point is within bounds of this dimension.
     # @param [ChunkyPNG::Point, ...] A point-like to bounds-check.
-    # @return [true, false] True iff the the x and y coordinate fall in this dimension.
+    # @return [true, false] True iff the x and y coordinate fall in this dimension.
     # @see ChunkyPNG.Point
     def include?(*point_like)
       point = ChunkyPNG::Point(*point_like)

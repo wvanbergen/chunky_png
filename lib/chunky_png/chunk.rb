@@ -4,7 +4,7 @@ module ChunkyPNG
   # contained within, help with handling these chunks. It supports both
   # reading and writing chunks.
   #
-  # All chunck types are instances of the {ChunkyPNG::Chunk::Base} class. For
+  # All chunk types are instances of the {ChunkyPNG::Chunk::Base} class. For
   # some chunk types a specialized class is available, e.g. the IHDR chunk is
   # represented by the {ChunkyPNG::Chunk::Header} class. These specialized
   # classes help accessing the content of the chunk. All other chunks are
@@ -72,7 +72,7 @@ module ChunkyPNG
 
       # Writes the chunk to the IO stream.
       #
-      # It will call te +content+ method to get the content for this chunk,
+      # It will call the +content+ method to get the content for this chunk,
       # and will calculate and append the checksum automatically.
       # @param [IO] io The IO stream to write to.
       def write(io)
