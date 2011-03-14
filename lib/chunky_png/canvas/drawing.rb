@@ -30,7 +30,7 @@ module ChunkyPNG
       end
       
       # Draws a Bezier curve
-      # @param [Array, Point] A collection of control points
+      # @param [Array, Point] A collection of control points:w
       # @return [Chunky:PNG::Canvas] Itself, with the curve drawn
       def bezier_curve(points, stroke_color = ChunkyPNG::Color::BLACK)
         

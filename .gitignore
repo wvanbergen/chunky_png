@@ -1,9 +1,5 @@
-.DS_Store
-spec/resources/_*.png
-/pkg
-/tmp
-/doc
-/.yardoc
-/.bundle
+*.gem
+.bundle
 Gemfile.lock
-*.rbc
+pkg/*
+test/*
