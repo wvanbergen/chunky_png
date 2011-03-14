@@ -29,6 +29,56 @@ module ChunkyPNG
         set_pixel(x, y, ChunkyPNG::Color.compose(color, get_pixel(x, y)))
       end
       
+      # Draws a Bezier curve
+      # @param [Array, Point] A collection of control points
+      # @return [Chunky:PNG::Canvas] Itself, with the curve drawn
+      def bezier_curve(points, stroke_color = ChunkyPNG::Color::BLACK)
+        
+        case points.length
+          when 0 || 1; return self
+          when 2; return line( points[0].x, points[0].y, points[1].x, points[1].y, stroke_color )
+        end
+        
+        curvePoints = Array.new
+        
+        t = 0
+        n = points.length - 1
+        bicof = 0
+        while( t <= 100 )
+                    
+          curP = ChunkyPNG::Point.new(0,0)
+          
+          #Generate a float of t.
+          tF = t / 100.00
+          
+          curP.x += ( ( 1 - tF )**n ) * points[0].x
+          curP.y += ( ( 1 - tF )**n ) * points[0].y
+          
+          for i in 1...points.length - 1
+            bicof = binomial_coefficient( n , i )
+            
+            curP.x += ( bicof * ( 1 - tF ) ** ( n - i ) ) *  tF**i * points[i].x 
+            curP.y += ( bicof * ( 1 - tF ) ** ( n - i ) ) *  tF**i * points[i].y 
+            i += 1
+          end
+          
+          curP.x += tF**n  * points[n].x
+          curP.y += tF**n  * points[n].y
+
+          curvePoints.push( curP )
+          
+          bicof = 0
+          t += 1
+        end
+        
+        for i in 0...curvePoints.length - 1
+          line_xiaolin_wu( curvePoints[i].x.round, curvePoints[i].y.round, curvePoints[i+1].x.round, curvePoints[i+1].y.round, stroke_color)
+        end
+        
+        return self
+      end
+      
+      
       # Draws an anti-aliased line using Xiaolin Wu's algorithm.
       #
       # @param [Integer] x0 The x-coordinate of the first control point.
@@ -238,6 +288,50 @@ module ChunkyPNG
         end
 
         return self
+      end
+      
+      private
+      
+      # Calculates the binomial coefficient for n over k.
+      #
+      # @param [Integer] n first parameter in coeffient (the number on top when looking at the mathematic formula)
+      # @param [Integer] k k-element, second parameter in coeffient (the number on the bottom when looking at the mathematic formula)
+      # @return [Integer] The binomial coeffcient of (n,k)
+      def binomial_coefficient( n, k )
+        if( n == k || k == 0 )
+          return 1
+        end
+          
+        if( k==1 )
+          return n
+        end
+        
+        if( n < k )
+          return -1
+        else
+          
+          #calculate n
+          fact_n = 1
+          for i in 2..n
+            fact_n *= i
+          end
+
+          #calcule k    
+          fact_k = 1      
+          for i in 2..k
+            fact_k *= i
+          end
+
+          #Calculate ( n - k)          
+          fact_n_sub_k = 1
+          for i in 2..(n-k)
+            fact_n_sub_k *= i
+          end
+          
+          return ( fact_n / (fact_k * fact_n_sub_k) )
+          
+        end
+      
       end
     end
   end
