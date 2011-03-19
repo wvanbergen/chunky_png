@@ -34,47 +34,48 @@ module ChunkyPNG
       # @return [Chunky:PNG::Canvas] Itself, with the curve drawn
       def bezier_curve(points, stroke_color = ChunkyPNG::Color::BLACK)
         
+        points = ChunkyPNG::Vector(*points)
         case points.length
-          when 0 || 1; return self
-          when 2; return line( points[0].x, points[0].y, points[1].x, points[1].y, stroke_color )
+          when 0, 1; return self
+          when 2; return line(points[0].x, points[0].y, points[1].x, points[1].y, stroke_color)
         end
         
-        curvePoints = Array.new
+        curve_points = Array.new
         
         t = 0
         n = points.length - 1
         bicof = 0
-        while( t <= 100 )
-                    
-          curP = ChunkyPNG::Point.new(0,0)
+        
+        while t <= 100
+          cur_p = ChunkyPNG::Point.new(0,0)
           
-          #Generate a float of t.
-          tF = t / 100.00
+          # Generate a float of t.
+          t_f = t / 100.00
           
-          curP.x += ( ( 1 - tF )**n ) * points[0].x
-          curP.y += ( ( 1 - tF )**n ) * points[0].y
+          cur_p.x += ((1 - t_f) ** n) * points[0].x
+          cur_p.y += ((1 - t_f) ** n) * points[0].y
           
           for i in 1...points.length - 1
-            bicof = binomial_coefficient( n , i )
+            bicof = binomial_coefficient(n , i)
             
-            curP.x += ( bicof * ( 1 - tF ) ** ( n - i ) ) *  tF**i * points[i].x 
-            curP.y += ( bicof * ( 1 - tF ) ** ( n - i ) ) *  tF**i * points[i].y 
+            cur_p.x += (bicof * (1 - t_f) ** (n - i)) *  (t_f ** i) * points[i].x 
+            cur_p.y += (bicof * (1 - t_f) ** (n - i)) *  (t_f ** i) * points[i].y 
             i += 1
           end
           
-          curP.x += tF**n  * points[n].x
-          curP.y += tF**n  * points[n].y
+          cur_p.x += (t_f ** n) * points[n].x
+          cur_p.y += (t_f ** n) * points[n].y
 
-          curvePoints.push( curP )
-          
+          curve_points << cur_p
+
           bicof = 0
           t += 1
         end
-        
-        for i in 0...curvePoints.length - 1
-          line_xiaolin_wu( curvePoints[i].x.round, curvePoints[i].y.round, curvePoints[i+1].x.round, curvePoints[i+1].y.round, stroke_color)
+
+        curve_points.each_cons(2) do |p1, p2|
+          line_xiaolin_wu(p1.x.round, p1.y.round, p2.x.round, p2.y.round, stroke_color)
         end
-        
+
         return self
       end
       
@@ -297,41 +298,17 @@ module ChunkyPNG
       # @param [Integer] n first parameter in coeffient (the number on top when looking at the mathematic formula)
       # @param [Integer] k k-element, second parameter in coeffient (the number on the bottom when looking at the mathematic formula)
       # @return [Integer] The binomial coeffcient of (n,k)
-      def binomial_coefficient( n, k )
-        if( n == k || k == 0 )
-          return 1
-        end
-          
-        if( k==1 )
-          return n
-        end
-        
-        if( n < k )
-          return -1
-        else
-          
-          #calculate n
-          fact_n = 1
-          for i in 2..n
-            fact_n *= i
-          end
+      def binomial_coefficient(n, k)
+        return  1 if n == k || k == 0
+        return  n if k == 1
+        return -1 if n < k
 
-          #calcule k    
-          fact_k = 1      
-          for i in 2..k
-            fact_k *= i
-          end
+        # calculate factorials
+        fact_n = (2..n).inject(1) { |carry, i| carry * i }
+        fact_k = (2..k).inject(1) { |carry, i| carry * i }
+        fact_n_sub_k = (2..(n - k)).inject(1) { |carry, i| carry * i }
 
-          #Calculate ( n - k)          
-          fact_n_sub_k = 1
-          for i in 2..(n-k)
-            fact_n_sub_k *= i
-          end
-          
-          return ( fact_n / (fact_k * fact_n_sub_k) )
-          
-        end
-      
+        fact_n / (fact_k * fact_n_sub_k)
       end
     end
   end

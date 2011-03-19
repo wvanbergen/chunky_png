@@ -122,114 +122,49 @@ describe ChunkyPNG::Canvas::Drawing do
   end
   
   describe '#bezier_curve' do
-    subject { ChunkyPNG::Canvas.new(24, 24) }
+    subject { ChunkyPNG::Canvas.new(24, 24, ChunkyPNG::Color::WHITE) }
     
     it "should draw a bezier curve starting at the first point" do
-      points = Array.new
-      points[0] = ChunkyPNG::Point.new(3,20)
-      points[1] = ChunkyPNG::Point.new(10,10)
-      points[2] = ChunkyPNG::Point.new(20,20)
-      subject.bezier_curve( points )
-      
-      subject[points[0].x, points[0].y].should == ChunkyPNG::Color::BLACK
+      subject.bezier_curve('3,20 10,10, 20,20')
+      subject[3, 20].should == ChunkyPNG::Color::BLACK
     end
     
     it "should draw a bezier curve ending at the last point" do
-      points = Array.new
-      points[0] = ChunkyPNG::Point.new(3,20)
-      points[1] = ChunkyPNG::Point.new(10,10)
-      points[2] = ChunkyPNG::Point.new(20,20)
-      subject.bezier_curve( points )
-      
-      subject[points[2].x, points[2].y].should == ChunkyPNG::Color::BLACK
+      subject.bezier_curve('3,20 10,10, 20,20')
+      subject[20, 20].should == ChunkyPNG::Color::BLACK
     end
     
     it "should draw a bezier curve with a color of green" do
-      points = Array.new
-      points[0] = ChunkyPNG::Point.new(3,20)
-      points[1] = ChunkyPNG::Point.new(10,10)
-      points[2] = ChunkyPNG::Point.new(20,20)
-      subject.bezier_curve( points, "green" )
-      
-      subject[points[0].x, points[0].y].should == ChunkyPNG::Color(:green)
+      subject.bezier_curve('3,20 10,10, 20,20', :green)
+      subject[3, 20].should == ChunkyPNG::Color(:green)
     end
     
     it "should draw a three point bezier curve" do
-      pnts = Array.new
-      canvas = ChunkyPNG::Canvas.new(24, 24, ChunkyPNG::Color::WHITE)
-      pnts[0] = ChunkyPNG::Point.new(01,23)
-      pnts[1] = ChunkyPNG::Point.new(12,10)
-      pnts[2] = ChunkyPNG::Point.new(23,23)
-      canvas.bezier_curve( pnts )
-      canvas.should == reference_canvas('bezier_three_point')
+      subject.bezier_curve('1,23 12,10 23,23').should == reference_canvas('bezier_three_point')
     end
     
     it "should draw a three point bezier curve flipped" do
-      pnts = Array.new
-      canvas = ChunkyPNG::Canvas.new(24, 24, ChunkyPNG::Color::WHITE)
-      pnts[0] = ChunkyPNG::Point.new(01,01)
-      pnts[1] = ChunkyPNG::Point.new(12,15)
-      pnts[2] = ChunkyPNG::Point.new(23,01)
-      canvas.bezier_curve( pnts )
-      canvas.should == reference_canvas('bezier_three_point_flipped')
+      subject.bezier_curve('1,1 12,15 23,1').should == reference_canvas('bezier_three_point_flipped')
     end
     
     it "should draw a four point bezier curve" do
-      pnts = Array.new
-      canvas = ChunkyPNG::Canvas.new(24, 24, ChunkyPNG::Color::WHITE)
-      pnts[0] = ChunkyPNG::Point.new(01,23)
-      pnts[1] = ChunkyPNG::Point.new(01,05)
-      pnts[2] = ChunkyPNG::Point.new(22,05)
-      pnts[3] = ChunkyPNG::Point.new(22,23)    
-      canvas.bezier_curve( pnts )
-      canvas.should == reference_canvas('bezier_four_point')
+      subject.bezier_curve('1,23 1,5 22,5 22,23').should == reference_canvas('bezier_four_point')
     end
     
     it "should draw a four point bezier curve flipped" do
-      pnts = Array.new
-      canvas = ChunkyPNG::Canvas.new(24, 24, ChunkyPNG::Color::WHITE)
-      pnts[0] = ChunkyPNG::Point.new(01,01)
-      pnts[1] = ChunkyPNG::Point.new(01,19)
-      pnts[2] = ChunkyPNG::Point.new(22,19)
-      pnts[3] = ChunkyPNG::Point.new(22,01)    
-      canvas.bezier_curve( pnts )
-      canvas.should == reference_canvas('bezier_four_point_flipped')
+      subject.bezier_curve('1,1 1,19 22,19 22,1').should == reference_canvas('bezier_four_point_flipped')
     end
     
     it "should draw a four point bezier curve with a shape of an s" do
-      pnts = Array.new
-      canvas = ChunkyPNG::Canvas.new(24, 24, ChunkyPNG::Color::WHITE)
-      pnts[0] = ChunkyPNG::Point.new(01,23)
-      pnts[1] = ChunkyPNG::Point.new(01,05)
-      pnts[3] = ChunkyPNG::Point.new(22,05)
-      pnts[2] = ChunkyPNG::Point.new(22,23)    
-      canvas.bezier_curve( pnts )
-      canvas.should == reference_canvas('bezier_four_point_s')
+      subject.bezier_curve('1,23 1,5 22,23 22,5').should == reference_canvas('bezier_four_point_s')
     end
     
     it "should draw a five point bezier curve" do
-      pnts = Array.new
-      canvas = ChunkyPNG::Canvas.new(24, 24, ChunkyPNG::Color::WHITE)
-      pnts[0] = ChunkyPNG::Point.new(10,23)
-      pnts[1] = ChunkyPNG::Point.new(01,10)
-      pnts[2] = ChunkyPNG::Point.new(12,05)
-      pnts[3] = ChunkyPNG::Point.new(23,10)
-      pnts[4] = ChunkyPNG::Point.new(14,23)    
-      canvas.bezier_curve( pnts )
-      canvas.should == reference_canvas('bezier_five_point')
+      subject.bezier_curve('10,23 1,10 12,5 23,10 14,23').should == reference_canvas('bezier_five_point')
     end
     
     it "should draw a six point bezier curve" do
-      pnts = Array.new
-      canvas = ChunkyPNG::Canvas.new(24, 24, ChunkyPNG::Color::WHITE)
-      pnts[0] = ChunkyPNG::Point.new(01,23)
-      pnts[1] = ChunkyPNG::Point.new(04,15)
-      pnts[2] = ChunkyPNG::Point.new(8,20)
-      pnts[3] = ChunkyPNG::Point.new(02,02)
-      pnts[4] = ChunkyPNG::Point.new(23,15)
-      pnts[5] = ChunkyPNG::Point.new(23,01)        
-      canvas.bezier_curve( pnts )
-      canvas.should == reference_canvas('bezier_six_point')
+      subject.bezier_curve('1,23 4,15 8,20 2,2 23,15 23,1').should == reference_canvas('bezier_six_point')
     end
   end
 end
