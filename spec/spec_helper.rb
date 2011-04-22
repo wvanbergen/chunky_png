@@ -24,6 +24,12 @@ module ResourceFileHelper
     File.expand_path("./resources/#{name}", File.dirname(__FILE__))
   end  
   
+  def resource_data(name)
+    data = nil
+    File.open(resource_file(name), 'rb') { |f| data = f.read } 
+    data
+  end
+  
   def reference_canvas(name)
     ChunkyPNG::Canvas.from_file(resource_file("#{name}.png"))
   end
