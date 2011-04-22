@@ -14,20 +14,6 @@ describe 'PNG testuite' do
     end
   end
   
-  context 'Decoding unsupported images' do
-
-    # TODO: we eventually want to support these!
-    
-    png_suite_files(:basic_not_supported).each do |file|
-      color_mode = file.match(/[in](\d)[apgc](\d\d)\.png$/)[1].to_i
-      bit_depth  = file.match(/[in](\d)[apgc](\d\d)\.png$/)[2].to_i
-      
-      it "should report #{File.basename(file)} (color mode: #{color_mode}, bit depth: #{bit_depth}) as unsupported" do
-        lambda { ChunkyPNG::Image.from_file(file) }.should raise_error(ChunkyPNG::NotSupported)
-      end
-    end
-  end
-  
   context 'Decoding supported images' do
     png_suite_files(:basic, '*.png').each do |file|
 
