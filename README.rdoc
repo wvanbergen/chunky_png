@@ -56,7 +56,7 @@ provides a massive speed boost to encoding and decoding.
 
   # edge detection for PNG files
   image = ChunkyPNG::Image.from_file('original.png')
-  edge_detected_image = image.edge_detect_with(:sobel) # default, :prewitt also available
+  edge_detected_image = image.edge_detect # default, :prewitt also available
   
 For more information, see the project wiki on http://github.com/wvanbergen/chunky_png/wiki
 or the RDOC documentation on http://rdoc.info/gems/chunky_png/frames
