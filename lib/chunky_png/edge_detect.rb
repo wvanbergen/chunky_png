@@ -15,8 +15,12 @@ module ChunkyPNG
     SOBEL_X = [[-1,0,1], [-2,0,2], [-1,0,1]]
     SOBEL_Y = [[-1,-2,-1], [0,0,0], [1,2,1]]
 
+    PREWITT_X = [[-1,0,1], [-1,0,1], [-1,0,1]]
+    PREWITT_Y = [[-1,-1,-1], [0,0,0], [1,1,1]]
+    
     def edge_detect_with(algo=:sobel)      
       al_x, al_y = SOBEL_X, SOBEL_Y if algo == :sobel
+      al_x, al_y = PREWITT_X, PREWITT_Y if algo == :prewitt
       edge = ChunkyPNG::Image.new(width, height, ChunkyPNG::Color::TRANSPARENT)
       for x in 1..width-2
         for y in 1..height-2
