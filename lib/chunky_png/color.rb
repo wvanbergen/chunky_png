@@ -305,6 +305,27 @@ module ChunkyPNG
       (fg + bg) >> 1
     end
 
+    # Calculates the grayscale teint of an RGB color.
+    #
+    # @param [Integer] color The color to convert.    
+    # @return [Integer] The grayscale teint of the input color, 0-255.
+    def grayscale_teint(color)
+      (r(color) * 0.3 + g(color) * 0.59 + b(color) * 0.11).round
+    end
+    
+    # Converts a color to a fiting grayscale value. It will conserve the alpha
+    # channel.
+    #
+    # This method will return a full color value, with the R, G, and B value set
+    # to the grayscale teint calcuated from the input color's R, G and B values.
+    #
+    # @param [Integer] color The color to convert.
+    # @return [Integer] The input color, converted to the best fitting grayscale.
+    # @see #grayscale_teint
+    def to_grayscale(color)
+      grayscale_alpha(grayscale_teint(color), a(color))
+    end    
+
     # Lowers the intensity of a color, by lowering its alpha by a given factor.
     # @param [Integer] color The color to adjust.
     # @param [Integer] factor Fade factor as an integer between 0 and 255.
@@ -437,10 +458,13 @@ module ChunkyPNG
     # Returns an array with the grayscale teint and alpha channel values
     # for this color.
     #
-    # This method expects the r,g and b value to be equal.
+    # This method expects the color to be grayscale, i.e. r,g and b value 
+    # to be equal and uses only the B channel. If you need to convert a 
+    # color to grayscale first, see {#to_grayscale}.
     #
     # @param [Integer] color The grayscale color to convert.
     # @return [Array<Integer>] An array with 2 Integer elements.
+    # @see #to_grascale
     def to_grayscale_alpha_bytes(color)
       [b(color), a(color)] # assumption r == g == b
     end

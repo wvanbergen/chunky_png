@@ -11,6 +11,31 @@ module ChunkyPNG
     # @see ChunkyPNG::Canvas
     module Operations
       
+      # Converts the canvas to grascale.
+      #
+      # This method will modify the canvas. The obtain a new canvas and leave the 
+      # current instance intact, use {#grayscale} instead.
+      #
+      # @return [ChunkyPNG::Canvas] Returns itself, converted to grayscale.
+      # @see {#grayscale}
+      # @see {ChunkyPNG::Color#to_grayscale}
+      def grayscale!
+        pixels.map! { |pixel| ChunkyPNG::Color.to_grayscale(pixel) }
+        return self
+      end
+
+      # Converts the canvas to grascale, returning a new canvas.
+      #
+      # This method will not modify the canvas. To modift the current canvas,
+      # use {#grayscale!} instead.
+      #
+      # @return [ChunkyPNG::Canvas] A copy of the canvas, converted to grasycale.
+      # @see {#grayscale!}
+      # @see {ChunkyPNG::Color#to_grayscale}
+      def grayscale
+        dup.grayscale!
+      end
+      
       # Composes another image onto this image using alpha blending. This will modify
       # the current canvas.
       #

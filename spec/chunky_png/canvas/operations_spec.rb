@@ -4,6 +4,31 @@ describe ChunkyPNG::Canvas::Operations do
   
   subject { reference_canvas('operations') } 
   
+  describe '#grayscale' do
+    it "should not return itself" do
+      subject.grayscale.should_not equal(subject)
+    end
+
+    it "should convert the image correctly" do
+      subject.grayscale.should == reference_canvas('operations_grayscale')
+    end
+    
+    it "should not adjust the current image" do
+      lambda { subject.crop(10, 5, 4, 8) }.should_not change(subject, :pixels)
+    end
+  end
+  
+  describe '#grayscale!' do
+    it "should return itself" do
+      subject.grayscale!.should equal(subject)
+    end
+
+    it "should convert the image correctly" do
+      subject.grayscale!
+      subject.should == reference_canvas('operations_grayscale')
+    end
+  end  
+  
   describe '#crop' do
     it "should crop the right pixels from the original canvas" do
       subject.crop(10, 5, 4, 8).should == reference_canvas('cropped')
@@ -13,8 +38,8 @@ describe ChunkyPNG::Canvas::Operations do
       subject.crop(10, 5, 4, 8).should_not equal(subject)
     end
     
-    it "should not adjust the currnet image" do
-      lambda { subject.crop(10, 5, 4, 8) }.should_not change(subject, :dimension)
+    it "should not adjust the current image" do
+      lambda { subject.crop(10, 5, 4, 8) }.should_not change(subject, :pixels)
     end
     
     it "should raise an exception when the cropped image falls outside the oiginal image" do
