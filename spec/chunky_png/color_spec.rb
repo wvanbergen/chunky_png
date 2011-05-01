@@ -149,6 +149,27 @@ describe ChunkyPNG::Color do
     end
   end
   
+  describe '#grayscale_teint' do
+    it "should calculate the correct grayscale teint" do
+      grayscale_teint(@opaque).should     == 79
+      grayscale_teint(@non_opaque).should == 79
+    end
+  end
+  
+  describe '#to_grayscale' do
+    it "should use the grayscale teint for r, g and b" do
+      gs = to_grayscale(@non_opaque)
+      r(gs).should == grayscale_teint(@non_opaque)
+      g(gs).should == grayscale_teint(@non_opaque)
+      b(gs).should == grayscale_teint(@non_opaque)
+    end
+    
+    it "should preserve the alpha channel" do
+      a(to_grayscale(@non_opaque)).should == a(@non_opaque)
+      a(to_grayscale(@opaque)).should == MAX
+    end
+  end
+  
   describe '#to_hex' do
     it "should represent colors correcly using hex notation" do
       to_hex(@white).should == '#ffffffff'
