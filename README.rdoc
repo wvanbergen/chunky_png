@@ -63,5 +63,8 @@ The library is written by Willem van Bergen for Floorplanner.com, and released
 under the MIT license (see LICENSE). Please contact me for questions or
 remarks. Patches are greatly appreciated!
 
+Please check out the changelog on https://github.com/wvanbergen/chunky_png/wiki/Changelog
+to see what changed in all versions.
+
 P.S.: The name of this library is intentionally similar to Chunky Bacon and 
 Chunky GIF. Use Google if you want to know _why. :-)
