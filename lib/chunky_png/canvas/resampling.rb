@@ -16,8 +16,6 @@ module ChunkyPNG
       # @return [ChunkyPNG::Canvas] A new canvas instance with the resampled pixels.
       def resample_nearest_neighbor!(new_width, new_height)
         
-        resampled_image = self.class.new(new_width.to_i, new_height.to_i)
-        
         width_ratio  = width.to_f / new_width.to_f
         height_ratio = height.to_f / new_height.to_f
 
