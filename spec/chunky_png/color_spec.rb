@@ -166,7 +166,7 @@ describe ChunkyPNG::Color do
     
     it "should preserve the alpha channel" do
       a(to_grayscale(@non_opaque)).should == a(@non_opaque)
-      a(to_grayscale(@opaque)).should == MAX
+      a(to_grayscale(@opaque)).should == ChunkyPNG::Color::MAX
     end
   end
   
