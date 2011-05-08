@@ -85,6 +85,26 @@ describe 'PNG testuite' do
     end
   end
   
+  context 'Decoding transparency' do
+    png_suite_files(:transparency, 'tp0*.png').each do |file|
+      it "should not have transparency in #{File.basename(file)}" do
+        ChunkyPNG::Color.a(ChunkyPNG::Image.from_file(file)[0,0]).should == 255
+      end
+    end
+    
+    png_suite_files(:transparency, 'tp1*.png').each do |file|
+      it "should have transparency in #{File.basename(file)}" do
+        ChunkyPNG::Color.a(ChunkyPNG::Image.from_file(file)[0,0]).should == 0
+      end
+    end
+    
+    png_suite_files(:transparency, 'tb*.png').each do |file|
+      it "should have transparency in #{File.basename(file)}" do
+        ChunkyPNG::Color.a(ChunkyPNG::Image.from_file(file)[0,0]).should == 0
+      end
+    end
+  end
+  
   context 'Decoding different sizes' do
     
     png_suite_files(:sizes, '*n*.png').each do |file|
