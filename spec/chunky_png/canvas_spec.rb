@@ -161,8 +161,7 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should handle float values for x and y as though they were integers" do
-      bigger_subject { ChunkyPNG::Canvas.new(3, 3, ChunkyPNG::Color::WHITE) }
-      lambda { bigger_subject.set_pixel(1.5, 1, ChunkyPNG::Color::BLACK) }.should change { bigger_subject[1, 1] }.from(ChunkyPNG::Color::WHITE).to(ChunkyPNG::Color::BLACK)
+      lambda { subject.set_pixel(0.5, 0, ChunkyPNG::Color::BLACK) }.should change { subject[0, 0] }.from(ChunkyPNG::Color::WHITE).to(ChunkyPNG::Color::BLACK)
     end
   end
   
