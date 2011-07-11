@@ -305,6 +305,30 @@ module ChunkyPNG
       (fg + bg) >> 1
     end
 
+    # Interpolates the foreground and background colors by the given alpha value.
+    # This also blends the alpha channels themselves.
+    #
+    # A blending factor of 255 will give entirely the foreground,
+    # while a blending factor of 0 will give the background.
+    #
+    # @param [Integer] fg The foreground color.
+    # @param [Integer] bg The background color.
+    # @param [Integer] alpha The blending factor (fixed 8bit)
+    # @param [Integer] The interpolated color.
+    def interpolate_quick(fg, bg, alpha)
+      return fg if alpha >= 255
+      return bg if alpha <= 0
+      
+      alpha_com = 255 - alpha
+
+      new_r = int8_mult(alpha, r(fg)) + int8_mult(alpha_com, r(bg))
+      new_g = int8_mult(alpha, g(fg)) + int8_mult(alpha_com, g(bg))
+      new_b = int8_mult(alpha, b(fg)) + int8_mult(alpha_com, b(bg))
+      new_a = int8_mult(alpha, a(fg)) + int8_mult(alpha_com, a(bg))
+      
+      return rgba(new_r, new_g, new_b, new_a)
+    end
+
     # Calculates the grayscale teint of an RGB color.
     #
     # @param [Integer] color The color to convert.    
