@@ -13,7 +13,7 @@ module ChunkyPNG
     # @see ChunkyPNG::Canvas
     module Resampling
 
-      # Interger Interpolation between two values
+      # Integer Interpolation between two values
       #
       # Used for generating indicies for interpolation (eg, nearest
       # neighbour).
