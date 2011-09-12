@@ -99,7 +99,9 @@ module ChunkyPNG
         check_size_constraints!(other, offset_x, offset_y)
 
         for y in 0...other.height do
-          pixels[(y + offset_y) * width + offset_x, other.width] = other.pixels[y * other.width, other.width]
+          for d in 0...other.width
+            pixels[(y + offset_y) * width + offset_x + d] = other.pixels[y * other.width + d]
+          end
         end
         self
       end
