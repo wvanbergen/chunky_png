@@ -20,7 +20,7 @@ module ChunkyPNG
       #
       # @param [Integer] old_theme_color The original theme color in this image.
       # @param [Integer] new_theme_color The color to replace the old theme color with.
-      # @param [Integer] The background color on which the theme colored pixels are placed.
+      # @param [Integer] bg_color The background color on which the theme colored pixels are placed.
       # @param [Integer] tolerance The tolerance level to use when extracting the mask image. Five is 
       #    the default; increase this if the masked image does not extract all the required pixels, 
       #    decrease it if too many pixels get extracted.
