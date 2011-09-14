@@ -4,6 +4,7 @@ require 'chunky_png/canvas/adam7_interlacing'
 require 'chunky_png/canvas/stream_exporting'
 require 'chunky_png/canvas/stream_importing'
 require 'chunky_png/canvas/data_url_exporting'
+require 'chunky_png/canvas/data_url_importing'
 require 'chunky_png/canvas/operations'
 require 'chunky_png/canvas/drawing'
 require 'chunky_png/canvas/resampling'
@@ -40,6 +41,7 @@ module ChunkyPNG
     extend  StreamImporting
 
     include DataUrlExporting
+    extend  DataUrlImporting
 
     include Operations
     include Drawing
