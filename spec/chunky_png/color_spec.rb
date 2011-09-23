@@ -219,6 +219,18 @@ describe ChunkyPNG::Color do
     it "should decompose the alpha channel correctly" do
       decompose_alpha(0x9fc2d6ff, @opaque, @white).should == 0x00000064
     end
+    
+    it "should return fully transparent if the background channel matches the resulting color" do
+      decompose_alpha(0xabcdefff, 0xff000000, 0xabcdefff).should == 0x00
+    end
+    
+    it "should return fully opaque if the background channel matches the mask color" do
+      decompose_alpha(0xff000000, 0xabcdefff, 0xabcdefff).should == 0xff
+    end
+    
+    it "should return fully opaque if the resulting color matches the mask color" do
+      decompose_alpha(0xabcdefff, 0xabcdefff, 0xffffffff).should == 255
+    end    
   end
   
   describe '#blend' do

@@ -422,8 +422,13 @@ module ChunkyPNG
     # @param [Integer] bg The background color on which the color was composed.
     # @return [Integer] The decomposed alpha value for the channel.
     def decompose_alpha_component(channel, color, mask, bg)
-      ((send(channel, bg) - send(channel, color)).to_f / 
-          (send(channel, bg) - send(channel, mask)).to_f * MAX).round
+      cc, mc, bc = send(channel, color), send(channel, mask), send(channel, bg)
+      
+      return 0x00 if bc == cc
+      return 0xff if bc == mc
+      return 0xff if cc == mc
+      
+      (((bc - cc).to_f / (bc - mc).to_f) * MAX).round
     end
     
     # Decomposes the alpha channels for the r, g and b color channel.
