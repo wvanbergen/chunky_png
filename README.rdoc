@@ -57,6 +57,17 @@ provides a massive speed boost to encoding and decoding.
 For more information, see the project wiki on http://github.com/wvanbergen/chunky_png/wiki
 or the RDOC documentation on http://rdoc.info/gems/chunky_png/frames
 
+== Security warning
+
+ChunkyPNG is vulnerable to decompression bombs, which means that ChunkyPNG is vulnerable to 
+DOS attacks by running out of memory when loading a specifically crafted PNG file. Because 
+of the pure-Ruby nature of the library it is very hard to fix this problem in the library 
+itself.
+
+In order to safely deal with untrusted images, you should make sure to do the image 
+processing using ChunkyPNG in a separate process, e.g. by using fork or a background
+processing library.
+
 == About
 
 The library is written by Willem van Bergen for Floorplanner.com, and released
