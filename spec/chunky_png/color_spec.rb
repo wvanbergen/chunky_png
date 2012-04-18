@@ -242,5 +242,6 @@ describe ChunkyPNG::Color do
       blend(@opaque, @black).should == blend(@black, @opaque)
     end
   end
+  
 end
 
