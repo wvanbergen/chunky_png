@@ -367,7 +367,7 @@ module ChunkyPNG
           else nil
         end
         
-        raise ChunkyPNG::NotSupported, "No encoder found for color mode #{color_mode} and #{depth}-bit depth!" unless respond_to?(encoder_method)
+        raise ChunkyPNG::NotSupported, "No encoder found for color mode #{color_mode} and #{depth}-bit depth!" unless respond_to?(encoder_method, true)
         encoder_method
       end
       
