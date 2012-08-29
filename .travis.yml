@@ -12,4 +12,4 @@ rvm:
   - jruby-19mode
 matrix:
   allow_failures:
-    - rbx-19mode
+    - rvm: rbx-19mode
