@@ -2,3 +2,5 @@ test.*
 Gemfile.lock
 pkg/
 spec/
+_site/
+
