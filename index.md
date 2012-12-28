@@ -3,29 +3,39 @@ layout: default
 title: ChunkyPNG
 ---
 
-<h3>Welcome to GitHub Pages.</h3>
+### ChunkyPNG
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+ChunkyPNG is a pure Ruby library to read and write PNG images.
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+### Creating a simple image from scratch
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+    get '/dynamic_smile.png' do
+      # Create a 600x400 image with transparent background
+      image = ChunkyPNG::Image.new(15, 15)
 
-<h3>Designer Templates</h3>
+      # Draw some stuff
+      image.circle(7, 7, 7, ChunkyPNG::Color::BLACK, ChunkyPNG::Color.rgb(255, 255, 0))
+      image.rect(4, 5,  5, 6, ChunkyPNG::Color::BLACK)
+      image.rect(9, 5, 10, 6, ChunkyPNG::Color::BLACK)
+      image.line(5, 10, 9, 10, ChunkyPNG::Color::BLACK)
+      image[ 4, 9] = ChunkyPNG::Color::BLACK
+      image[10, 9] = ChunkyPNG::Color::BLACK
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+      # Save the result as a PNG file
+      content_type 'image/png'
+      image.to_blob
+    end
 
-<h3>Rather Drive Stick?</h3>
+### Modifying an existing image
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+    post '/watermark_image' do
+      image = ChunkyPNG::Image.from_io(params[:uploaded_file][:tempfile])
+      watermark = ChunkyPNG::Image.from_file('watermark.png')
 
-<h3>Authors and Contributors</h3>
+      watermark_x = image.width  - watermark.width  - 5
+      watermark_y = image.height - watermark.height - 5
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+      image.compose!(watermark, watermark_x, watermark_y)
+      image.save("uploads/#{params[:uploaded_file][:filename]}")
+      201
+    end
