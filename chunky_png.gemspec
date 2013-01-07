@@ -3,8 +3,8 @@ Gem::Specification.new do |s|
 
   # Do not change the version and date fields by hand. This will be done
   # automatically by the gem release script.
-  s.version = "1.2.6"
-  s.date    = "2012-08-07"
+  s.version = "1.2.7"
+  s.date    = "2013-01-07"
 
   s.summary     = "Pure ruby library for read/write, chunk-level access to PNG files"
   s.description = <<-EOT
