@@ -191,36 +191,14 @@ module ChunkyPNG
       # @param [Integer] value The 4 bit value to resample.
       # @return [Integer] The 8 bit resampled value.
       def decode_png_resample_4bit_value(value)
-        case value
-        when 0x00; 0
-        when 0x01; 17
-        when 0x02; 34
-        when 0x03; 51
-        when 0x04; 68
-        when 0x05; 85
-        when 0x06; 102
-        when 0x07; 119
-        when 0x08; 137
-        when 0x09; 154
-        when 0x0a; 171
-        when 0x0b; 188
-        when 0x0c; 205
-        when 0x0d; 222
-        when 0x0e; 239
-        when 0x0f; 255
-        end
+        value << 4 | value
       end
       
       # Resamples a 2 bit value to an 8 bit value.
       # @param [Integer] value The 2 bit value to resample.
       # @return [Integer] The 8 bit resampled value.
       def decode_png_resample_2bit_value(value)
-        case value
-        when 0x00; 0x00
-        when 0x01; 0x55
-        when 0x02; 0xaa
-        when 0x03; 0xff
-        end
+        value << 6 | value << 4 | value << 2 | value
       end
       
       # Resamples a 1 bit value to an 8 bit value.
