@@ -13,7 +13,7 @@ rake task or as standalone script.
 Use rvm to simply run the tests against different interpreters. Of course, 
 make sure that the chunky_png is installed for all your interpreters.
 
-    rvm 1.8.7,1.9.1,rbx rake benchmark N=10
+    rvm 1.8.7,1.9.3,rbx rake benchmark N=10
 
 == Results
 
