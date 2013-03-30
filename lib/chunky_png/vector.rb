@@ -77,7 +77,7 @@ module ChunkyPNG
     # @raise [ChunkyPNG::ExpectationFailed] if the vector contains less than two points.
     # @see #each_edge
     def edges(close = true)
-      Enumerator.new(self, :each_edge, close)
+      to_enum(:each_edge, close)
     end
     
     # Returns the number of points in this vector.
