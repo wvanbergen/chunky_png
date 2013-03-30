@@ -99,7 +99,7 @@ module ChunkyPNG
       def verify_signature!(io)
         signature = io.read(ChunkyPNG::Datastream::SIGNATURE.length)
         unless signature == ChunkyPNG::Datastream::SIGNATURE
-          raise ChunkyPNG::SignatureMismatch, "PNG signature not found!"
+          raise ChunkyPNG::SignatureMismatch, "PNG signature not found, found #{signature.inspect} instead of #{ChunkyPNG::Datastream::SIGNATURE.inspect}!"
         end
       end
     end
