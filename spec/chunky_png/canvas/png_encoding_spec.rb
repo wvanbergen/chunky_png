@@ -122,32 +122,32 @@ describe ChunkyPNG::Canvas::PNGEncoding do
 
     it "should encode using 8-bit RGBA mode correctly" do
       stream = @canvas.encode_png_pixelstream(ChunkyPNG::COLOR_TRUECOLOR_ALPHA, 8, ChunkyPNG::INTERLACING_NONE, ChunkyPNG::FILTER_NONE)
-      stream.should == "\0\x01\x02\x03\x04\xFC\xFD\xFE\xFF\0\xFF\xFE\xFD\xFC\x04\x03\x02\x01"
+      stream.should == "\0\x01\x02\x03\x04\xFC\xFD\xFE\xFF\0\xFF\xFE\xFD\xFC\x04\x03\x02\x01".force_encoding("BINARY")
     end
 
     it "should encode using 8 bit RGB mode correctly" do
       stream = @canvas.encode_png_pixelstream(ChunkyPNG::COLOR_TRUECOLOR, 8, ChunkyPNG::INTERLACING_NONE, ChunkyPNG::FILTER_NONE)
-      stream.should == "\0\x01\x02\x03\xFC\xFD\xFE\0\xFF\xFE\xFD\x04\x03\x02"
+      stream.should == "\0\x01\x02\x03\xFC\xFD\xFE\0\xFF\xFE\xFD\x04\x03\x02".force_encoding("BINARY")
     end
 
     it "should encode using 1-bit grayscale mode correctly" do
       stream = @canvas.encode_png_pixelstream(ChunkyPNG::COLOR_GRAYSCALE, 1, ChunkyPNG::INTERLACING_NONE, ChunkyPNG::FILTER_NONE)
-      stream.should == "\0\x40\0\x80" # Using the B byte of the pixel == 3, assuming R == G == B for grayscale images
+      stream.should == "\0\x40\0\x80".force_encoding("BINARY") # Using the B byte of the pixel == 3, assuming R == G == B for grayscale images
     end
 
     it "should encode using 2-bit grayscale mode correctly" do
       stream = @canvas.encode_png_pixelstream(ChunkyPNG::COLOR_GRAYSCALE, 2, ChunkyPNG::INTERLACING_NONE, ChunkyPNG::FILTER_NONE)
-      stream.should == "\0\x30\0\xC0" # Using the B byte of the pixel == 3, assuming R == G == B for grayscale images
+      stream.should == "\0\x30\0\xC0".force_encoding("BINARY") # Using the B byte of the pixel == 3, assuming R == G == B for grayscale images
     end
 
     it "should encode using 4-bit grayscale mode correctly" do
       stream = @canvas.encode_png_pixelstream(ChunkyPNG::COLOR_GRAYSCALE, 4, ChunkyPNG::INTERLACING_NONE, ChunkyPNG::FILTER_NONE)
-      stream.should == "\0\x0F\0\xF0" # Using the B byte of the pixel == 3, assuming R == G == B for grayscale images
+      stream.should == "\0\x0F\0\xF0".force_encoding("BINARY") # Using the B byte of the pixel == 3, assuming R == G == B for grayscale images
     end
 
     it "should encode using 8-bit grayscale mode correctly" do
       stream = @canvas.encode_png_pixelstream(ChunkyPNG::COLOR_GRAYSCALE, 8, ChunkyPNG::INTERLACING_NONE, ChunkyPNG::FILTER_NONE)
-      stream.should == "\0\x03\xFE\0\xFD\x02" # Using the B byte of the pixel == 3, assuming R == G == B for grayscale images
+      stream.should == "\0\x03\xFE\0\xFD\x02".force_encoding("BINARY") # Using the B byte of the pixel == 3, assuming R == G == B for grayscale images
     end
 
     it "should not encode using 1-bit indexed mode because the image has too many colors" do
@@ -158,17 +158,17 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     
     it "should encode using 2-bit indexed mode correctly" do
       stream = @canvas.encode_png_pixelstream(ChunkyPNG::COLOR_INDEXED, 2, ChunkyPNG::INTERLACING_NONE, ChunkyPNG::FILTER_NONE)
-      stream.should == "\0\x20\0\xD0"
+      stream.should == "\0\x20\0\xD0".force_encoding("BINARY")
     end
     
     it "should encode using 4-bit indexed mode correctly" do
       stream = @canvas.encode_png_pixelstream(ChunkyPNG::COLOR_INDEXED, 4, ChunkyPNG::INTERLACING_NONE, ChunkyPNG::FILTER_NONE)
-      stream.should == "\0\x02\0\x31"
+      stream.should == "\0\x02\0\x31".force_encoding("BINARY")
     end
     
     it "should encode using 8-bit indexed mode correctly" do
       stream = @canvas.encode_png_pixelstream(ChunkyPNG::COLOR_INDEXED, 8, ChunkyPNG::INTERLACING_NONE, ChunkyPNG::FILTER_NONE)
-      stream.should == "\0\x00\x02\0\x03\x01"
+      stream.should == "\0\x00\x02\0\x03\x01".force_encoding("BINARY")
     end
   end
   
