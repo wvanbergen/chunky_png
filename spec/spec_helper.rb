@@ -45,8 +45,15 @@ module ResourceFileHelper
   end
 end
 
+module BinaryStrings
+  def binary_string(str)
+    str.respond_to?(:force_encoding) ? str.force_encoding('BINARY') : str
+  end
+end
+
 RSpec.configure do |config|
   config.extend PNGSuite
   config.include PNGSuite
   config.include ResourceFileHelper
+  config.include BinaryStrings
 end
