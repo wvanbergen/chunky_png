@@ -11,7 +11,7 @@ module ChunkyPNG
   class Datastream
 
     # The signature that each PNG file or stream should begin with.
-    SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10].pack('C8')
+    SIGNATURE = ChunkyPNG.force_binary([137, 80, 78, 71, 13, 10, 26, 10].pack('C8'))
 
     # The header chunk of this datastream.
     # @return [ChunkyPNG::Chunk::Header]

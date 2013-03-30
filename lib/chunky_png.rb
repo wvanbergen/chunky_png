@@ -124,17 +124,21 @@ module ChunkyPNG
   # Exception that is raised if an expectation fails.
   class OutOfBounds < ChunkyPNG::ExpectationFailed
   end
+
+  def self.force_binary(str)
+    str.respond_to?(:force_encoding) ? str.force_encoding('BINARY') : str
+  end
   
   # Empty byte array. This basically is an empty string, but with the encoding
   # set correctly to ASCII-8BIT (binary) in Ruby 1.9.
   # @return [String] An empty string, with encoding set to binary in Ruby 1.9
   # @private
-  EMPTY_BYTEARRAY = String.method_defined?(:force_encoding) ? "".force_encoding('ASCII-8BIT').freeze : "".freeze
+  EMPTY_BYTEARRAY = force_binary("").freeze
 
   # Null-byte, with the encoding set correctly to ASCII-8BIT (binary) in Ruby 1.9.
   # @return [String] A binary string, consisting of one NULL-byte. 
   # @private
-  EXTRA_BYTE = String.method_defined?(:force_encoding) ? "\0".force_encoding('ASCII-8BIT') : "\0"
+  EXTRA_BYTE = force_binary("\0").freeze
 end
 
 
