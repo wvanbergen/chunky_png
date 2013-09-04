@@ -34,6 +34,7 @@ Gem::Specification.new do |s|
   s.authors  = ['Willem van Bergen']
   s.email    = ['willem@railsdoctors.com']
   s.homepage = 'http://wiki.github.com/wvanbergen/chunky_png'
+  s.license  = 'MIT'
 
   s.add_development_dependency('rake')
   s.add_development_dependency('rspec', '~> 2.2')
