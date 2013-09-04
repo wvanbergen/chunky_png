@@ -37,7 +37,7 @@ describe 'ChunkyPNG.Dimension' do
   end
   
   it "should create a dimension from an object that responds to width and height" do
-    mock_object = mock('Some object with width and height', :width => 1, :height => 2)
+    mock_object = Struct.new(:width, :height).new(1, 2)
     ChunkyPNG::Dimension(mock_object).should == subject
   end
   

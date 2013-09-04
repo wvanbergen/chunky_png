@@ -7,10 +7,6 @@ describe 'PNG testuite' do
       it "should report #{File.basename(file)} as broken" do
         lambda { ChunkyPNG::Image.from_file(file) }.should raise_error(ChunkyPNG::Exception)
       end
-
-      it "should not report #{File.basename(file)} as unsupported" do
-        lambda { ChunkyPNG::Image.from_file(file) }.should_not raise_error(ChunkyPNG::NotSupported)
-      end
     end
   end
   

@@ -65,7 +65,7 @@ describe 'ChunkyPNG.Point' do
   end
   
   it "should create a point from an object that responds to x and y" do
-    mock_object = mock('Some object with x and y', :x => 1, :y => 2)
+    mock_object = Struct.new(:x, :y).new(1, 2)
     ChunkyPNG::Point(mock_object).should == subject
   end
   
