@@ -23,10 +23,6 @@ require 'enumerator'
 # @author Willem van Bergen
 module ChunkyPNG
 
-  # The current version of ChunkyPNG. This value will be updated 
-  # automatically by them <tt>gem:release</tt> rake task.
-  VERSION = "1.2.8"
-
   ###################################################
   # PNG international standard defined constants
   ###################################################
@@ -141,6 +137,7 @@ module ChunkyPNG
   EXTRA_BYTE = force_binary("\0").freeze
 end
 
+require 'chunky_png/version'
 
 # Ruby 1.8 / 1.9 compatibility
 require 'chunky_png/compatibility'
