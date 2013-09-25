@@ -153,9 +153,8 @@ module ChunkyPNG
       # @raise [ChunkyPNG::OutOfBounds] when the crop dimensions plus the given coordinates 
       #     are bigger then the original image.      
       def crop!(x, y, crop_width, crop_height)
-        
-        raise ChunkyPNG::OutOfBounds, "Image width is too small!" if crop_width + x > width
-        raise ChunkyPNG::OutOfBounds, "Image width is too small!" if crop_height + y > height
+        raise ChunkyPNG::OutOfBounds, "Original image width is too small!" if crop_width + x > width
+        raise ChunkyPNG::OutOfBounds, "Original image height is too small!" if crop_height + y > height
         
         new_pixels = []
         for cy in 0...crop_height do
