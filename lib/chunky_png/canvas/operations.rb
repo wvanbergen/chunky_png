@@ -316,8 +316,6 @@ module ChunkyPNG
         y1 = [*0...height].index  { |r|    row(r).uniq != [border] }
         y2 = [*0...height].rindex { |r|    row(r).uniq != [border] }
         
-        return self unless [x1, x2, y1, y2].all? # Any nils mean no border to trim.
-        
         crop! x1, y1, x2 - x1, y2 - y1
       end
       
