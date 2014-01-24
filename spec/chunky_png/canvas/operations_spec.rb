@@ -14,7 +14,7 @@ describe ChunkyPNG::Canvas::Operations do
     end
     
     it "should not adjust the current image" do
-      lambda { subject.crop(10, 5, 4, 8) }.should_not change(subject, :pixels)
+      lambda { subject.grayscale }.should_not change(subject, :pixels)
     end
   end
   
