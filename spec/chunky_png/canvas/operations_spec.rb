@@ -309,3 +309,33 @@ describe ChunkyPNG::Canvas::Operations do
     end
   end
 end
+
+describe ChunkyPNG::Canvas::Operations do
+
+  subject { ChunkyPNG::Canvas.new(4, 4).rect(1, 1, 3, 3, 255, 255) }
+
+  describe "#trim" do
+    it "should trim the border" do
+      subject.trim.should == ChunkyPNG::Canvas.new(2, 2, 255)
+    end
+
+    it "should not return itself" do
+      subject.trim.should_not equal(subject)
+    end
+
+    it "should be able to fail to trim a specified color" do
+      lambda { subject.trim(ChunkyPNG::Color::BLACK) }.should_not change(subject, :pixels)
+    end
+  end
+
+  describe "#trim!" do
+    it "should trim the border" do
+      subject.trim!
+      subject.should == ChunkyPNG::Canvas.new(2, 2, 255)
+    end
+
+    it "should return itself" do
+      subject.trim!.should equal(subject)
+    end
+  end
+end
