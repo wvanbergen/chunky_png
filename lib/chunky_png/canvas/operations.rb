@@ -316,7 +316,7 @@ module ChunkyPNG
         y1 = [*0...height].index  { |r|    row(r).uniq != [border] }
         y2 = [*0...height].rindex { |r|    row(r).uniq != [border] }
         
-        crop! x1, y1, x2 - x1, y2 - y1
+        crop! x1, y1, x2 - x1 + 1, y2 - y1 + 1
       end
       
       protected
