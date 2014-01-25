@@ -343,3 +343,42 @@ describe ChunkyPNG::Canvas::Operations do
     end
   end
 end
+
+describe ChunkyPNG::Canvas::Operations do
+
+  subject { ChunkyPNG::Canvas.new(4, 4) }
+
+  describe "#border" do
+    it "should add the border" do
+      subject.border(2).should == reference_canvas('operations_border')
+    end
+
+    it "should not return itself" do
+      subject.border(1).should_not equal(subject)
+    end
+
+    it "should retain transparency" do
+      ChunkyPNG::Canvas.new(1, 1).border(1).pixels.should include(0)
+    end
+  end
+
+  describe "#border!" do
+    it "should add the border" do
+      subject.border!(2)
+      subject.should == reference_canvas('operations_border')
+    end
+
+    it "should return itself" do
+      subject.border!(1).should equal(subject)
+    end
+
+    it "should retain transparency" do
+      subject.border!(1)
+      subject.pixels.should include(0)
+    end
+
+    it "should change the image dimensions" do
+      lambda { subject.border!(1) }.should change(subject, :dimension).from(ChunkyPNG::Dimension('4x4')).to(ChunkyPNG::Dimension('6x6'))
+    end
+  end
+end
