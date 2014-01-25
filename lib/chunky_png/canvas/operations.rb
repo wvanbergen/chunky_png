@@ -319,6 +319,40 @@ module ChunkyPNG
         crop! x1, y1, x2 - x1 + 1, y2 - y1 + 1
       end
       
+      # Draws a border around the image.
+      #
+      # @param [Integer] size The size of the border.
+      # @param [Integer] color The color of the border.
+      # @return [ChunkyPNG::Canvas] Returns a bordered version of the image.
+      # @see #border!
+      def border size, color = ChunkyPNG::Color::BLACK
+        new_width  = width  + size * 2
+        new_height = height + size * 2
+
+        # This approach of replacing the center of a new canvas whose background is
+        # the border color will almost always be faster than mutating a duplicate.
+        ChunkyPNG::Canvas.new(new_width, new_height, color).replace(self, size, size)
+      end
+
+      # Draws a border around the image in place.
+      #
+      # @param [Integer] size The size of the border.
+      # @param [Integer] color The color of the border.
+      # @return [ChunkyPNG::Canvas] Returns itself with the border added.
+      # @see #border
+      def border! size, color = ChunkyPNG::Color::BLACK
+        original   = dup
+        new_width  = width  + size * 2
+        new_height = height + size * 2
+
+        # Resampling is, at present, the only way to specify a new width and height
+        # for an image, which is necessary for an in-place border addition.
+        resample_bilinear!(new_width, new_height)
+
+        rect(0, 0, new_width, new_height, color, color)
+        replace!(original, size, size)
+      end
+
       protected
       
       # Checks whether another image has the correct dimension to be used for an operation
