@@ -312,7 +312,7 @@ end
 
 describe ChunkyPNG::Canvas::Operations do
 
-  subject { ChunkyPNG::Canvas.new(4, 4).rect(1, 1, 3, 3, 255, 255) }
+  subject { ChunkyPNG::Canvas.new(4, 4).rect(1, 1, 2, 2, 255, 255) }
 
   describe "#trim" do
     it "should trim the border" do
