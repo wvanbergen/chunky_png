@@ -296,6 +296,29 @@ module ChunkyPNG
         return self
       end
       
+      # Trims the border around the image, presumed to be the color of the first pixel.
+      #
+      # @param [Integer] border The color to attempt to trim.
+      # @return [ChunkyPNG::Canvas] The trimmed image.
+      # @see #trim!
+      def trim(border = pixels.first)
+        dup.trim!
+      end
+
+      # Trims the border around the image in place.
+      #
+      # @param [Integer] border The color to attempt to trim.
+      # @return [ChunkyPNG::Canvas] Returns itself, but with the border trimmed.
+      # @see #trim
+      def trim!(border = pixels.first)
+        x1 = [*0...width].index   { |c| column(c).uniq != [border] }
+        x2 = [*0...width].rindex  { |c| column(c).uniq != [border] }
+        y1 = [*0...height].index  { |r|    row(r).uniq != [border] }
+        y2 = [*0...height].rindex { |r|    row(r).uniq != [border] }
+        
+        crop! x1, y1, x2 - x1, y2 - y1
+      end
+      
       protected
       
       # Checks whether another image has the correct dimension to be used for an operation
