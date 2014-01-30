@@ -326,6 +326,10 @@ describe ChunkyPNG::Canvas::Operations do
     it "should be able to fail to trim a specified color" do
       lambda { subject.trim(ChunkyPNG::Color::BLACK) }.should_not change(subject, :pixels)
     end
+
+    it "should be the same after trimming an added border" do
+      subject.border(2).trim.should == subject
+    end
   end
 
   describe "#trim!" do
