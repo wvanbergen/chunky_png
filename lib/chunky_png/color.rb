@@ -158,18 +158,15 @@ module ChunkyPNG
     # @return [Integer] The color value.
     # @raise [ArgumentError] if the value given is not a hex color notation.
     def from_hex(hex_value, opacity = nil)
-      if HEX3_COLOR_REGEXP =~ hex_value
-        base_color = ($1[0].chr.hex * 0x11 << 24) +
-                     ($1[1].chr.hex * 0x11 << 16) +
-                     ($1[2].chr.hex * 0x11 <<  8)
-        opacity  ||= 0xff
-      elsif HEX6_COLOR_REGEXP =~ hex_value
-        base_color = $1.hex << 8
-        opacity  ||= $2 ? $2.hex : 0xff
+      base_color = case hex_value
+                   when HEX3_COLOR_REGEXP
+                     $1.gsub(/([0-9a-f])/i, '\1\1').hex << 8
+                   when HEX6_COLOR_REGEXP
+                     $1.hex << 8
       else
         raise ArgumentError, "Not a valid hex color notation: #{hex_value.inspect}!"
       end
-
+      opacity  ||= $2 ? $2.hex : 0xff
       base_color | opacity
     end
 
