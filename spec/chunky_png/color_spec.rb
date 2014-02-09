@@ -88,18 +88,23 @@ describe ChunkyPNG::Color do
   end
   
   describe '#from_hex' do
-    it "should load colors correctlt from hex notation" do
+    it "should load colors correctly from hex notation" do
       from_hex('0a649664').should   == @non_opaque
       from_hex('#0a649664').should  == @non_opaque
       from_hex('0x0a649664').should == @non_opaque
       from_hex('0a6496').should     == @opaque
       from_hex('#0a6496').should    == @opaque
       from_hex('0x0a6496').should   == @opaque
+      from_hex('abc').should        == 0xaabbccff
+      from_hex('#abc').should       == 0xaabbccff
+      from_hex('0xabc').should      == 0xaabbccff
     end
     
-    it "should allow setting opacity explicitely" do
+    it "should allow setting opacity explicitly" do
       from_hex('0x0a6496', 0x64).should == @non_opaque
       from_hex('#0a6496', 0x64).should  == @non_opaque
+      from_hex('0xabc', 0xdd).should    == 0xaabbccdd
+      from_hex('#abc', 0xdd).should     == 0xaabbccdd
     end
   end
   
@@ -113,7 +118,7 @@ describe ChunkyPNG::Color do
       html_color('SPRING_GREEN').should == 0x00ff7fff
     end
     
-    it "should set the opacity level explicitely" do
+    it "should set the opacity level explicitly" do
       html_color(:springgreen, 0xff).should == 0x00ff7fff
       html_color(:springgreen, 0xaa).should == 0x00ff7faa
       html_color(:springgreen, 0x00).should == 0x00ff7f00

@@ -57,7 +57,7 @@ module ChunkyPNG
     
     # @private
     # @return [Regexp] The regexp to parse hex color values.
-    HEX_COLOR_REGEXP  = /^(?:#|0x)?([0-9a-f]{6})([0-9a-f]{2})?$/i
+    HEX_COLOR_REGEXP  = /^(?:#|0x)?([0-9a-f]{3,6})([0-9a-f]{2})?$/i
 
     # @private
     # @return [Regexp] The regexp to parse named color values.
@@ -153,13 +153,14 @@ module ChunkyPNG
     # @return [Integer] The color value.
     # @raise [ArgumentError] if the value given is not a hex color notation.
     def from_hex(hex_value, opacity = nil)
-      if HEX_COLOR_REGEXP =~ hex_value
-        base_color = $1.hex << 8
-        opacity  ||= $2 ? $2.hex : 0xff
-        base_color | opacity
-      else 
+      hex_value.scan(HEX_COLOR_REGEXP)
+      unless [3, 6].include?($1.size)
         raise ArgumentError, "Not a valid hex color notation: #{hex_value.inspect}!"
       end
+
+      base_color = ($1.size == 6 ? $1 : $1.gsub(/([0-9a-f])/i, '\1\1')).hex << 8
+      opacity  ||= $2 ? $2.hex : 0xff
+      base_color | opacity
     end
 
     ####################################################################
