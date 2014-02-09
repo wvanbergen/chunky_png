@@ -159,9 +159,9 @@ module ChunkyPNG
     # @raise [ArgumentError] if the value given is not a hex color notation.
     def from_hex(hex_value, opacity = nil)
       if HEX3_COLOR_REGEXP =~ hex_value
-        base_color = ($1[0].hex * 0x11 << 24) +
-                     ($1[1].hex * 0x11 << 16) +
-                     ($1[2].hex * 0x11 <<  8)
+        base_color = ($1[0].chr.hex * 0x11 << 24) +
+                     ($1[1].chr.hex * 0x11 << 16) +
+                     ($1[2].chr.hex * 0x11 <<  8)
         opacity  ||= 0xff
       elsif HEX6_COLOR_REGEXP =~ hex_value
         base_color = $1.hex << 8
