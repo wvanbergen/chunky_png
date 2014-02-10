@@ -56,8 +56,12 @@ module ChunkyPNG
     MAX = 0xff
     
     # @private
-    # @return [Regexp] The regexp to parse hex color values.
-    HEX_COLOR_REGEXP  = /^(?:#|0x)?([0-9a-f]{6})([0-9a-f]{2})?$/i
+    # @return [Regexp] The regexp to parse 3-digit hex color values.
+    HEX3_COLOR_REGEXP  = /\A(?:#|0x)?([0-9a-f]{3})\z/i
+
+    # @private
+    # @return [Regexp] The regexp to parse 6- and 8-digit hex color values.
+    HEX6_COLOR_REGEXP  = /\A(?:#|0x)?([0-9a-f]{6})([0-9a-f]{2})?\z/i
 
     # @private
     # @return [Regexp] The regexp to parse named color values.
@@ -77,8 +81,8 @@ module ChunkyPNG
       return source if source.kind_of?(Integer)
       case source.to_s
         when /^\d+$/; source.to_s.to_i
-        when ChunkyPNG::Color::HEX_COLOR_REGEXP;  ChunkyPNG::Color.from_hex(source.to_s)
-        when ChunkyPNG::Color::HTML_COLOR_REGEXP; ChunkyPNG::Color.html_color(source.to_s)
+        when HEX3_COLOR_REGEXP, HEX6_COLOR_REGEXP; from_hex(source.to_s)
+        when HTML_COLOR_REGEXP; html_color(source.to_s)
         else raise ArgumentError, "Don't know how to create a color from #{source.inspect}!"
       end
     end
@@ -143,7 +147,8 @@ module ChunkyPNG
     
     # Creates a color by converting it from a string in hex notation. 
     #
-    # It supports colors with (#rrggbbaa) or without (#rrggbb) alpha channel.
+    # It supports colors with (#rrggbbaa) or without (#rrggbb) alpha channel
+    # as well as the 3-digit short format (#rgb) for those without.
     # Color strings may include the prefix "0x" or "#".
     #
     # @param [String] str The color in hex notation. @return [Integer] The
@@ -153,13 +158,16 @@ module ChunkyPNG
     # @return [Integer] The color value.
     # @raise [ArgumentError] if the value given is not a hex color notation.
     def from_hex(hex_value, opacity = nil)
-      if HEX_COLOR_REGEXP =~ hex_value
-        base_color = $1.hex << 8
-        opacity  ||= $2 ? $2.hex : 0xff
-        base_color | opacity
-      else 
-        raise ArgumentError, "Not a valid hex color notation: #{hex_value.inspect}!"
-      end
+      base_color = case hex_value
+                   when HEX3_COLOR_REGEXP
+                     $1.gsub(/([0-9a-f])/i, '\1\1').hex << 8
+                   when HEX6_COLOR_REGEXP
+                     $1.hex << 8
+                   else
+                     raise ArgumentError, "Not a valid hex color notation: #{hex_value.inspect}!"
+                   end
+      opacity  ||= $2 ? $2.hex : 0xff
+      base_color | opacity
     end
 
     ####################################################################
