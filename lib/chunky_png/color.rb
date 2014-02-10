@@ -163,9 +163,9 @@ module ChunkyPNG
                      $1.gsub(/([0-9a-f])/i, '\1\1').hex << 8
                    when HEX6_COLOR_REGEXP
                      $1.hex << 8
-      else
-        raise ArgumentError, "Not a valid hex color notation: #{hex_value.inspect}!"
-      end
+                   else
+                     raise ArgumentError, "Not a valid hex color notation: #{hex_value.inspect}!"
+                   end
       opacity  ||= $2 ? $2.hex : 0xff
       base_color | opacity
     end
