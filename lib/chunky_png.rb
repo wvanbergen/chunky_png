@@ -1,3 +1,4 @@
+#test
 # Basic requirements from standard library
 require 'set'
 require 'zlib'
