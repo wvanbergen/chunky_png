@@ -137,24 +137,26 @@ module ChunkyPNG
   EXTRA_BYTE = force_binary("\0").freeze
 end
 
-require 'chunky_png/version'
+filepath = File.dirname(__FILE__) + '/'
+
+require filepath + "chunky_png/version"
 
 # Ruby 1.8 / 1.9 compatibility
-require 'chunky_png/compatibility'
+require filepath + 'chunky_png/compatibility'
 
 # PNG file structure
-require 'chunky_png/datastream'
-require 'chunky_png/chunk'
+require filepath + 'chunky_png/datastream'
+require filepath + 'chunky_png/chunk'
 
 # Colors
-require 'chunky_png/palette'
-require 'chunky_png/color'
+require filepath + 'chunky_png/palette'
+require filepath + 'chunky_png/color'
 
 # Geometry
-require 'chunky_png/point'
-require 'chunky_png/vector'
-require 'chunky_png/dimension'
+require filepath + 'chunky_png/point'
+require filepath + 'chunky_png/vector'
+require filepath + 'chunky_png/dimension'
 
 # Canvas / Image classes
-require 'chunky_png/canvas'
-require 'chunky_png/image'
+require filepath + 'chunky_png/canvas'
+require filepath + 'chunky_png/image'
