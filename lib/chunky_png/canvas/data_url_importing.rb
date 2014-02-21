@@ -1,3 +1,4 @@
+module ArribaSection
 module ChunkyPNG
   class Canvas
 
@@ -18,4 +19,5 @@ module ChunkyPNG
       end
     end
   end
+end
 end

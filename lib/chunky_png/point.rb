@@ -1,3 +1,4 @@
+module ArribaSection
 module ChunkyPNG
   
   # Factory method to create {ChunkyPNG::Point} instances.
@@ -112,4 +113,5 @@ module ChunkyPNG
       ChunkyPNG::Dimension(*dimension_like).include?(self)
     end
   end
+end
 end

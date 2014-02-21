@@ -1,3 +1,4 @@
+module ArribaSection
 module ChunkyPNG
 
   # The Datastream class represents a PNG formatted datastream. It supports
@@ -182,4 +183,5 @@ module ChunkyPNG
     alias :to_string :to_blob
     alias :to_s :to_blob
   end
+end
 end

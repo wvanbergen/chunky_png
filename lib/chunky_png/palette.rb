@@ -1,3 +1,4 @@
+module ArribaSection
 module ChunkyPNG
 
   # A palette describes the set of colors that is being used for an image.
@@ -206,4 +207,5 @@ module ChunkyPNG
       end
     end
   end
+end
 end

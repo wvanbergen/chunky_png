@@ -11,6 +11,7 @@ require filepath + 'canvas/drawing'
 require filepath + 'canvas/resampling'
 require filepath + 'canvas/masking'
 
+module ArribaSection
 module ChunkyPNG
 
   # The ChunkyPNG::Canvas class represents a raster image as a matrix of
@@ -333,4 +334,5 @@ module ChunkyPNG
       return true
     end
   end
+end
 end

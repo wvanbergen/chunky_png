@@ -1,3 +1,4 @@
+module ArribaSection
 module ChunkyPNG
   
   # A PNG datastream consists of multiple chunks. This module, and the classes
@@ -325,4 +326,5 @@ module ChunkyPNG
       'tEXt' => Text, 'zTXt' => CompressedText, 'iTXt' => InternationalText
     }
   end
+end
 end

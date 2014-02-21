@@ -1,3 +1,4 @@
+module ArribaSection
 module ChunkyPNG
   
   # Creates a {ChunkyPNG::Dimension} instance using arguments that can be interpreted 
@@ -110,4 +111,5 @@ module ChunkyPNG
     
     alias_method :to_ary, :to_a
   end
+end
 end

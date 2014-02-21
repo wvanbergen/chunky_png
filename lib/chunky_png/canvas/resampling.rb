@@ -1,6 +1,6 @@
 
 
-
+module ArribaSection
 module ChunkyPNG
   class Canvas
     
@@ -144,4 +144,5 @@ module ChunkyPNG
       alias_method :resize, :resample
     end
   end
+end
 end

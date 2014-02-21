@@ -1,3 +1,4 @@
+module ArribaSection
 module ChunkyPNG
   
   # Factory method to return a color value, based on the arguments given.
@@ -749,4 +750,5 @@ module ChunkyPNG
       (scanline_bytesize(color_mode, depth, width) + 1) * height
     end
   end
+end
 end

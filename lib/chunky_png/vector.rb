@@ -1,3 +1,4 @@
+module ArribaSection
 module ChunkyPNG
 
   # Factory method for {ChunkyPNG::Vector} instances.
@@ -183,4 +184,5 @@ module ChunkyPNG
       multiple_from_array(source_str.scan(/[\(\[\{]?(\d+)\s*[,x]?\s*(\d+)[\)\]\}]?/))
     end
   end
+end
 end

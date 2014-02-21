@@ -1,3 +1,4 @@
+module ArribaSection
 module ChunkyPNG
 
   # ChunkyPNG::Image is an extension of the {ChunkyPNG::Canvas} class, that
@@ -76,4 +77,5 @@ module ChunkyPNG
       return image
     end
   end
+end
 end
