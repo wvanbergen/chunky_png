@@ -114,6 +114,11 @@ module ChunkyPNG
     def y_range
       Range.new(*points.map { |p| p.y }.minmax)
     end
+
+    def y_range_float
+      range_array=points.map { |p| p.y }.minmax
+      Range.new((range_array.first+1).to_i, range_array.last.to_i)
+    end
     
     # Finds the lowest x-coordinate in this vector.
     # @return [Integer] The lowest x-coordinate of all the points in the vector.

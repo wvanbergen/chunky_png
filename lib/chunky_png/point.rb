@@ -71,7 +71,8 @@ module ChunkyPNG
     # @param [Integer, :to_i] x The x-coordinate.
     # @param [Integer, :to_i] y The y-coordinate.
     def initialize(x, y)
-      @x, @y = x.to_i, y.to_i
+      #@x, @y = x.to_i, y.to_i
+      @x, @y = x, y
     end
     
     # Checks whether 2 points are identical.

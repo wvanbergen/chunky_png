@@ -79,8 +79,93 @@ module ChunkyPNG
 
         return self
       end
-      
-      
+
+
+      def plot(x, y, c, stroke_color)
+        #plot the pixel at (x, y) with brightness c (where 0 ≤ c ≤ 1)
+        compose_pixel(x, y, ChunkyPNG::Color.fade(stroke_color, (c * 255).round))
+      end
+
+      def ipart(x)
+        x.to_i
+      end
+
+      def round(x)
+        return ipart(x + 0.5)
+      end
+
+      def fpart(x)
+        return x - x.to_i #'fractional part of x'
+      end
+
+      def rfpart(x)
+        return 1 - fpart(x)
+      end
+
+
+      def line_xiaolin_wu_float(x0, y0, x1, y1, stroke_color, inclusive = true)
+        steep = (y1 - y0).abs > (x1 - x0).abs
+
+        if steep
+          x0, y0 = y0, x0
+          x1, y1 = y1, x1
+        end
+
+        if x0 > x1
+          x0, x1 = x1, x0
+          y0, y1 = y1, y0
+        end
+
+        dx = x1 - x0
+        dy = y1 - y0
+        gradient = dy / dx
+
+        # handle first endpoint
+        xend = round(x0)
+        yend = y0 + gradient * (xend - x0)
+        xgap = rfpart(x0 + 0.5)
+        xpxl1 = xend   #this will be used in the main loop
+        ypxl1 = ipart(yend)
+
+        if steep
+          plot(ypxl1, xpxl1, rfpart(yend) * xgap, stroke_color)
+          plot(ypxl1+1, xpxl1, fpart(yend) * xgap, stroke_color)
+        else
+          plot(xpxl1, ypxl1, rfpart(yend) * xgap, stroke_color)
+          plot(xpxl1, ypxl1+1, fpart(yend) * xgap, stroke_color)
+        end
+
+        intery = yend + gradient # first y-intersection for the main loop
+
+        # handle second endpoint
+        xend = round(x1)
+        yend = y1 + gradient * (xend - x1)
+        xgap = fpart(x1 + 0.5)
+        xpxl2 = xend #this will be used in the main loop
+        ypxl2 = ipart(yend)
+
+        if steep
+          plot(ypxl2  , xpxl2, rfpart(yend) * xgap, stroke_color)
+          plot(ypxl2+1, xpxl2,  fpart(yend) * xgap, stroke_color)
+        else
+          plot(xpxl2, ypxl2,  rfpart(yend) * xgap, stroke_color)
+          plot(xpxl2, ypxl2+1, fpart(yend) * xgap, stroke_color)
+        end
+
+        # main loop
+        for x in (xpxl1 + 1)..(xpxl2 - 1)
+          if  steep
+            plot(ipart(intery)  , x, rfpart(intery), stroke_color)
+            plot(ipart(intery)+1, x,  fpart(intery), stroke_color)
+          else
+            plot(x, ipart(intery),  rfpart(intery), stroke_color)
+            plot(x, ipart(intery)+1, fpart(intery), stroke_color)
+          end
+          intery = intery + gradient
+        end
+      end
+      alias_method :line_float, :line_xiaolin_wu_float
+
       # Draws an anti-aliased line using Xiaolin Wu's algorithm.
       #
       # @param [Integer] x0 The x-coordinate of the first control point.
@@ -94,7 +179,6 @@ module ChunkyPNG
       def line_xiaolin_wu(x0, y0, x1, y1, stroke_color, inclusive = true)
         
         stroke_color = ChunkyPNG::Color.parse(stroke_color)
-        
         dx = x1 - x0
         sx = dx < 0 ? -1 : 1
         dx *= sx
@@ -169,7 +253,8 @@ module ChunkyPNG
 
         # Fill
         unless fill_color == ChunkyPNG::Color::TRANSPARENT
-          vector.y_range.each do |y|
+
+          vector.y_range_float.each do |y|
             intersections = []
             vector.edges.each do |p1, p2|
               if (p1.y < y && p2.y >= y) || (p2.y < y && p1.y >= y)
@@ -188,7 +273,7 @@ module ChunkyPNG
         
         # Stroke
         vector.each_edge do |(from_x, from_y), (to_x, to_y)|
-          line(from_x, from_y, to_x, to_y, stroke_color, false)
+          line_float(from_x, from_y, to_x, to_y, stroke_color, false)
         end
 
         return self
