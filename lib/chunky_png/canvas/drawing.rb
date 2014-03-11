@@ -320,6 +320,8 @@ module ChunkyPNG
       # @param [Integer] fill_color The color to use that fills the circle.
       # @return [ChunkyPNG::Canvas] Itself, with the circle drawn.
       def circle(x0, y0, radius, stroke_color = ChunkyPNG::Color::BLACK, fill_color = ChunkyPNG::Color::TRANSPARENT)
+        x0 = x0.to_i  #TODO implement new anti aliased circle algorithm
+        y0 = y0.to_i
 
         stroke_color = ChunkyPNG::Color.parse(stroke_color)
         fill_color   = ChunkyPNG::Color.parse(fill_color)
