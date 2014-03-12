@@ -244,28 +244,35 @@ module ChunkyPNG
       # @param [Integer] fill_color The fill color to use for this polygon.
       # @return [ChunkyPNG::Canvas] Itself, with the polygon drawn.
       def polygon(path, stroke_color = ChunkyPNG::Color::BLACK, fill_color = ChunkyPNG::Color::TRANSPARENT)
-        
-        vector = ChunkyPNG::Vector(*path)
-        raise ArgumentError, "A polygon requires at least 3 points" if path.length < 3
 
-        stroke_color = ChunkyPNG::Color.parse(stroke_color)
-        fill_color   = ChunkyPNG::Color.parse(fill_color)
+        if path.length == 2
+          puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ENKELE LIJN"
+          x0, y0 = path[0].x, path[0].y
+          x1, y1 = path[0].x, path[0].y
+          line_float(x0, y0, x1, y1, stroke_color, inclusive = true)
+        else
+          vector = ChunkyPNG::Vector(*path)
+          raise ArgumentError, "A polygon requires at least 3 points" if path.length < 3
 
-        # Fill
-        unless fill_color == ChunkyPNG::Color::TRANSPARENT
+          stroke_color = ChunkyPNG::Color.parse(stroke_color)
+          fill_color   = ChunkyPNG::Color.parse(fill_color)
 
-          vector.y_range_float.each do |y|
-            intersections = []
-            vector.edges.each do |p1, p2|
-              if (p1.y < y && p2.y >= y) || (p2.y < y && p1.y >= y)
-                intersections << (p1.x + (y - p1.y).to_f / (p2.y - p1.y) * (p2.x - p1.x)).round
+          # Fill
+          unless fill_color == ChunkyPNG::Color::TRANSPARENT
+
+            vector.y_range_float.each do |y|
+              intersections = []
+              vector.edges.each do |p1, p2|
+                if (p1.y < y && p2.y >= y) || (p2.y < y && p1.y >= y)
+                  intersections << (p1.x + (y - p1.y).to_f / (p2.y - p1.y) * (p2.x - p1.x)).round
+                end
               end
-            end
 
-            intersections.sort!
-            0.step(intersections.length - 1, 2) do |i|
-              intersections[i].upto(intersections[i + 1]) do |x|
-                compose_pixel(x, y, fill_color)
+              intersections.sort!
+              0.step(intersections.length - 1, 2) do |i|
+                intersections[i].upto(intersections[i + 1]) do |x|
+                  compose_pixel(x, y, fill_color)
+                end
               end
             end
           end
@@ -309,6 +316,94 @@ module ChunkyPNG
         line(x1, y0, x0, y0, stroke_color, false)
         
         return self
+      end
+
+    def circle_float(centerpoint, radius, feather,stroke_color, fill_color)
+      #procedure DrawDisk(png, centerx, centery, radius, feather)
+      # Draw a disk on Bitmap. Bitmap must be a 256 color (pf8bit)
+      # palette bitmap, and parts outside the disk will get palette
+      # index 0, parts inside will get palette index 255, and in the
+      # antialiased area (feather), the pixels will get values
+      # inbetween.
+      # ***Parameters***
+      # Bitmap:
+      #   The bitmap to draw on
+      # CenterX, CenterY:
+      #   The center of the disk (float precision). Note that [0, 0]
+      #   would be the center of the first pixel. To draw in the
+      #   exact middle of a 100x100 bitmap, use CenterX = 49.5 and
+      #   CenterY = 49.5
+      # Radius:
+      #   The radius of the drawn disk in pixels (float precision)
+      # Feather:
+      #   The feather area. Use 1 pixel for a 1-pixel antialiased
+      #   area. Pixel centers outside 'Radius + Feather / 2' become
+      #   0, pixel centers inside 'Radius - Feather/2' become 255.
+      #   Using a value of 0 will yield a bilevel image.
+      # Copyright (c) 2003 Nils Haeck M.Sc. www.simdesign.nl
+      # http://www.simdesign.nl/tips/tip002.html
+      #var
+      # x, y: integer;
+      #LX, RX, LY, RY: integer;
+      #Fact: integer;
+      #RPF2, RMF2: single;
+      #P: PByteArray;
+      #SqY, SqDist: single;
+      #sqX: array of single;
+
+        centerx = centerpoint.x
+        centery = centerpoint.y
+        # Determine some helpful values (singles)
+        rpf2 = Math.sqrt(radius + feather/2)
+        rmf2 = Math.sqrt(radius - feather/2)
+
+        # Determine bounds:
+        lx = ArribaHatch.max((centerx - rpf2).floor, 0)
+        rx = ArribaHatch.min((centerx + rpf2).ceil, self.width - 1)
+        ly = ArribaHatch.max((centery - rpf2).floor, 0)
+        ry = ArribaHatch.min((centery + rpf2).ceil, self.height - 1)
+
+        # Optimization run: find squares of X first
+        sqX=[]
+        #set_length(sqX, rx - lx + 1)
+        for n in 0..(rx-lx+1)
+          sqX[n]=nil
+        end
+
+        for x in lx..rx
+          sqX[x - lx] = Math.sqrt(x - centerx)
+
+          # Loop through Y values
+          for y in ly..ry
+            sqY = Math.sqrt(y - centery)
+            # Loop through X values
+            for x in lx..rx
+              # determine squared distance from center for this pixel
+              sqdist = sqY + sqX[x - lx]
+
+              # inside inner circle? Most often..
+              if sqdist < rmf2
+                 # inside the inner circle.. just give the scanline the
+                 # new color
+                 #p[x] = 255
+                 plot(x, y, 1, stroke_color)
+              else
+                if sqdist < rpf2 # inside outer circle?
+                 # We are inbetween the inner and outer bound, now
+                 # mix the color
+                 fact = (((radius - Math.sqrt(sqdist)) * 2 / feather) * 127.5 + 127.5).round
+                 # just in case limit to [0, 255]
+                 #p[x] = [0, [fact, 255].min].max`
+
+                 plot(x, y, ArribaHatch.max(0, ArribaHatch.min(fact, 255))/255, stroke_color)
+                else
+                  #p[x] = 0
+                  plot(x, y, 0, stroke_color)
+                end
+              end
+            end
+          end
+        end
       end
       
       # Draws a circle on the canvas.
