@@ -4,6 +4,15 @@ This library can read and write PNG files. It is written in pure Ruby for
 maximum portability. Let me rephrase: it does NOT require RMagick or any other
 memory leaking image library.
 
+=====  Watch a devcast and tutorial of Chunky-PNG, click below.
+
+http://devcasts.co/ruby-chunky_png-a-great-gem-for-on-the-fly-png-manipulation
+
+http://devcasts.co/wp-content/uploads/2014/03/chunky-png.png
+
+===== http://devcasts.co/ruby-chunky_png-a-great-gem-for-on-the-fly-png-manipulation/
+
+
 Source code:: http://github.com/wvanbergen/chunky_png/tree
 RDoc:: http://rdoc.info/gems/chunky_png/frames
 Wiki:: http://github.com/wvanbergen/chunky_png/wiki
