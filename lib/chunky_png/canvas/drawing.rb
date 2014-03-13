@@ -318,7 +318,7 @@ module ChunkyPNG
         return self
       end
 
-    def circle_float(centerpoint, radius, feather,stroke_color, fill_color)
+    def circle_float(centerpoint, radius, feather, stroke_color = ChunkyPNG::Color::BLACK)
       #procedure DrawDisk(png, centerx, centery, radius, feather)
       # Draw a disk on Bitmap. Bitmap must be a 256 color (pf8bit)
       # palette bitmap, and parts outside the disk will get palette
@@ -351,17 +351,20 @@ module ChunkyPNG
       #SqY, SqDist: single;
       #sqX: array of single;
 
-        centerx = centerpoint.x
-        centery = centerpoint.y
+        return if centerpoint.y  < 0 - radius || centerpoint.y > height + radius || centerpoint.x < 0 - radius || centerpoint.x > width + radius
+
+        temp_translate = radius +10000
+        centerx = centerpoint.x + temp_translate
+        centery = centerpoint.y + temp_translate
         # Determine some helpful values (singles)
         rpf2 = Math.sqrt(radius + feather/2)
         rmf2 = Math.sqrt(radius - feather/2)
 
         # Determine bounds:
         lx = ArribaHatch.max((centerx - rpf2).floor, 0)
-        rx = ArribaHatch.min((centerx + rpf2).ceil, self.width - 1)
+        rx = ArribaHatch.min((centerx + rpf2).ceil, width - 1)
         ly = ArribaHatch.max((centery - rpf2).floor, 0)
-        ry = ArribaHatch.min((centery + rpf2).ceil, self.height - 1)
+        ry = ArribaHatch.min((centery + rpf2).ceil, height - 1)
 
         # Optimization run: find squares of X first
         sqX=[]
@@ -371,6 +374,8 @@ module ChunkyPNG
         end
 
         for x in lx..rx
+
+          puts 'halllllooo', x ,centerx, "#{x - centerx}"
           sqX[x - lx] = Math.sqrt(x - centerx)
 
           # Loop through Y values
@@ -386,7 +391,7 @@ module ChunkyPNG
                  # inside the inner circle.. just give the scanline the
                  # new color
                  #p[x] = 255
-                 plot(x, y, 1, stroke_color)
+                 plot(x-temp_translate, y-temp_translate, 1, stroke_color)
               else
                 if sqdist < rpf2 # inside outer circle?
                  # We are inbetween the inner and outer bound, now
@@ -395,10 +400,10 @@ module ChunkyPNG
                  # just in case limit to [0, 255]
                  #p[x] = [0, [fact, 255].min].max`
 
-                 plot(x, y, ArribaHatch.max(0, ArribaHatch.min(fact, 255))/255, stroke_color)
+                 plot(x- temp_translate, y-temp_translate, ArribaHatch.max(0, ArribaHatch.min(fact, 255))/255, stroke_color)
                 else
                   #p[x] = 0
-                  plot(x, y, 0, stroke_color)
+                  plot(x- temp_translate, y-temp_translate, 0, stroke_color)
                 end
               end
             end
