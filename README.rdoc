@@ -57,8 +57,6 @@ provides a massive speed boost to encoding and decoding.
 Also check out the following screencast by John Davison, which illustrates 
 basic usage of the library: http://devcasts.co/ruby-chunky_png-a-great-gem-for-on-the-fly-png-manipulation.
 
-{rdoc-image:http://chunkypng.com/images/screencast.png}[http://devcasts.co/ruby-chunky_png-a-great-gem-for-on-the-fly-png-manipulation]
-
 For more information, see the project wiki on http://github.com/wvanbergen/chunky_png/wiki
 or the RDOC documentation on http://rdoc.info/gems/chunky_png/frames
 
