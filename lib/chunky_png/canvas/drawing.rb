@@ -318,7 +318,7 @@ module ChunkyPNG
         return self
       end
 
-    def circle_float(centerpoint, radius, feather, stroke_color = ChunkyPNG::Color::BLACK)
+    def circle_float(centerpoint, radius, stroke_color = ChunkyPNG::Color::BLACK)
       #procedure DrawDisk(png, centerx, centery, radius, feather)
       # Draw a disk on Bitmap. Bitmap must be a 256 color (pf8bit)
       # palette bitmap, and parts outside the disk will get palette
@@ -350,6 +350,7 @@ module ChunkyPNG
       #P: PByteArray;
       #SqY, SqDist: single;
       #sqX: array of single;
+      feather =  radius * 0.05
 
         return if centerpoint.y  < 0 - radius || centerpoint.y > height + radius || centerpoint.x < 0 - radius || centerpoint.x > width + radius
 
@@ -375,7 +376,6 @@ module ChunkyPNG
 
         for x in lx..rx
           sqX[x - lx] = (x - centerx)**2
-          puts sqX.inspect
         end
 
         # Loop through Y values
@@ -393,21 +393,20 @@ module ChunkyPNG
                # new color
                #p[x] = 255
                plot(x, y, 1, stroke_color)
-            else
-              if sqdist < rpf2 # inside outer circle?
+            elsif sqdist < rpf2 # inside outer circle?
                # We are inbetween the inner and outer bound, now
                # mix the color
-               fact = (((radius - (sqdist)**2) * 2 / feather) * 127.5 + 127.5).round
+               #fact = (((radius - Math.sqrt(sqdist)) * 2 / feather) * 127.5 + 127.5).round
+                fact = (radius - Math.sqrt(sqdist))/feather
                # just in case limit to [0, 255]
                #p[x] = [0, [fact, 255].min].max`
-               plot(x, y, ArribaHatch.max(0, ArribaHatch.min(fact, 255))/255, stroke_color)
-              else
-                #p[x] = 0
-                plot(x, y, 0, stroke_color)
-              end
+               #plot(x, y, ArribaHatch.max(0, ArribaHatch.min(fact, 255))/255, stroke_color)
+               plot(x, y, fact, stroke_color)
+            else
+              #p[x] = 0
+              plot(x, y, 0, stroke_color)
             end
           end
-
         end
       end
       
