@@ -83,7 +83,13 @@ module ChunkyPNG
 
       def plot(x, y, c, stroke_color)
         #plot the pixel at (x, y) with brightness c (where 0 ≤ c ≤ 1)
-        compose_pixel(x, y, ChunkyPNG::Color.fade(stroke_color, (c * 255).round))
+        #compose_pixel(x, y, ChunkyPNG::Color.fade(stroke_color, (c * 255).round))
+
+        fg = rgba(r(stroke_color), g(stroke_color), b(stroke_color), (c * 255).round )
+        bg = get_pixel(x,y)
+        compose_pixel(x, y, ChunkyPNG::Color.compose_quick(fg, bg))
+
+
       end
 
       def ipart(x)
