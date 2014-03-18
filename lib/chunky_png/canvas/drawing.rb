@@ -318,7 +318,7 @@ module ChunkyPNG
         return self
       end
 
-    def circle_float(centerpoint, radius, stroke_color = ChunkyPNG::Color::BLACK)
+    def circle_float(centerpoint, radius, stroke_color = ChunkyPNG::Color::BLACK, feather = 2)
       #procedure DrawDisk(png, centerx, centery, radius, feather)
       # Draw a disk on Bitmap. Bitmap must be a 256 color (pf8bit)
       # palette bitmap, and parts outside the disk will get palette
@@ -350,9 +350,9 @@ module ChunkyPNG
       #P: PByteArray;
       #SqY, SqDist: single;
       #sqX: array of single;
-      feather =  radius * 0.05
+      #feather =  radius * 0.05
 
-        return if centerpoint.y  < 0 - radius || centerpoint.y > height + radius || centerpoint.x < 0 - radius || centerpoint.x > width + radius
+        #return if centerpoint.y  < 0 - radius || centerpoint.y > height + radius || centerpoint.x < 0 - radius || centerpoint.x > width + radius
 
 
         centerx = centerpoint.x
@@ -397,7 +397,7 @@ module ChunkyPNG
                # We are inbetween the inner and outer bound, now
                # mix the color
                #fact = (((radius - Math.sqrt(sqdist)) * 2 / feather) * 127.5 + 127.5).round
-                fact = (radius - Math.sqrt(sqdist))/feather
+                fact = (radius - Math.sqrt(sqdist))/feather * 2
                # just in case limit to [0, 255]
                #p[x] = [0, [fact, 255].min].max`
                #plot(x, y, ArribaHatch.max(0, ArribaHatch.min(fact, 255))/255, stroke_color)
