@@ -82,14 +82,15 @@ module ChunkyPNG
 
 
       def plot(x, y, c, stroke_color)
-        #plot the pixel at (x, y) with brightness c (where 0 ≤ c ≤ 1)
-        #compose_pixel(x, y, ChunkyPNG::Color.fade(stroke_color, (c * 255).round))
-
-        fg = rgba(r(stroke_color), g(stroke_color), b(stroke_color), (c * 255).round )
-        bg = get_pixel(x,y)
-        compose_pixel(x, y, ChunkyPNG::Color.compose_quick(fg, bg))
-
-
+        #plot the pixel at (x, y) with brightness c (where 0 ≤ c ≤ 255)
+        #stroke_color = ChunkyPNG::Color.r(ChunkyPNG::Color::PREDEFINED_COLORS[:orange])
+        #compose_pixel(x, y, ChunkyPNG::Color.fade(stroke_color, (c * 255).round))     #origineel
+        alpha =  (c).round
+        fg = ChunkyPNG::Color.rgba(ChunkyPNG::Color.r(stroke_color),
+                                   ChunkyPNG::Color.g(stroke_color),
+                                   ChunkyPNG::Color.b(stroke_color),
+                                   ChunkyPNG::Color.a(alpha) )
+        compose_pixel(x, y, fg)
       end
 
       def ipart(x)
@@ -109,7 +110,8 @@ module ChunkyPNG
       end
 
 
-      def line_xiaolin_wu_float(x0, y0, x1, y1, stroke_color, inclusive = true)
+      def line_xiaolin_wu_float(p1, p2, stroke_color, inclusive = true)
+        x0, y0, x1, y1 = p1.x, p1.y, p2.x, p2.y
         steep = (y1 - y0).abs > (x1 - x0).abs
 
         if steep
@@ -134,11 +136,11 @@ module ChunkyPNG
         ypxl1 = ipart(yend)
 
         if steep
-          plot(ypxl1, xpxl1, rfpart(yend) * xgap, stroke_color)
-          plot(ypxl1+1, xpxl1, fpart(yend) * xgap, stroke_color)
+          plot(ypxl1, xpxl1, rfpart(yend) * xgap * 255, stroke_color)
+          plot(ypxl1+1, xpxl1, fpart(yend) * xgap * 255, stroke_color)
         else
-          plot(xpxl1, ypxl1, rfpart(yend) * xgap, stroke_color)
-          plot(xpxl1, ypxl1+1, fpart(yend) * xgap, stroke_color)
+          plot(xpxl1, ypxl1, rfpart(yend) * xgap * 255, stroke_color)
+          plot(xpxl1, ypxl1+1, fpart(yend) * xgap * 255, stroke_color)
         end
 
         intery = yend + gradient # first y-intersection for the main loop
@@ -151,21 +153,21 @@ module ChunkyPNG
         ypxl2 = ipart(yend)
 
         if steep
-          plot(ypxl2  , xpxl2, rfpart(yend) * xgap, stroke_color)
-          plot(ypxl2+1, xpxl2,  fpart(yend) * xgap, stroke_color)
+          plot(ypxl2  , xpxl2, rfpart(yend) * xgap * 255, stroke_color)
+          plot(ypxl2+1, xpxl2,  fpart(yend) * xgap * 255, stroke_color)
         else
-          plot(xpxl2, ypxl2,  rfpart(yend) * xgap, stroke_color)
-          plot(xpxl2, ypxl2+1, fpart(yend) * xgap, stroke_color)
+          plot(xpxl2, ypxl2,  rfpart(yend) * xgap * 255, stroke_color)
+          plot(xpxl2, ypxl2+1, fpart(yend) * xgap * 255, stroke_color)
         end
 
         # main loop
         for x in (xpxl1 + 1)..(xpxl2 - 1)
           if  steep
-            plot(ipart(intery)  , x, rfpart(intery), stroke_color)
-            plot(ipart(intery)+1, x,  fpart(intery), stroke_color)
+            plot(ipart(intery)  , x, rfpart(intery) * 255, stroke_color)
+            plot(ipart(intery)+1, x,  fpart(intery) * 255, stroke_color)
           else
-            plot(x, ipart(intery),  rfpart(intery), stroke_color)
-            plot(x, ipart(intery)+1, fpart(intery), stroke_color)
+            plot(x, ipart(intery),  rfpart(intery) * 255, stroke_color)
+            plot(x, ipart(intery)+1, fpart(intery) * 255, stroke_color)
           end
           intery = intery + gradient
         end
@@ -324,7 +326,7 @@ module ChunkyPNG
         return self
       end
 
-    def circle_float(centerpoint, radius, stroke_color = ChunkyPNG::Color::BLACK, feather = 2)
+    def circle_float(centerpoint, radius, stroke_color = ChunkyPNG::Color::BLACK, feather = 1)
       #procedure DrawDisk(png, centerx, centery, radius, feather)
       # Draw a disk on Bitmap. Bitmap must be a 256 color (pf8bit)
       # palette bitmap, and parts outside the disk will get palette
@@ -398,19 +400,18 @@ module ChunkyPNG
                # inside the inner circle.. just give the scanline the
                # new color
                #p[x] = 255
-               plot(x, y, 1, stroke_color)
+               plot(x, y, 255, stroke_color)
             elsif sqdist < rpf2 # inside outer circle?
                # We are inbetween the inner and outer bound, now
                # mix the color
-               #fact = (((radius - Math.sqrt(sqdist)) * 2 / feather) * 127.5 + 127.5).round
-                fact = (radius - Math.sqrt(sqdist))/feather * 2
+                fact = (((radius - Math.sqrt(sqdist)) * 2 / feather) * 127.5 + 127.5).round
                # just in case limit to [0, 255]
                #p[x] = [0, [fact, 255].min].max`
                #plot(x, y, ArribaHatch.max(0, ArribaHatch.min(fact, 255))/255, stroke_color)
-               plot(x, y, fact, stroke_color)
+                plot(x, y, fact, stroke_color)
             else
               #p[x] = 0
-              plot(x, y, 0, stroke_color)
+              #plot(x, y, 0, stroke_color) #plotpoints outside  of circle
             end
           end
         end
