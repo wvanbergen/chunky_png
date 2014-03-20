@@ -110,8 +110,7 @@ module ChunkyPNG
       end
 
 
-      def line_xiaolin_wu_float(p1, p2, stroke_color, inclusive = true)
-        x0, y0, x1, y1 = p1.x, p1.y, p2.x, p2.y
+      def line_xiaolin_wu_float(x0, y0, x1, y1, stroke_color, inclusive = true)
         steep = (y1 - y0).abs > (x1 - x0).abs
 
         if steep
@@ -251,10 +250,9 @@ module ChunkyPNG
       # @param [Integer] stroke_color The stroke color to use for this polygon.
       # @param [Integer] fill_color The fill color to use for this polygon.
       # @return [ChunkyPNG::Canvas] Itself, with the polygon drawn.
-      def polygon(path, stroke_color = ChunkyPNG::Color::BLACK, fill_color = ChunkyPNG::Color::TRANSPARENT)
+      def polygon(path, stroke_color = ChunkyPNG::Color::BLACK, fill_color = stroke_color)
 
         if path.length == 2
-          puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ENKELE LIJN"
           x0, y0 = path[0].x, path[0].y
           x1, y1 = path[0].x, path[0].y
           line_float(x0, y0, x1, y1, stroke_color, inclusive = true)
