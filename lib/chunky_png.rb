@@ -21,7 +21,7 @@ require 'enumerator'
 # {ChunkyPNG::Vector}::     geometry helper class representing a series of points.
 #
 # @author Willem van Bergen
-module ArribaSection
+module Skalp
 module ChunkyPNG
 
   ###################################################
@@ -138,7 +138,7 @@ module ChunkyPNG
   EXTRA_BYTE = force_binary("\0").freeze
 end
 
-end #module ArribaSection
+end #module Skalp
 
 filepath = File.dirname(__FILE__) + '/'
 

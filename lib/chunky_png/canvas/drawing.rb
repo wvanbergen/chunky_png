@@ -1,4 +1,4 @@
-module ArribaSection
+module Skalp
 module ChunkyPNG
   class Canvas
     
@@ -368,10 +368,10 @@ module ChunkyPNG
         rmf2 = (radius - feather/2)**2
 
         # Determine bounds:
-        lx = ArribaHatch.max((centerx - rpf2).floor, 0)
-        rx = ArribaHatch.min((centerx + rpf2).ceil, width - 1)
-        ly = ArribaHatch.max((centery - rpf2).floor, 0)
-        ry = ArribaHatch.min((centery + rpf2).ceil, height - 1)
+        lx = SkalpHatch.max((centerx - rpf2).floor, 0)
+        rx = SkalpHatch.min((centerx + rpf2).ceil, width - 1)
+        ly = SkalpHatch.max((centery - rpf2).floor, 0)
+        ry = SkalpHatch.min((centery + rpf2).ceil, height - 1)
 
         # Optimization run: find squares of X first
         sqX=[]
@@ -405,7 +405,7 @@ module ChunkyPNG
                 fact = (((radius - Math.sqrt(sqdist)) * 2 / feather) * 127.5 + 127.5).round
                # just in case limit to [0, 255]
                #p[x] = [0, [fact, 255].min].max`
-               #plot(x, y, ArribaHatch.max(0, ArribaHatch.min(fact, 255))/255, stroke_color)
+               #plot(x, y, SkalpHatch.max(0, SkalpHatch.min(fact, 255))/255, stroke_color)
                 plot(x, y, fact, stroke_color)
             else
               #p[x] = 0

@@ -1,4 +1,4 @@
-module ArribaSection
+module Skalp
 module ChunkyPNG
 
   # Factory method for {ChunkyPNG::Vector} instances.

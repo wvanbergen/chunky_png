@@ -11,7 +11,7 @@ require filepath + 'canvas/drawing'
 require filepath + 'canvas/resampling'
 require filepath + 'canvas/masking'
 
-module ArribaSection
+module Skalp
 module ChunkyPNG
 
   # The ChunkyPNG::Canvas class represents a raster image as a matrix of

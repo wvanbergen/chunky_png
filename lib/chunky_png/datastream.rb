@@ -1,4 +1,4 @@
-module ArribaSection
+module Skalp
 module ChunkyPNG
 
   # The Datastream class represents a PNG formatted datastream. It supports

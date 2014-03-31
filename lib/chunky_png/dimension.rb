@@ -1,4 +1,4 @@
-module ArribaSection
+module Skalp
 module ChunkyPNG
   
   # Creates a {ChunkyPNG::Dimension} instance using arguments that can be interpreted 

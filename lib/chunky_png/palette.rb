@@ -1,4 +1,4 @@
-module ArribaSection
+module Skalp
 module ChunkyPNG
 
   # A palette describes the set of colors that is being used for an image.

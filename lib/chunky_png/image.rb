@@ -1,4 +1,4 @@
-module ArribaSection
+module Skalp
 module ChunkyPNG
 
   # ChunkyPNG::Image is an extension of the {ChunkyPNG::Canvas} class, that
