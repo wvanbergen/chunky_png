@@ -3,7 +3,7 @@ module ChunkyPNG
   # The Datastream class represents a PNG formatted datastream. It supports
   # both reading from and writing to strings, streams and files.
   #
-  # A PNG datastream begins with the PNG signature, and than contains multiple
+  # A PNG datastream begins with the PNG signature, and then contains multiple
   # chunks, starting with a header (IHDR) chunk and finishing with an end
   # (IEND) chunk.
   #
