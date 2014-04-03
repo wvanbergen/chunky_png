@@ -729,7 +729,7 @@ module ChunkyPNG
         when ChunkyPNG::COLOR_TRUECOLOR_ALPHA; 4
         when ChunkyPNG::COLOR_GRAYSCALE;       1
         when ChunkyPNG::COLOR_GRAYSCALE_ALPHA; 2
-        else raise ChunkyPNG::NotSupported, "Don't know the numer of samples for this colormode: #{color_mode}!"
+        else raise ChunkyPNG::NotSupported, "Don't know the number of samples for this colormode: #{color_mode}!"
       end
     end
 
