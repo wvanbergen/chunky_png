@@ -16,7 +16,7 @@ module ChunkyPNG
     # Builds a new palette given a set (Enumerable instance) of colors.
     #
     # @param enum [Enumerable<Integer>] The set of colors to include in this
-    #   palette.This Enumerable can contains duplicates.
+    #   palette.This Enumerable can contain duplicates.
     # @param decoding_map [Array] An array of colors in the exact order at
     #   which they appeared in the palette chunk, so that this array can be
     #   used for decoding.
