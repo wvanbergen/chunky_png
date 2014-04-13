@@ -63,7 +63,10 @@ module ChunkyPNG
     # @param canvas [ChunkyPNG::Canvas] The canvas to create a palette for.
     # @return [ChunkyPNG::Palette] The palette instance.
     def self.from_canvas(canvas)
-      self.new(canvas.pixels)
+      # Although we don't need to call .uniq.sort before initializing, because
+      # Palette subclasses SortedSet, we get significantly better performance
+      # by doing so.
+      self.new(canvas.pixels.uniq.sort)
     end
 
     # Builds a palette instance from a given set of pixels.
