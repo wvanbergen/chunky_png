@@ -145,7 +145,7 @@ describe ChunkyPNG::Color do
     end
   end
 
-  describe 'extractiion of separate color channels' do
+  describe 'extraction of separate color channels' do
     it 'should extract components from a color correctly' do
       r(@opaque).should == 10
       g(@opaque).should == 100
