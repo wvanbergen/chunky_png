@@ -527,6 +527,37 @@ module ChunkyPNG
     end
 
     ####################################################################
+    # COMPARISON
+    ####################################################################
+
+    # Compute the Euclidean distance between 2 colors in RGBA
+    #
+    # This method simply takes the Euclidean distance between the RGBA channels
+    # of 2 colors, which gives us a measure of how different the two colors
+    # are.
+    #
+    # Although it would be more perceptually accurate to calculate a proper
+    # Delta E in Lab colorspace, this method should serve many use-cases while
+    # avoiding the overhead of converting RGBA to Lab.
+    #
+    # @param color_a [Integer]
+    # @param color_b [Integer]
+    # @return [Float]
+    def euclidean_distance_rgba(pixel_after, pixel_before)
+      Math.sqrt(
+        (r(pixel_after) - r(pixel_before))**2 +
+        (g(pixel_after) - g(pixel_before))**2 +
+        (b(pixel_after) - b(pixel_before))**2 +
+        (a(pixel_after) - a(pixel_before))**2
+      )
+    end
+
+    # Could be simplified as MAX * 2, but this format mirrors the math in
+    # {#euclidean_distance_rgba}
+    # @return [Float] The maximum Euclidean distance of two RGBA colors.
+    MAX_EUCLIDEAN_DISTANCE_RGBA = Math.sqrt(MAX**2 * 4)
+
+    ####################################################################
     # COLOR CONSTANTS
     ####################################################################
 
