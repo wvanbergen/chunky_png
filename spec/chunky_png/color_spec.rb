@@ -247,4 +247,29 @@ describe ChunkyPNG::Color do
       blend(@opaque, @black).should == blend(@black, @opaque)
     end
   end
+
+  describe '#euclidean_distance_rgba' do
+    subject { euclidean_distance_rgba(color_a, color_b) }
+
+    context 'with white and black' do
+      let(:color_a) { @white }
+      let(:color_b) { @black }
+
+      it { should == Math.sqrt(195_075) } # sqrt(255^2 * 3)
+    end
+
+    context 'with black and white' do
+      let(:color_a) { @black }
+      let(:color_b) { @white }
+
+      it { should == Math.sqrt(195_075) } # sqrt(255^2 * 3)
+    end
+
+    context 'with the same colors' do
+      let(:color_a) { @white }
+      let(:color_b) { @white }
+
+      it { should == 0 }
+    end
+  end
 end
