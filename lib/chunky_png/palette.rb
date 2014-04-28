@@ -1,5 +1,4 @@
 module ChunkyPNG
-
   # A palette describes the set of colors that is being used for an image.
   #
   # A PNG image can contain an explicit palette which defines the colors of
@@ -12,7 +11,6 @@ module ChunkyPNG
   #
   # @see ChunkyPNG::Color
   class Palette < SortedSet
-
     # Builds a new palette given a set (Enumerable instance) of colors.
     #
     # @param enum [Enumerable<Integer>] The set of colors to include in this
@@ -56,14 +54,17 @@ module ChunkyPNG
         index += 1
       end
 
-      self.new(decoding_map, decoding_map)
+      new(decoding_map, decoding_map)
     end
 
     # Builds a palette instance from a given canvas.
     # @param canvas [ChunkyPNG::Canvas] The canvas to create a palette for.
     # @return [ChunkyPNG::Palette] The palette instance.
     def self.from_canvas(canvas)
-      self.new(canvas.pixels)
+      # Although we don't need to call .uniq.sort before initializing, because
+      # Palette subclasses SortedSet, we get significantly better performance
+      # by doing so.
+      new(canvas.pixels.uniq.sort)
     end
 
     # Builds a palette instance from a given set of pixels.
@@ -71,7 +72,7 @@ module ChunkyPNG
     #   palette for
     # @return [ChunkyPNG::Palette] The palette instance.
     def self.from_pixels(pixels)
-      self.new(pixels)
+      new(pixels)
     end
 
     # Checks whether the size of this palette is suitable for indexed storage.
@@ -214,11 +215,11 @@ module ChunkyPNG
     #   this image cannot be saved as an indexed image.
     def determine_bit_depth
       case size
-        when 1..2; 1
-        when 3..4; 2
-        when 5..16; 4
-        when 17..256; 8
-        else nil
+      when 1..2 then 1
+      when 3..4 then 2
+      when 5..16 then 4
+      when 17..256 then 8
+      else nil
       end
     end
   end
