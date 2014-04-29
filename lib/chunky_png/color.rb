@@ -540,8 +540,8 @@ module ChunkyPNG
     # Delta E in Lab colorspace, this method should serve many use-cases while
     # avoiding the overhead of converting RGBA to Lab.
     #
-    # @param color_a [Integer]
-    # @param color_b [Integer]
+    # @param pixel_after [Integer]
+    # @param pixel_before [Integer]
     # @return [Float]
     def euclidean_distance_rgba(pixel_after, pixel_before)
       Math.sqrt(
