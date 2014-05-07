@@ -30,12 +30,10 @@ module ChunkyPNG
   # @see ChunkyPNG::Point
   def self.Point(*args)
     case args.length
-    when 2
-      ChunkyPNG::Point.new(*args)
-    when 1
-      build_point_from_object(args.first)
-    else 
-      raise ArgumentError, "Don't know how to construct a point from #{args.inspect}!"
+    when 2; ChunkyPNG::Point.new(*args)
+    when 1; build_point_from_object(args.first)
+    else raise ArgumentError, 
+      "Don't know how to construct a point from #{args.inspect}!"
     end 
   end
 
