@@ -43,6 +43,7 @@ end
 
 describe 'ChunkyPNG.Point' do
   subject { ChunkyPNG::Point.new(1, 2) }
+
   
   it "should create a point from a 2-item array" do
     ChunkyPNG::Point([1, 2]).should     == subject
@@ -52,6 +53,11 @@ describe 'ChunkyPNG.Point' do
   it "should create a point from a hash with x and y keys" do
     ChunkyPNG::Point(:x => 1, :y => 2).should       == subject
     ChunkyPNG::Point('x' => '1', 'y' => '2').should == subject
+  end
+
+  it "should create a point from a ChunkyPNG::Dimension object" do
+    dimension = ChunkyPNG::Dimension.new(1, 2)
+    ChunkyPNG::Point(dimension) == subject
   end
   
   it "should create a point from a point-like string" do

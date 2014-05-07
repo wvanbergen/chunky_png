@@ -30,24 +30,38 @@ module ChunkyPNG
   # @see ChunkyPNG::Point
   def self.Point(*args)
     case args.length
-      when 2; ChunkyPNG::Point.new(*args)
-      when 1; case source = args.first
-          when ChunkyPNG::Point; source
-          when ChunkyPNG::Dimension; ChunkyPNG::Point.new(source.width, source.height)
-          when Array; ChunkyPNG::Point.new(source[0], source[1])
-          when Hash; ChunkyPNG::Point.new(source[:x] || source['x'], source[:y] || source['y'])
-          when ChunkyPNG::Point::POINT_REGEXP; ChunkyPNG::Point.new($1.to_i, $2.to_i)
-          else 
-            if source.respond_to?(:x) && source.respond_to?(:y)
-              ChunkyPNG::Point.new(source.x, source.y)
-            else
-              raise ArgumentError, "Don't know how to construct a point from #{source.inspect}!"
-            end
-        end
-      else raise ArgumentError, "Don't know how to construct a point from #{args.inspect}!"
+    when 2; ChunkyPNG::Point.new(*args)
+    when 1; build_point_from_object(args.first)
+    else raise ArgumentError, 
+      "Don't know how to construct a point from #{args.inspect}!"
+    end 
+  end
+
+  def self.build_point_from_object(source)
+    case source
+    when ChunkyPNG::Point
+      source
+    when ChunkyPNG::Dimension
+      ChunkyPNG::Point.new(source.width, source.height)
+    when Array
+      ChunkyPNG::Point.new(source[0], source[1])
+    when Hash
+      x = source[:x] || source['x']
+      y = source[:y] || source['y']
+      ChunkyPNG::Point.new(x, y)
+    when ChunkyPNG::Point::POINT_REGEXP
+      ChunkyPNG::Point.new($1.to_i, $2.to_i)
+    else 
+      if source.respond_to?(:x) && source.respond_to?(:y)
+        ChunkyPNG::Point.new(source.x, source.y)
+      else 
+        raise ArgumentError, 
+          "Don't know how to construct a point from #{source.inspect}!"
+      end
     end
   end
-  
+  private_class_method :build_point_from_object
+
   # Simple class that represents a point on a canvas using an x and y coordinate.
   #
   # This class implements some basic methods to handle comparison, the splat operator and
