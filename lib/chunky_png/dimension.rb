@@ -28,25 +28,37 @@ module ChunkyPNG
   # @raise [ArgumentError] If the argument(s) given where not understood as a dimension.
   # @see ChunkyPNG::Dimension
   def self.Dimension(*args)
-
     case args.length
-      when 2; ChunkyPNG::Dimension.new(*args)
-      when 1; case source = args.first
-          when ChunkyPNG::Dimension; source
-          when ChunkyPNG::Point; ChunkyPNG::Dimension.new(source.x, source.y)
-          when Array; ChunkyPNG::Dimension.new(source[0], source[1])
-          when Hash;  ChunkyPNG::Dimension.new(source[:width] || source['width'], source[:height] || source['height'])
-          when ChunkyPNG::Dimension::DIMENSION_REGEXP; ChunkyPNG::Dimension.new($1, $2)
-          else
-            if source.respond_to?(:width) && source.respond_to?(:height)
-              ChunkyPNG::Dimension.new(source.width, source.height)
-            else
-              raise ArgumentError, "Don't know how to construct a point from #{source.inspect}!"
-            end
-        end
-      else raise ArgumentError, "Don't know how to construct a point from #{args.inspect}!"
+    when 2; ChunkyPNG::Dimension.new(*args)
+    when 1; build_dimension_from_object(args.first)
+    else raise ArgumentError, 
+      "Don't know how to construct a dimension from #{args.inspect}"
     end
   end
+
+  def self.build_dimension_from_object(source)
+    case source
+    when ChunkyPNG::Dimension
+      source
+    when ChunkyPNG::Point
+      ChunkyPNG::Dimension.new(source.x, source.y)
+    when Array
+      ChunkyPNG::Dimension.new(source[0], source[1])
+    when Hash
+      width = source[:width] || source['width']
+      height = source[:height] || source['height']
+      ChunkyPNG::Dimension.new(width, height)
+    when ChunkyPNG::Dimension::DIMENSION_REGEXP
+      ChunkyPNG::Dimension.new($1, $2)
+    else
+      if source.respond_to?(:width) && source.respond_to?(:height)
+        ChunkyPNG::Dimension.new(source.width, source.height)
+      else
+        raise ArgumentError, "Don't know how to construct a dimension from #{source.inspect}!"
+      end
+    end
+  end
+  private_class_method :build_dimension_from_object
   
   # Class that represents the dimension of something, e.g. a {ChunkyPNG::Canvas}.
   #
