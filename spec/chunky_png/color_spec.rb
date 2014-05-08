@@ -128,6 +128,24 @@ describe ChunkyPNG::Color do
     end
   end
 
+  describe '#from_hsl' do
+    before(:each) do 
+      @mint_green = 0x66cc66ff
+      @red        = 0xff0000ff
+      @green      = 0x00ff00ff
+      @blue       = 0x0000ffff
+    end
+
+    it 'should load colors correctly from an HSV triple' do
+      from_hsl(120, 0.5, 0.80).should == @mint_green
+      from_hsl(0, 0, 0).should        == @black
+      from_hsl(0, 0, 1).should        == @white
+      from_hsl(0, 1, 1).should        == @red
+      from_hsl(240, 1, 1).should      == @green
+      from_hsl(120, 1, 1).should      == @blue
+    end
+  end
+
   describe '#html_color' do
     it 'should find the correct color value' do
       html_color(:springgreen).should   == 0x00ff7fff
