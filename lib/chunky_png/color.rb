@@ -568,6 +568,40 @@ module ChunkyPNG
       include_alpha ? ('#%08x' % color) : ('#%06x' % [color >> 8])
     end
 
+    # Returns an array with the separate HSV components of this color.
+    #
+    # Because ChunkyPNG internally handles colors as Integers for performance
+    # reasons, some rounding  occurs when importing or exporting HSV colors 
+    # whose coordinates are float-based.  Because of this rounding, #to_hsv and 
+    # #from_hsv may not be perfect inverses.
+    #
+    # The returned hue will be in the range 0-360 degrees. Saturation and 
+    # brightness/value are both in the range 0-1.
+    #
+    # @param [Integer] color The color to convert.
+    # @return [Array<Fixnum>] An array with 3 Fixnum elements representing hue,
+    # saturation, and brightness/value.
+    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    def to_hsv(color)
+      rgb      = to_truecolor_bytes(color)
+      rgb.map! { |component| component.fdiv(255) }
+      min, max = rgb.minmax
+      chroma   = max - min
+
+      r, g, b = rgb
+      hue_prime = chroma.zero? ? 0 : case max
+                                     when r; (g - b).fdiv(chroma)
+                                     when g; (b - r).fdiv(chroma) + 2
+                                     when b; (r - g).fdiv(chroma) + 4
+                                     else 0
+                                     end
+
+      hue        = 60 * hue_prime
+      value      = max
+      saturation = chroma.zero? ? 0 : chroma.fdiv(value)
+      [hue, saturation, value]
+    end
+ 
     # Returns an array with the separate RGBA values for this color.
     #
     # @param [Integer] color The color to convert.

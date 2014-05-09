@@ -245,6 +245,19 @@ describe ChunkyPNG::Color do
     end
   end
 
+  describe '#to_hsv' do
+    it 'should return a [hue, saturation, value] array' do
+      to_hsv(@white).should     == [0, 0, 1]
+      to_hsv(@black).should     == [0, 0, 0]
+      to_hsv(@red).should       == [0, 1, 1]
+      to_hsv(@blue).should      == [240, 1, 1]
+      to_hsv(@green).should     == [120, 1, 1]
+      to_hsv(0x805440ff)[0].should be_within(1).of(19)
+      to_hsv(0x805440ff)[1].should be_within(0.01).of(0.5)
+      to_hsv(0x805440ff)[2].should be_within(0.01).of(0.5)
+    end
+  end
+
   describe 'conversion to other formats' do
     it 'should convert the individual color values back correctly' do
       to_truecolor_bytes(@opaque).should == [10, 100, 150]
