@@ -188,17 +188,18 @@ module ChunkyPNG
     # @param [Fixnum] hue The hue component (0-360)
     # @param [Fixnum] saturation The saturation component (0-1)
     # @param [Fixnum] value The value (brightness) component (0-1)
+    # @param [Fixnum] alpha Defaults to opaque (255).
     # @return [Integer] The newly constructed color value.
     # @raise [ArgumentError] if the hsv triple is invalid.
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
-    def from_hsv(hue, saturation, value)
+    def from_hsv(hue, saturation, value, alpha = 255)
       raise ArgumentError, "Hue must be between 0 and 360" unless (0..360).include?(hue)
       raise ArgumentError, "Saturation must be between 0 and 1" unless (0..1).include?(saturation)
       raise ArgumentError, "Value/brightness must be between 0 and 1" unless (0..1).include?(value)
       chroma = value * saturation
       rgb    = cylindrical_to_cubic(hue, saturation, value, chroma)
       rgb.map! { |component| ((component + value - chroma)*255).to_i }
-      self.rgb(*rgb)
+      self.rgba(*rgb, alpha)
     end
     alias_method :from_hsb, :from_hsv
 
@@ -210,17 +211,18 @@ module ChunkyPNG
     # @param [Fixnum] hue The hue component (0-360)
     # @param [Fixnum] saturation The saturation component (0-1)
     # @param [Fixnum] lightness The lightness component (0-1)
+    # @param [Fixnum] alpha Defaults to opaque (255).
     # @return [Integer] The newly constructed color value.
     # @raise [ArgumentError] if the hsl triple is invalid.
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
-    def from_hsl(hue, saturation, lightness)
+    def from_hsl(hue, saturation, lightness, alpha = 255)
       raise ArgumentError, "Hue #{hue} was not between 0 and 360" unless (0..360).include?(hue)
       raise ArgumentError, "Saturation #{saturation} was not between 0 and 1" unless (0..1).include?(saturation)
       raise ArgumentError, "Lightness #{lightness} was not between 0 and 1" unless (0..1).include?(lightness)
       chroma = (1 - (2 * lightness - 1).abs) * saturation
       rgb    = cylindrical_to_cubic(hue, saturation, lightness, chroma)
       rgb.map! { |component| ((component + lightness - 0.5*chroma)*255).to_i }
-      self.rgb(*rgb)
+      self.rgba(*rgb, alpha)
     end
 
     # Convert one HSL or HSV triple and associated chroma to rgb triple
@@ -576,17 +578,23 @@ module ChunkyPNG
     # #from_hsv may not be perfect inverses.
     #
     # The returned hue will be in the range 0-360 degrees. Saturation and 
-    # brightness/value are both in the range 0-1.
+    # brightness/value are both in the range 0-1. This implementation follows
+    # the modern convention of 0 degrees hue indicating red.
     #
     # @param [Integer] color The ChunkyPNG color to convert.
-    # @return [Array<Fixnum>] An array with 3 Fixnum elements representing hue,
-    # saturation, and brightness/value.
+    # @param [Boolean] include_alpha Flag indicates whether a fourth element representing alpha channel should be included in the returned array.
+    # @return [Array<Fixnum>[0]] The hue of the color.
+    # @return [Array<Fixnum>[1]] The saturation of the color
+    # @return [Array<Fixnum>[2]] The value of the color
+    # @return [Array<Fixnum>[3]] Optional fourth element for alpha, included if include_alpha=true
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
-    def to_hsv(color)
+    def to_hsv(color, include_alpha = false)
       hue, chroma, max, min = hue_and_chroma(color)
       value      = max
       saturation = chroma.zero? ? 0 : chroma.fdiv(value)
-      [hue, saturation, value]
+
+      include_alpha ? [hue, saturation, value, a(color)] : 
+                      [hue, saturation, value]
     end
 
     # Returns an array with the separate HSL components of this color.
@@ -601,14 +609,19 @@ module ChunkyPNG
     # modern convention of 0 degrees hue indicating red.
     #
     # @param [Integer] color The ChunkyPNG color to convert.
-    # @return [Array<Fixnum>] An array with 3 Fixnum elements representing hue,
-    # saturation, and lightness.
+    # @param [Boolean] include_alpha Flag indicates whether a fourth element representing alpha channel should be included in the returned array.
+    # @return [Array<Fixnum>[0]] The hue of the color.
+    # @return [Array<Fixnum>[1]] The saturation of the color
+    # @return [Array<Fixnum>[2]] The lightness of the color
+    # @return [Array<Fixnum>[3]] Optional fourth element for alpha, included if include_alpha=true
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
-    def to_hsl(color)
+    def to_hsl(color, include_alpha = false)
       hue, chroma, max, min = hue_and_chroma(color)
       lightness  = 0.5 * (max + min)
       saturation = chroma.zero? ? 0 : chroma.fdiv(1 - (2*lightness-1).abs)
-      [hue, saturation, lightness]
+
+      include_alpha ? [hue, saturation, lightness, a(color)] : 
+                      [hue, saturation, lightness]
     end
 
     # This method encapsulates the logic needed to extract hue and chroma from
