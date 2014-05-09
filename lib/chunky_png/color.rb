@@ -176,6 +176,69 @@ module ChunkyPNG
       base_color | opacity
     end
 
+    # Creates a new color from an HSV triple.
+    #
+    # Create a new color using an HSV (sometimes also called HSB) triple. The 
+    # words `value` and `brightness` are used interchangeably and synonymously 
+    # in descriptions of this colorspace. 
+    #
+    # Hue must be a Fixnum value in the range 0 to 360. Saturation and value 
+    # (brightness) should fall between 0 and 1.
+    # 
+    # @param [Fixnum] hue The hue component (0-360)
+    # @param [Fixnum] saturation The saturation component (0-1)
+    # @param [Fixnum] value The value (brightness) component (0-1)
+    # @return [Integer] The newly constructed color value.
+    # @raise [ArgumentError] if the hsv triple is invalid.
+    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    def from_hsv(hue, saturation, value)
+      raise ArgumentError, "Hue must be between 0 and 360" unless (0..360).include?(hue)
+      raise ArgumentError, "Saturation must be between 0 and 1" unless (0..1).include?(saturation)
+      raise ArgumentError, "Value/brightness must be between 0 and 1" unless (0..1).include?(value)
+      chroma = value * saturation
+      rgb    = cylindrical_to_cubic(hue, saturation, value, chroma)
+      self.rgb(*rgb)
+    end
+    alias_method :from_hsb, :from_hsv
+
+    # Convert one HSL or HSV triple and associated chroma to rgb triple
+    #
+    # This method encapsulates the shared mathematical operations needed to 
+    # convert coordinates from a cylindrical colorspace such as HSL or HSV into
+    # coordinates of the RGB colorspace.  
+    #
+    # Even though chroma values are derived from the other three coordinates, 
+    # the formula for calculating chroma differs for each colorspace.  Since it 
+    # is calculated differently for each colorspace, it must be passed in as
+    # a parameter.
+    #
+    # @param [Fixnum] hue The hue-component (0-360)
+    # @param [Fixnum] saturation The saturation-component (0-1)
+    # @param [Fixnum] radius The radius can represent either lightness or brightness/value (0-1)
+    # @param [Fixnum] chroma The associated chroma value.
+    # @return [Array<Fixnum>] The newly constructed r,g,b triple.
+    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    # @private
+    def cylindrical_to_cubic(hue, saturation, radius, chroma)
+      hue_prime = hue.fdiv(60)
+      puts "^"*50
+      puts "h': #{hue_prime}"
+      x = chroma * (1 - (hue_prime % 2 - 1).abs)
+      puts "x: #{x}"
+      puts "chroma: #{chroma}"
+
+      rgb = case hue_prime
+            when (0...1); [chroma, x, 0]
+            when (1...2); [x, chroma, 0]
+            when (2...3); [0, chroma, x]
+            when (3...4); [0, x, chroma]
+            when (4...5); [x, 0, chroma]
+            when (5...6); [chroma, 0, x]
+            end
+      rgb.map! { |component| ((component + radius - chroma)*255).to_i }
+    end
+    private :cylindrical_to_cubic
+
     ####################################################################
     # PROPERTIES
     ####################################################################
