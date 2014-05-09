@@ -119,12 +119,21 @@ describe ChunkyPNG::Color do
     end
 
     it 'should load colors correctly from an HSV triple' do
-      from_hsv(120, 0.5, 0.80).should == @mint_green
+      # At 0 brightness, should be @black independent of hue or sat
       from_hsv(0, 0, 0).should        == @black
+      from_hsv(100, 1, 0).should      == @black 
+      from_hsv(100, 0.5, 0).should    == @black 
+      
+      # At brightness 1 and sat 0, should be @white regardless of hue
       from_hsv(0, 0, 1).should        == @white
+      from_hsv(100, 0, 1).should      == @white
+
       from_hsv(0, 1, 1).should        == @red
-      from_hsv(240, 1, 1).should      == @green
-      from_hsv(120, 1, 1).should      == @blue
+      from_hsv(120, 1, 1).should      == @green
+      from_hsv(240, 1, 1).should      == @blue
+
+      # And, finally, one random color
+      from_hsv(120, 0.5, 0.80).should == @mint_green
     end
   end
 
