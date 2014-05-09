@@ -218,6 +218,7 @@ module ChunkyPNG
     # @param [Fixnum] chroma The associated chroma value.
     # @return [Array<Fixnum>] The newly constructed r,g,b triple.
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    # @see http://www.tomjewett.com/colors/hsb.html
     # @private
     def cylindrical_to_cubic(hue, saturation, radius, chroma)
       hue_prime = hue.fdiv(60)
