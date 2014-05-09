@@ -29,6 +29,9 @@ describe ChunkyPNG::Color do
     @opaque            = 0x0a6496ff
     @non_opaque        = 0x0a649664
     @fully_transparent = 0x0a649600
+    @red               = 0xff0000ff
+    @green             = 0x00ff00ff
+    @blue              = 0x0000ffff
   end
 
   describe '#parse' do
@@ -109,15 +112,6 @@ describe ChunkyPNG::Color do
   end
 
   describe '#from_hsv' do
-    before(:each) do 
-      # These selected because they correspond to nice
-      # even numbers in both HSV and RGB space.
-      @mint_green = 0x66cc66ff
-      @red        = 0xff0000ff
-      @green      = 0x00ff00ff
-      @blue       = 0x0000ffff
-    end
-
     it 'should load colors correctly from an HSV triple' do
       # At 0 brightness, should be @black independent of hue or sat
       from_hsv(0, 0, 0).should        == @black
@@ -128,30 +122,41 @@ describe ChunkyPNG::Color do
       from_hsv(0, 0, 1).should        == @white
       from_hsv(100, 0, 1).should      == @white
 
+      # Converting the "pure" colors should work
       from_hsv(0, 1, 1).should        == @red
       from_hsv(120, 1, 1).should      == @green
       from_hsv(240, 1, 1).should      == @blue
 
       # And, finally, one random color
-      from_hsv(120, 0.5, 0.80).should == @mint_green
+      from_hsv(120, 0.5, 0.80).should == 0x66cc66ff
     end
   end
 
   describe '#from_hsl' do
     before(:each) do 
       @mint_green = 0x66cc66ff
-      @red        = 0xff0000ff
-      @green      = 0x00ff00ff
-      @blue       = 0x0000ffff
     end
 
-    it 'should load colors correctly from an HSV triple' do
-      from_hsl(120, 0.5, 0.80).should == @mint_green
-      from_hsl(0, 0, 0).should        == @black
-      from_hsl(0, 0, 1).should        == @white
-      from_hsl(0, 1, 1).should        == @red
-      from_hsl(240, 1, 1).should      == @green
-      from_hsl(120, 1, 1).should      == @blue
+    it 'should load colors correctly from an HSL triple' do
+      # At 0 lightness, should always be black
+      from_hsl(0, 0, 0).should         == @black
+      from_hsl(100, 0, 0).should       == @black
+      from_hsl(54, 0.5, 0).should      == @black
+      
+      # At 1 lightness, should always be white
+      from_hsl(0, 0, 1).should         == @white
+      from_hsl(0, 0.5, 1).should       == @white
+      from_hsl(110, 0, 1).should       == @white
+      
+      # 'Pure' colors should work
+      from_hsl(0, 1, 0.5).should       == @red
+      from_hsl(120, 1, 0.5).should     == @green
+      from_hsl(240, 1, 0.5).should     == @blue
+      
+      # Random colors
+      from_hsl(87.27, 0.5, 0.5686)     == 0x96c85aff
+      from_hsl(271.83, 0.5399, 0.4176) == 0x6e31a4ff
+      from_hsl(63.6, 0.5984, 0.4882)   == 0xbec732ff
     end
   end
 
