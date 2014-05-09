@@ -180,10 +180,8 @@ module ChunkyPNG
     #
     # Create a new color using an HSV (sometimes also called HSB) triple. The 
     # words `value` and `brightness` are used interchangeably and synonymously 
-    # in descriptions of this colorspace. 
-    #
-    # Hue must be a Fixnum value in the range 0 to 360. Saturation and value 
-    # (brightness) should fall between 0 and 1.
+    # in descriptions of this colorspace. This implementation follows the modern 
+    # convention of 0 degrees hue indicating red.
     # 
     # @param [Fixnum] hue The hue component (0-360)
     # @param [Fixnum] saturation The saturation component (0-1)
@@ -205,8 +203,8 @@ module ChunkyPNG
 
     # Creates a new color from an HSL triple.
     #
-    # Hue must be a Fixnum value in the range 0 to 360. Saturation and lightness
-    # should fall between 0 and 1.
+    # This implementation follows the modern convention of 0 degrees hue 
+    # indicating red.
     # 
     # @param [Fixnum] hue The hue component (0-360)
     # @param [Fixnum] saturation The saturation component (0-1)
@@ -225,7 +223,7 @@ module ChunkyPNG
       self.rgba(*rgb, alpha)
     end
 
-    # Convert one HSL or HSV triple and associated chroma to rgb triple
+    # Convert one HSL or HSV triple and associated chroma to a scaled rgb triple
     #
     # This method encapsulates the shared mathematical operations needed to 
     # convert coordinates from a cylindrical colorspace such as HSL or HSV into
@@ -238,12 +236,11 @@ module ChunkyPNG
     #
     # @param [Fixnum] hue The hue-component (0-360)
     # @param [Fixnum] saturation The saturation-component (0-1)
-    # @param [Fixnum] y_component The y_component can represent either lightness 
-    # or brightness/value (0-1) depending on which scheme (HSV/HSL) is being
-    # used.
+    # @param [Fixnum] y_component The y_component can represent either lightness
+    #     or brightness/value (0-1) depending on which scheme (HSV/HSL) is being used.
     # @param [Fixnum] chroma The associated chroma value.
-    # @return [Array<Fixnum>] An unscaled r,g,b triple. Scheme-dependent 
-    # adjustments are still needed to reach the true r,g,b values.
+    # @return [Array<Fixnum>] A scaled r,g,b triple. Scheme-dependent 
+    #    adjustments are still needed to reach the true r,g,b values.
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
     # @see http://www.tomjewett.com/colors/hsb.html
     # @private
@@ -570,23 +567,24 @@ module ChunkyPNG
       include_alpha ? ('#%08x' % color) : ('#%06x' % [color >> 8])
     end
 
-    # Returns an array with the separate HSV components of this color.
+    # Returns an array with the separate HSV components of a color.
     #
     # Because ChunkyPNG internally handles colors as Integers for performance
     # reasons, some rounding  occurs when importing or exporting HSV colors 
     # whose coordinates are float-based.  Because of this rounding, #to_hsv and 
     # #from_hsv may not be perfect inverses.
     #
-    # The returned hue will be in the range 0-360 degrees. Saturation and 
-    # brightness/value are both in the range 0-1. This implementation follows
-    # the modern convention of 0 degrees hue indicating red.
+    # This implementation follows the modern convention of 0 degrees hue 
+    # indicating red.
     #
     # @param [Integer] color The ChunkyPNG color to convert.
-    # @param [Boolean] include_alpha Flag indicates whether a fourth element representing alpha channel should be included in the returned array.
-    # @return [Array<Fixnum>[0]] The hue of the color.
-    # @return [Array<Fixnum>[1]] The saturation of the color
-    # @return [Array<Fixnum>[2]] The value of the color
-    # @return [Array<Fixnum>[3]] Optional fourth element for alpha, included if include_alpha=true
+    # @param [Boolean] include_alpha Flag indicates whether a fourth element 
+    #    representing alpha channel should be included in the returned array.
+    # @return [Array<Fixnum>[0]] The hue of the color (0-360)
+    # @return [Array<Fixnum>[1]] The saturation of the color (0-1)
+    # @return [Array<Fixnum>[2]] The value of the color (0-1)
+    # @return [Array<Fixnum>[3]] Optional fourth element for alpha, included if 
+    #    include_alpha=true (0-255)
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
     def to_hsv(color, include_alpha = false)
       hue, chroma, max, min = hue_and_chroma(color)
@@ -596,24 +594,25 @@ module ChunkyPNG
       include_alpha ? [hue, saturation, value, a(color)] : 
                       [hue, saturation, value]
     end
+    alias_method :to_hsb, :to_hsv
 
-    # Returns an array with the separate HSL components of this color.
+    # Returns an array with the separate HSL components of a color.
     #
     # Because ChunkyPNG internally handles colors as Integers for performance
     # reasons, some rounding  occurs when importing or exporting HSL colors 
     # whose coordinates are float-based.  Because of this rounding, #to_hsl and 
     # #from_hsl may not be perfect inverses.
     #
-    # The returned hue will be in the range 0-360 degrees. Saturation and 
-    # lightness are both in the range 0-1.  This implementation follows the
-    # modern convention of 0 degrees hue indicating red.
+    # This implementation follows the modern convention of 0 degrees hue indicating red.
     #
     # @param [Integer] color The ChunkyPNG color to convert.
-    # @param [Boolean] include_alpha Flag indicates whether a fourth element representing alpha channel should be included in the returned array.
-    # @return [Array<Fixnum>[0]] The hue of the color.
-    # @return [Array<Fixnum>[1]] The saturation of the color
-    # @return [Array<Fixnum>[2]] The lightness of the color
-    # @return [Array<Fixnum>[3]] Optional fourth element for alpha, included if include_alpha=true
+    # @param [Boolean] include_alpha Flag indicates whether a fourth element 
+    #     representing alpha channel should be included in the returned array.
+    # @return [Array<Fixnum>[0]] The hue of the color (0-360)
+    # @return [Array<Fixnum>[1]] The saturation of the color (0-1)
+    # @return [Array<Fixnum>[2]] The lightness of the color (0-1)
+    # @return [Array<Fixnum>[3]] Optional fourth element for alpha, included if 
+    #     include_alpha=true (0-255)
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
     def to_hsl(color, include_alpha = false)
       hue, chroma, max, min = hue_and_chroma(color)
@@ -625,14 +624,14 @@ module ChunkyPNG
     end
 
     # This method encapsulates the logic needed to extract hue and chroma from
-    # a ChunkPNG color shared by the cylindrical HSV/HSB and HSL color space 
-    # models.  
+    # a ChunkPNG color. This logic is shared by the cylindrical HSV/HSB and HSL 
+    # color space models.  
     #
     # @param [Integer] A ChunkyPNG color.
-    # @return [Fixnum] hue The hue of the color.
-    # @return [Fixnum] chroma The chroma of the color.
-    # @return [Fixnum] max The magnitude of the largest scaled rgb component. 
-    # @return [Fixnum] min The magnitude of the smallest scaled rgb component. 
+    # @return [Fixnum] hue The hue of the color (0-360)
+    # @return [Fixnum] chroma The chroma of the color (0-1)
+    # @return [Fixnum] max The magnitude of the largest scaled rgb component (0-1)
+    # @return [Fixnum] min The magnitude of the smallest scaled rgb component (0-1)
     # @private
     def hue_and_chroma(color)
       scaled_rgb      = to_truecolor_bytes(color)
