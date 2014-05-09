@@ -258,6 +258,16 @@ describe ChunkyPNG::Color do
     end
   end
 
+  describe '#to_hsl' do
+    it 'should return a [hue, saturation, lightness] array' do
+      to_hsl(@white).should == [0, 0, 1]
+      to_hsl(@black).should == [0, 0, 0]
+      to_hsl(@red).should   == [0, 1, 0.5]
+      to_hsl(@blue).should  == [240, 1, 0.5]
+      to_hsl(@green).should == [120, 1, 0.5]
+    end
+  end
+
   describe 'conversion to other formats' do
     it 'should convert the individual color values back correctly' do
       to_truecolor_bytes(@opaque).should == [10, 100, 150]
