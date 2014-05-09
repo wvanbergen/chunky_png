@@ -578,29 +578,67 @@ module ChunkyPNG
     # The returned hue will be in the range 0-360 degrees. Saturation and 
     # brightness/value are both in the range 0-1.
     #
-    # @param [Integer] color The color to convert.
+    # @param [Integer] color The ChunkyPNG color to convert.
     # @return [Array<Fixnum>] An array with 3 Fixnum elements representing hue,
     # saturation, and brightness/value.
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
     def to_hsv(color)
-      rgb      = to_truecolor_bytes(color)
-      rgb.map! { |component| component.fdiv(255) }
-      min, max = rgb.minmax
+      hue, chroma, max, min = hue_and_chroma(color)
+      value      = max
+      saturation = chroma.zero? ? 0 : chroma.fdiv(value)
+      [hue, saturation, value]
+    end
+
+    # Returns an array with the separate HSL components of this color.
+    #
+    # Because ChunkyPNG internally handles colors as Integers for performance
+    # reasons, some rounding  occurs when importing or exporting HSL colors 
+    # whose coordinates are float-based.  Because of this rounding, #to_hsl and 
+    # #from_hsl may not be perfect inverses.
+    #
+    # The returned hue will be in the range 0-360 degrees. Saturation and 
+    # lightness are both in the range 0-1.  This implementation follows the
+    # modern convention of 0 degrees hue indicating red.
+    #
+    # @param [Integer] color The ChunkyPNG color to convert.
+    # @return [Array<Fixnum>] An array with 3 Fixnum elements representing hue,
+    # saturation, and lightness.
+    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    def to_hsl(color)
+      hue, chroma, max, min = hue_and_chroma(color)
+      lightness  = 0.5 * (max + min)
+      saturation = chroma.zero? ? 0 : chroma.fdiv(1 - (2*lightness-1).abs)
+      [hue, saturation, lightness]
+    end
+
+    # This method encapsulates the logic needed to extract hue and chroma from
+    # a ChunkPNG color shared by the cylindrical HSV/HSB and HSL color space 
+    # models.  
+    #
+    # @param [Integer] A ChunkyPNG color.
+    # @return [Fixnum] hue The hue of the color.
+    # @return [Fixnum] chroma The chroma of the color.
+    # @return [Fixnum] max The magnitude of the largest scaled rgb component. 
+    # @return [Fixnum] min The magnitude of the smallest scaled rgb component. 
+    # @private
+    def hue_and_chroma(color)
+      scaled_rgb      = to_truecolor_bytes(color)
+      scaled_rgb.map! { |component| component.fdiv(255) }
+      min, max = scaled_rgb.minmax
       chroma   = max - min
 
-      r, g, b = rgb
+      r, g, b   = scaled_rgb
       hue_prime = chroma.zero? ? 0 : case max
                                      when r; (g - b).fdiv(chroma)
                                      when g; (b - r).fdiv(chroma) + 2
                                      when b; (r - g).fdiv(chroma) + 4
                                      else 0
                                      end
+      hue = 60 * hue_prime
 
-      hue        = 60 * hue_prime
-      value      = max
-      saturation = chroma.zero? ? 0 : chroma.fdiv(value)
-      [hue, saturation, value]
+      return hue, chroma, max, min
     end
+    private :hue_and_chroma
  
     # Returns an array with the separate RGBA values for this color.
     #
