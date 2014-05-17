@@ -1,4 +1,4 @@
-module ArribaSection
+module Skalp
   module ChunkyPNG
     # The current version of ChunkyPNG.
     # Set it and commit the change this before running rake release.
