@@ -16,21 +16,33 @@ module ChunkyPNG
     # @param io [IO, #read] The IO stream to read from.
     # @return [ChunkyPNG::Chung::Base] The loaded chunk instance.
     def self.read(io)
-      length, type = io.read(8).unpack('Na4')
-      content      = io.read(length)
-      crc          = io.read(4).unpack('N').first
+      length, type = read_bytes(io, 8).unpack('Na4')
 
+      content = read_bytes(io, length)
+      crc     = read_bytes(io, 4).unpack('N').first
       verify_crc!(type, content, crc)
 
       CHUNK_TYPES.fetch(type, Generic).read(type, content)
+    end
+
+    # Reads an exact number of bytes from an IO stream.
+    # @param io [IO, #read] The IO stream to read from.    
+    # @param length [Integer] The IO exact number of bytes to read.
+    # @return [String] A binary string of exactly length bytes.
+    # @raise [ChunkyPNG::ExpectationFailed] If not exactly length
+    #   bytes could be read from the IO stream.
+    def self.read_bytes(io, length)
+      data = io.read(length)
+      raise ExpectationFailed, "Couldn't read #{length} bytes from IO stream." if data.nil? || data.bytesize != length
+      data
     end
 
     # Verifies the CRC of a chunk.
     # @param type [String] The chunk's type.
     # @param content [String] The chunk's content.
     # @param found_crc [Integer] The chunk's found CRC value.
-    # @raise [RuntimeError] An exception is raised if the found CRC value is
-    #   not equal to the expected CRC value.
+    # @raise [ChunkyPNG::CRCMismatch] An exception is raised if
+    #   the found CRC value is not equal to the expected CRC value.
     def self.verify_crc!(type, content, found_crc)
       expected_crc = Zlib.crc32(content, Zlib.crc32(type))
       raise ChunkyPNG::CRCMismatch, "Chuck CRC mismatch!" if found_crc != expected_crc
