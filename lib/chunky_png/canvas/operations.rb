@@ -182,6 +182,23 @@ module ChunkyPNG
         replace_canvas!(crop_width, crop_height, new_pixels)
       end
 
+      # Uses an image as a layer mask. Both images must be the same size.
+      # Construct an image mask with a white background and black shapes,
+      # then run this function to replace all black pixels in the mask with
+      # the pixels from the other image.
+      #
+      # @param [ChunkyPNG::Canvas] other The foreground canvas to get the
+      #   pixels from.
+      def apply_as_mask(other)
+        check_size_constraints!(other, 0, 0)
+
+        (0...pixels.length).each do |i|
+          next unless pixels[i] == 255
+          pixels[i] = other.pixels[i]
+        end
+        self
+      end
+
       # Flips the image horizontally, leaving the original intact.
       #
       # This will flip the image on its horizontal axis, e.g. pixels on the top
