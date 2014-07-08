@@ -184,17 +184,28 @@ module ChunkyPNG
 
       # Uses an image as a layer mask. Both images must be the same size.
       # Construct an image mask with a white background and black shapes,
+      # then run this function to mask off any black pixels in the image.
+      # This function returns a copy of the original image.
+      #
+      # @param [ChunkyPNG::Canvas] mask The layer mask to filter the
+      #   image with.
+      def apply_mask(mask)
+        dup.apply_mask!(mask)
+      end
+
+      # Uses an image as a layer mask. Both images must be the same size.
+      # Construct an image mask with a white background and black shapes,
       # then run this function to replace all black pixels in the mask with
       # the pixels from the other image.
       #
-      # @param [ChunkyPNG::Canvas] other The foreground canvas to get the
-      #   pixels from.
-      def apply_as_mask(other)
-        check_size_constraints!(other, 0, 0)
+      # @param [ChunkyPNG::Canvas] mask The layer mask to filter the
+      #   image with.
+      def apply_mask!(mask)
+        check_size_constraints!(mask, 0, 0)
 
         (0...pixels.length).each do |i|
-          next unless pixels[i] == 255
-          pixels[i] = other.pixels[i]
+          next if mask.pixels[i] == ChunkyPNG::Color::BLACK
+          pixels[i] = ChunkyPNG::Color::WHITE
         end
         self
       end

@@ -68,6 +68,42 @@ describe ChunkyPNG::Canvas::Operations do
     end
   end
 
+  describe '#apply_mask' do
+    it "should apply mask correctly" do
+      mask = ChunkyPNG::Canvas.new(16, 16, ChunkyPNG::Color::WHITE)
+      mask.rect(3, 3, 12, 12, ChunkyPNG::Color::BLACK, ChunkyPNG::Color::BLACK)
+      subject.apply_mask(mask).should == reference_canvas('masked')
+    end
+
+    it "should leave the original intact" do
+      mask = ChunkyPNG::Canvas.new(16, 16, ChunkyPNG::Color::WHITE)
+      mask.rect(3, 3, 12, 12, ChunkyPNG::Color::BLACK, ChunkyPNG::Color::BLACK)
+      subject.apply_mask(mask)
+      subject.should == reference_canvas('operations')
+    end
+
+    it "should not return itself" do
+      mask = ChunkyPNG::Canvas.new(16, 16, ChunkyPNG::Color::WHITE)
+      mask.rect(3, 3, 12, 12, ChunkyPNG::Color::BLACK, ChunkyPNG::Color::BLACK)
+      subject.apply_mask(mask).should_not equal(subject)
+    end
+  end
+
+  describe '#apply_mask!' do
+    it "should apply mask correctly" do
+      mask = ChunkyPNG::Canvas.new(16, 16, ChunkyPNG::Color::WHITE)
+      mask.rect(3, 3, 12, 12, ChunkyPNG::Color::BLACK, ChunkyPNG::Color::BLACK)
+      subject.apply_mask!(mask)
+      subject.should == reference_canvas('masked')
+    end
+
+    it "should return itself" do
+      mask = ChunkyPNG::Canvas.new(16, 16, ChunkyPNG::Color::WHITE)
+      mask.rect(3, 3, 12, 12, ChunkyPNG::Color::BLACK, ChunkyPNG::Color::BLACK)
+      subject.compose!(ChunkyPNG::Canvas.new(1,1)).should equal(subject)
+    end
+  end
+
   describe '#compose' do
     it "should compose pixels correctly" do
       subcanvas = ChunkyPNG::Canvas.new(4, 8, ChunkyPNG::Color.rgba(0, 0, 0, 75))
