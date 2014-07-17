@@ -200,12 +200,12 @@ module ChunkyPNG
       #
       # @param [ChunkyPNG::Canvas] mask The layer mask to filter the
       #   image with.
-      def apply_mask!(mask)
+      def apply_mask!(mask, mask_color = ChunkyPNG::Color::TRANSPARENT)
         check_size_constraints!(mask, 0, 0)
 
         (0...pixels.length).each do |i|
           next if mask.pixels[i] == ChunkyPNG::Color::BLACK
-          pixels[i] = ChunkyPNG::Color::WHITE
+          pixels[i] = mask_color
         end
         self
       end
