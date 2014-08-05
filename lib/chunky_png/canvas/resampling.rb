@@ -80,7 +80,7 @@ module ChunkyPNG
         steps_y = steps(height, new_height)
 
 
-        pixels = Array(size=new_width*new_height)
+        pixels = Array.new(size=new_width*new_height)
         i = 0
         for y in steps_y
           for x in steps_x
@@ -104,7 +104,7 @@ module ChunkyPNG
         index_x, interp_x = steps_residues(width, new_width)
         index_y, interp_y = steps_residues(height, new_height)
 
-        pixels = Array(size=new_width*new_height)
+        pixels = Array.new(size=new_width*new_height)
         i = 0
         for y in 1..new_height
           # Clamp the indicies to the edges of the image
