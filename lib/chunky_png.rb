@@ -22,144 +22,144 @@ require 'enumerator'
 #
 # @author Willem van Bergen
 module Skalp
-module ChunkyPNG
+  module ChunkyPNG
 
-  ###################################################
-  # PNG international standard defined constants
-  ###################################################
+    ###################################################
+    # PNG international standard defined constants
+    ###################################################
 
-  # Indicates that the PNG image uses grayscale colors, i.e. only a 
-  # single teint channel.
-  # @private
-  COLOR_GRAYSCALE       = 0
-  
-  # Indicates that the PNG image uses true color, composed of a red
-  # green and blue channel.
-  # @private
-  COLOR_TRUECOLOR       = 2
-  
-  # Indicates that the PNG image uses indexed colors, where the values
-  # point to colors defined on a palette.
-  # @private
-  COLOR_INDEXED         = 3
-  
-  # Indicates that the PNG image uses grayscale colors with opacity, i.e.
-  # a teint channel with an alpha channel.
-  # @private
-  COLOR_GRAYSCALE_ALPHA = 4
-  
-  # Indicates that the PNG image uses true color with opacity, composed of 
-  # a red, green and blue channel, and an alpha value.
-  # @private
-  COLOR_TRUECOLOR_ALPHA = 6
+    # Indicates that the PNG image uses grayscale colors, i.e. only a
+    # single teint channel.
+    # @private
+    COLOR_GRAYSCALE       = 0
 
-  # Indicates that the PNG specification's default compression
-  # method is used (Zlib/Deflate)
-  # @private
-  COMPRESSION_DEFAULT   = 0
+    # Indicates that the PNG image uses true color, composed of a red
+    # green and blue channel.
+    # @private
+    COLOR_TRUECOLOR       = 2
 
-  # Indicates that the image does not use interlacing.
-  # @private
-  INTERLACING_NONE      = 0
-  
-  # Indicates that the image uses Adam7 interlacing.
-  # @private  
-  INTERLACING_ADAM7     = 1
+    # Indicates that the PNG image uses indexed colors, where the values
+    # point to colors defined on a palette.
+    # @private
+    COLOR_INDEXED         = 3
 
-  ### Filter method constants
+    # Indicates that the PNG image uses grayscale colors with opacity, i.e.
+    # a teint channel with an alpha channel.
+    # @private
+    COLOR_GRAYSCALE_ALPHA = 4
 
-  # Indicates that the PNG specification's default filtering are
-  # being used in the image.
-  # @private
-  FILTERING_DEFAULT     = 0
+    # Indicates that the PNG image uses true color with opacity, composed of
+    # a red, green and blue channel, and an alpha value.
+    # @private
+    COLOR_TRUECOLOR_ALPHA = 6
 
-  # Indicates that no filtering is used for the scanline.
-  # @private
-  FILTER_NONE           = 0
-  
-  # Indicates that SUB filtering is used for the scanline.
-  # @private
-  FILTER_SUB            = 1
-  
-  # Indicates that UP filtering is used for the scanline.
-  # @private
-  FILTER_UP             = 2
-  
-  # Indicates that AVERAGE filtering is used for the scanline.
-  # @private
-  FILTER_AVERAGE        = 3
-  
-  # Indicates that PAETH filtering is used for the scanline.
-  # @private
-  FILTER_PAETH          = 4
+    # Indicates that the PNG specification's default compression
+    # method is used (Zlib/Deflate)
+    # @private
+    COMPRESSION_DEFAULT   = 0
 
-  ###################################################
-  # ChunkyPNG exception classes
-  ###################################################
+    # Indicates that the image does not use interlacing.
+    # @private
+    INTERLACING_NONE      = 0
 
-  # Default exception class for ChunkyPNG
-  class Exception < ::StandardError
+    # Indicates that the image uses Adam7 interlacing.
+    # @private
+    INTERLACING_ADAM7     = 1
+
+    ### Filter method constants
+
+    # Indicates that the PNG specification's default filtering are
+    # being used in the image.
+    # @private
+    FILTERING_DEFAULT     = 0
+
+    # Indicates that no filtering is used for the scanline.
+    # @private
+    FILTER_NONE           = 0
+
+    # Indicates that SUB filtering is used for the scanline.
+    # @private
+    FILTER_SUB            = 1
+
+    # Indicates that UP filtering is used for the scanline.
+    # @private
+    FILTER_UP             = 2
+
+    # Indicates that AVERAGE filtering is used for the scanline.
+    # @private
+    FILTER_AVERAGE        = 3
+
+    # Indicates that PAETH filtering is used for the scanline.
+    # @private
+    FILTER_PAETH          = 4
+
+    ###################################################
+    # ChunkyPNG exception classes
+    ###################################################
+
+    # Default exception class for ChunkyPNG
+    class Exception < ::StandardError
+    end
+
+    # Exception that is raised for an unsupported PNG image.
+    class NotSupported < ChunkyPNG::Exception
+    end
+
+    # Exception that is raised if the PNG signature is not encountered at the
+    # beginning of the file.
+    class SignatureMismatch < ChunkyPNG::Exception
+    end
+
+    # Exception that is raised if the CRC check for a block fails
+    class CRCMismatch < ChunkyPNG::Exception
+    end
+
+    # Exception that is raised if an expectation fails.
+    class ExpectationFailed < ChunkyPNG::Exception
+    end
+
+    # Exception that is raised if an expectation fails.
+    class OutOfBounds < ChunkyPNG::ExpectationFailed
+    end
+
+    def self.force_binary(str)
+      str.respond_to?(:force_encoding) ? str.force_encoding('BINARY') : str
+    end
+
+    # Empty byte array. This basically is an empty string, but with the encoding
+    # set correctly to ASCII-8BIT (binary) in Ruby 1.9.
+    # @return [String] An empty string, with encoding set to binary in Ruby 1.9
+    # @private
+    EMPTY_BYTEARRAY = force_binary("").freeze
+
+    # Null-byte, with the encoding set correctly to ASCII-8BIT (binary) in Ruby 1.9.
+    # @return [String] A binary string, consisting of one NULL-byte.
+    # @private
+    EXTRA_BYTE = force_binary("\0").freeze
   end
 
-  # Exception that is raised for an unsupported PNG image.
-  class NotSupported < ChunkyPNG::Exception
-  end
+  filepath = File.dirname(__FILE__) + '/'
 
-  # Exception that is raised if the PNG signature is not encountered at the 
-  # beginning of the file.
-  class SignatureMismatch < ChunkyPNG::Exception
-  end
+  require filepath + "chunky_png/version"
 
-  # Exception that is raised if the CRC check for a block fails
-  class CRCMismatch < ChunkyPNG::Exception
-  end
+  # Ruby 1.8 / 1.9 compatibility
+  require filepath + 'chunky_png/compatibility'
 
-  # Exception that is raised if an expectation fails.
-  class ExpectationFailed < ChunkyPNG::Exception
-  end
+  # PNG file structure
+  require filepath + 'chunky_png/datastream'
+  require filepath + 'chunky_png/chunk'
 
-  # Exception that is raised if an expectation fails.
-  class OutOfBounds < ChunkyPNG::ExpectationFailed
-  end
+  # Colors
+  require filepath + 'chunky_png/palette'
+  require filepath + 'chunky_png/color'
 
-  def self.force_binary(str)
-    str.respond_to?(:force_encoding) ? str.force_encoding('BINARY') : str
-  end
-  
-  # Empty byte array. This basically is an empty string, but with the encoding
-  # set correctly to ASCII-8BIT (binary) in Ruby 1.9.
-  # @return [String] An empty string, with encoding set to binary in Ruby 1.9
-  # @private
-  EMPTY_BYTEARRAY = force_binary("").freeze
+  # Geometry
+  require filepath + 'chunky_png/point'
+  require filepath + 'chunky_png/vector'
+  require filepath + 'chunky_png/dimension'
 
-  # Null-byte, with the encoding set correctly to ASCII-8BIT (binary) in Ruby 1.9.
-  # @return [String] A binary string, consisting of one NULL-byte. 
-  # @private
-  EXTRA_BYTE = force_binary("\0").freeze
-end
+  # Canvas / Image classes
+  require filepath + 'chunky_png/canvas'
+  require filepath + 'chunky_png/image'
 
 end #module Skalp
-
-filepath = File.dirname(__FILE__) + '/'
-
-require filepath + "chunky_png/version"
-
-# Ruby 1.8 / 1.9 compatibility
-require filepath + 'chunky_png/compatibility'
-
-# PNG file structure
-require filepath + 'chunky_png/datastream'
-require filepath + 'chunky_png/chunk'
-
-# Colors
-require filepath + 'chunky_png/palette'
-require filepath + 'chunky_png/color'
-
-# Geometry
-require filepath + 'chunky_png/point'
-require filepath + 'chunky_png/vector'
-require filepath + 'chunky_png/dimension'
-
-# Canvas / Image classes
-require filepath + 'chunky_png/canvas'
-require filepath + 'chunky_png/image'
