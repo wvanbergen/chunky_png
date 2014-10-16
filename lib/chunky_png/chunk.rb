@@ -26,7 +26,7 @@ module ChunkyPNG
     end
 
     # Reads an exact number of bytes from an IO stream.
-    # @param io [IO, #read] The IO stream to read from.    
+    # @param io [IO, #read] The IO stream to read from.
     # @param length [Integer] The IO exact number of bytes to read.
     # @return [String] A binary string of exactly length bytes.
     # @raise [ChunkyPNG::ExpectationFailed] If not exactly length
@@ -244,11 +244,6 @@ module ChunkyPNG
     end
 
     class ImageData < Generic
-      def self.read(type, content)
-        raise ExpectationFailed, 'The IDAT chunk should not be empty!' if content.bytesize == 0
-        super
-      end
-
       def self.combine_chunks(data_chunks)
         Zlib::Inflate.inflate(data_chunks.map { |c| c.content }.join(''))
       end
