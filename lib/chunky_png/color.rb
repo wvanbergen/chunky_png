@@ -176,6 +176,89 @@ module ChunkyPNG
       base_color | opacity
     end
 
+    # Creates a new color from an HSV triple.
+    #
+    # Create a new color using an HSV (sometimes also called HSB) triple. The 
+    # words `value` and `brightness` are used interchangeably and synonymously 
+    # in descriptions of this colorspace. This implementation follows the modern 
+    # convention of 0 degrees hue indicating red.
+    # 
+    # @param [Fixnum] hue The hue component (0-360)
+    # @param [Fixnum] saturation The saturation component (0-1)
+    # @param [Fixnum] value The value (brightness) component (0-1)
+    # @param [Fixnum] alpha Defaults to opaque (255).
+    # @return [Integer] The newly constructed color value.
+    # @raise [ArgumentError] if the hsv triple is invalid.
+    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    def from_hsv(hue, saturation, value, alpha = 255)
+      raise ArgumentError, "Hue must be between 0 and 360" unless (0..360).include?(hue)
+      raise ArgumentError, "Saturation must be between 0 and 1" unless (0..1).include?(saturation)
+      raise ArgumentError, "Value/brightness must be between 0 and 1" unless (0..1).include?(value)
+      chroma = value * saturation
+      rgb    = cylindrical_to_cubic(hue, saturation, value, chroma)
+      rgb.map! { |component| ((component + value - chroma)*255).to_i }
+      self.rgba(*rgb, alpha)
+    end
+    alias_method :from_hsb, :from_hsv
+
+    # Creates a new color from an HSL triple.
+    #
+    # This implementation follows the modern convention of 0 degrees hue 
+    # indicating red.
+    # 
+    # @param [Fixnum] hue The hue component (0-360)
+    # @param [Fixnum] saturation The saturation component (0-1)
+    # @param [Fixnum] lightness The lightness component (0-1)
+    # @param [Fixnum] alpha Defaults to opaque (255).
+    # @return [Integer] The newly constructed color value.
+    # @raise [ArgumentError] if the hsl triple is invalid.
+    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    def from_hsl(hue, saturation, lightness, alpha = 255)
+      raise ArgumentError, "Hue #{hue} was not between 0 and 360" unless (0..360).include?(hue)
+      raise ArgumentError, "Saturation #{saturation} was not between 0 and 1" unless (0..1).include?(saturation)
+      raise ArgumentError, "Lightness #{lightness} was not between 0 and 1" unless (0..1).include?(lightness)
+      chroma = (1 - (2 * lightness - 1).abs) * saturation
+      rgb    = cylindrical_to_cubic(hue, saturation, lightness, chroma)
+      rgb.map! { |component| ((component + lightness - 0.5*chroma)*255).to_i }
+      self.rgba(*rgb, alpha)
+    end
+
+    # Convert one HSL or HSV triple and associated chroma to a scaled rgb triple
+    #
+    # This method encapsulates the shared mathematical operations needed to 
+    # convert coordinates from a cylindrical colorspace such as HSL or HSV into
+    # coordinates of the RGB colorspace.  
+    #
+    # Even though chroma values are derived from the other three coordinates, 
+    # the formula for calculating chroma differs for each colorspace.  Since it 
+    # is calculated differently for each colorspace, it must be passed in as
+    # a parameter.
+    #
+    # @param [Fixnum] hue The hue-component (0-360)
+    # @param [Fixnum] saturation The saturation-component (0-1)
+    # @param [Fixnum] y_component The y_component can represent either lightness
+    #     or brightness/value (0-1) depending on which scheme (HSV/HSL) is being used.
+    # @param [Fixnum] chroma The associated chroma value.
+    # @return [Array<Fixnum>] A scaled r,g,b triple. Scheme-dependent 
+    #    adjustments are still needed to reach the true r,g,b values.
+    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    # @see http://www.tomjewett.com/colors/hsb.html
+    # @private
+    def cylindrical_to_cubic(hue, saturation, y_component, chroma)
+      hue_prime = hue.fdiv(60)
+      x = chroma * (1 - (hue_prime % 2 - 1).abs)
+
+      case hue_prime
+      when (0...1); [chroma, x, 0]
+      when (1...2); [x, chroma, 0]
+      when (2...3); [0, chroma, x]
+      when (3...4); [0, x, chroma]
+      when (4...5); [x, 0, chroma]
+      when (5...6); [chroma, 0, x]
+      end
+    end
+    private :cylindrical_to_cubic
+
     ####################################################################
     # PROPERTIES
     ####################################################################
@@ -484,6 +567,91 @@ module ChunkyPNG
       include_alpha ? ('#%08x' % color) : ('#%06x' % [color >> 8])
     end
 
+    # Returns an array with the separate HSV components of a color.
+    #
+    # Because ChunkyPNG internally handles colors as Integers for performance
+    # reasons, some rounding  occurs when importing or exporting HSV colors 
+    # whose coordinates are float-based.  Because of this rounding, #to_hsv and 
+    # #from_hsv may not be perfect inverses.
+    #
+    # This implementation follows the modern convention of 0 degrees hue 
+    # indicating red.
+    #
+    # @param [Integer] color The ChunkyPNG color to convert.
+    # @param [Boolean] include_alpha Flag indicates whether a fourth element 
+    #    representing alpha channel should be included in the returned array.
+    # @return [Array<Fixnum>[0]] The hue of the color (0-360)
+    # @return [Array<Fixnum>[1]] The saturation of the color (0-1)
+    # @return [Array<Fixnum>[2]] The value of the color (0-1)
+    # @return [Array<Fixnum>[3]] Optional fourth element for alpha, included if 
+    #    include_alpha=true (0-255)
+    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    def to_hsv(color, include_alpha = false)
+      hue, chroma, max, min = hue_and_chroma(color)
+      value      = max
+      saturation = chroma.zero? ? 0 : chroma.fdiv(value)
+
+      include_alpha ? [hue, saturation, value, a(color)] : 
+                      [hue, saturation, value]
+    end
+    alias_method :to_hsb, :to_hsv
+
+    # Returns an array with the separate HSL components of a color.
+    #
+    # Because ChunkyPNG internally handles colors as Integers for performance
+    # reasons, some rounding  occurs when importing or exporting HSL colors 
+    # whose coordinates are float-based.  Because of this rounding, #to_hsl and 
+    # #from_hsl may not be perfect inverses.
+    #
+    # This implementation follows the modern convention of 0 degrees hue indicating red.
+    #
+    # @param [Integer] color The ChunkyPNG color to convert.
+    # @param [Boolean] include_alpha Flag indicates whether a fourth element 
+    #     representing alpha channel should be included in the returned array.
+    # @return [Array<Fixnum>[0]] The hue of the color (0-360)
+    # @return [Array<Fixnum>[1]] The saturation of the color (0-1)
+    # @return [Array<Fixnum>[2]] The lightness of the color (0-1)
+    # @return [Array<Fixnum>[3]] Optional fourth element for alpha, included if 
+    #     include_alpha=true (0-255)
+    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    def to_hsl(color, include_alpha = false)
+      hue, chroma, max, min = hue_and_chroma(color)
+      lightness  = 0.5 * (max + min)
+      saturation = chroma.zero? ? 0 : chroma.fdiv(1 - (2*lightness-1).abs)
+
+      include_alpha ? [hue, saturation, lightness, a(color)] : 
+                      [hue, saturation, lightness]
+    end
+
+    # This method encapsulates the logic needed to extract hue and chroma from
+    # a ChunkPNG color. This logic is shared by the cylindrical HSV/HSB and HSL 
+    # color space models.  
+    #
+    # @param [Integer] A ChunkyPNG color.
+    # @return [Fixnum] hue The hue of the color (0-360)
+    # @return [Fixnum] chroma The chroma of the color (0-1)
+    # @return [Fixnum] max The magnitude of the largest scaled rgb component (0-1)
+    # @return [Fixnum] min The magnitude of the smallest scaled rgb component (0-1)
+    # @private
+    def hue_and_chroma(color)
+      scaled_rgb      = to_truecolor_bytes(color)
+      scaled_rgb.map! { |component| component.fdiv(255) }
+      min, max = scaled_rgb.minmax
+      chroma   = max - min
+
+      r, g, b   = scaled_rgb
+      hue_prime = chroma.zero? ? 0 : case max
+                                     when r; (g - b).fdiv(chroma)
+                                     when g; (b - r).fdiv(chroma) + 2
+                                     when b; (r - g).fdiv(chroma) + 4
+                                     else 0
+                                     end
+      hue = 60 * hue_prime
+
+      return hue, chroma, max, min
+    end
+    private :hue_and_chroma
+ 
     # Returns an array with the separate RGBA values for this color.
     #
     # @param [Integer] color The color to convert.
