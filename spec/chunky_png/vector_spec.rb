@@ -7,77 +7,77 @@ describe ChunkyPNG::Vector do
 
   describe '#length' do
     it "shopuld have 3 items" do
-      subject.length.should == 3
+      expect(subject.length).to eql 3
     end
   end
 
   describe '#x_range' do
     it "should get the right range of x values" do
-      subject.x_range.should == (1..4)
+      expect(subject.x_range).to eql (1..4)
     end
 
     it "should find the minimum x-coordinate" do
-      subject.min_x.should == 1
+      expect(subject.min_x).to eql 1
     end
 
     it "should find the maximum x-coordinate" do
-      subject.max_x.should == 4
+      expect(subject.max_x).to eql 4
     end
 
     it "should calculate the width correctly" do
-      subject.width.should == 4
+      expect(subject.width).to eql 4
     end
   end
 
   describe '#y_range' do
     it "should get the right range of y values" do
-      subject.y_range.should == (3..6)
+      expect(subject.y_range).to eql (3..6)
     end
 
     it "should find the minimum x-coordinate" do
-      subject.min_y.should == 3
+      expect(subject.min_y).to eql 3
     end
 
     it "should find the maximum x-coordinate" do
-      subject.max_y.should == 6
+      expect(subject.max_y).to eql 6
     end
 
     it "should calculate the height correctly" do
-      subject.height.should == 4
+      expect(subject.height).to eql 4
     end
   end
 
   describe '#offset' do
     it "should return a ChunkyPNG::Point" do
-      subject.offset.should be_kind_of(ChunkyPNG::Point)
+      expect(subject.offset).to be_kind_of(ChunkyPNG::Point)
     end
 
     it "should use the mininum x and y coordinates as values for the point" do
-      subject.offset.x.should == subject.min_x
-      subject.offset.y.should == subject.min_y
+      expect(subject.offset.x).to eql subject.min_x
+      expect(subject.offset.y).to eql subject.min_y
     end
   end
 
   describe '#dimension' do
     it "should return a ChunkyPNG::Dimension" do
-      subject.dimension.should be_kind_of(ChunkyPNG::Dimension)
+      expect(subject.dimension).to be_kind_of(ChunkyPNG::Dimension)
     end
 
     it "should use the width and height of the vector for the dimension" do
-      subject.dimension.width.should == subject.width
-      subject.dimension.height.should == subject.height
+      expect(subject.dimension.width).to eql subject.width
+      expect(subject.dimension.height).to eql subject.height
     end
   end
 
   describe '#edges' do
     it "should get three edges when closing the path" do
-      subject.edges(true).to_a.should == [[ChunkyPNG::Point.new(2, 5), ChunkyPNG::Point.new(1, 3)],
+      expect(subject.edges(true).to_a).to eql [[ChunkyPNG::Point.new(2, 5), ChunkyPNG::Point.new(1, 3)],
                                           [ChunkyPNG::Point.new(1, 3), ChunkyPNG::Point.new(4, 6)],
                                           [ChunkyPNG::Point.new(4, 6), ChunkyPNG::Point.new(2, 5)]]
     end
 
     it "should get two edges when not closing the path" do
-      subject.edges(false).to_a.should == [[ChunkyPNG::Point.new(2, 5), ChunkyPNG::Point.new(1, 3)],
+      expect(subject.edges(false).to_a).to eql [[ChunkyPNG::Point.new(2, 5), ChunkyPNG::Point.new(1, 3)],
                                            [ChunkyPNG::Point.new(1, 3), ChunkyPNG::Point.new(4, 6)]]
     end
   end
@@ -87,8 +87,8 @@ describe 'ChunkyPNG.Vector' do
   let(:example) { ChunkyPNG::Vector.new([ChunkyPNG::Point.new(2, 4), ChunkyPNG::Point.new(1, 2), ChunkyPNG::Point.new(3, 6)]) }
 
   it "should return an empty vector when given an empty array" do
-    ChunkyPNG::Vector().should == ChunkyPNG::Vector.new([])
-    ChunkyPNG::Vector(*[]).should == ChunkyPNG::Vector.new([])
+    expect(ChunkyPNG::Vector()).to eql ChunkyPNG::Vector.new([])
+    expect(ChunkyPNG::Vector(*[])).to eql ChunkyPNG::Vector.new([])
   end
 
   it "should raise an error when an odd number of numerics is given" do
@@ -96,14 +96,14 @@ describe 'ChunkyPNG.Vector' do
   end
 
   it "should create a vector from a string" do
-    ChunkyPNG::Vector('(2,4) (1,2) (3,6)').should == example
+    expect(ChunkyPNG::Vector('(2,4) (1,2) (3,6)')).to eql example
   end
 
   it "should create a vector from a flat array" do
-    ChunkyPNG::Vector(2,4,1,2,3,6).should == example
+    expect(ChunkyPNG::Vector(2,4,1,2,3,6)).to eql example
   end
 
   it "should create a vector from a nested array" do
-    ChunkyPNG::Vector('(2,4)', [1, 2], :x => 3, :y => 6).should == example
+    expect(ChunkyPNG::Vector('(2,4)', [1, 2], :x => 3, :y => 6)).to eql example
   end
 end

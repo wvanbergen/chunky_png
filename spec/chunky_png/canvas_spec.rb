@@ -11,7 +11,7 @@ describe ChunkyPNG::Canvas do
   describe '#initialize' do
     it "should accept a single color value as background color" do
       canvas = ChunkyPNG::Canvas.new(2, 2, 'red @ 0.8')
-      canvas[1, 0].should == ChunkyPNG::Color.parse('red @ 0.8')
+      expect(canvas[1, 0]).to eql ChunkyPNG::Color.parse('red @ 0.8')
     end
 
     it "should raise an error if the color value is not understood" do
@@ -20,10 +20,10 @@ describe ChunkyPNG::Canvas do
 
     it "should accept an array as initial pixel values" do
       canvas = ChunkyPNG::Canvas.new(2, 2, [1,2,3,4])
-      canvas[0, 0].should == 1
-      canvas[1, 0].should == 2
-      canvas[0, 1].should == 3
-      canvas[1, 1].should == 4
+      expect(canvas[0, 0]).to eql 1
+      expect(canvas[1, 0]).to eql 2
+      expect(canvas[0, 1]).to eql 3
+      expect(canvas[1, 1]).to eql 4
     end
 
     it "should raise an ArgumentError if the initial array does not have the correct number of elements" do
@@ -33,61 +33,61 @@ describe ChunkyPNG::Canvas do
 
     it "should use a transparent background by default" do
       canvas = ChunkyPNG::Canvas.new(1, 1)
-      canvas[0,0].should == ChunkyPNG::Color::TRANSPARENT
+      expect(canvas[0,0]).to eql ChunkyPNG::Color::TRANSPARENT
     end
   end
 
   describe '#dimension' do
     it "should return the dimensions as a Dimension instance" do
-      subject.dimension.should == ChunkyPNG::Dimension('1x1')
+      expect(subject.dimension).to eql ChunkyPNG::Dimension('1x1')
     end
   end
 
   describe '#area' do
     it "should return the dimensions as two-item array" do
-      subject.area.should == ChunkyPNG::Dimension('1x1').area
+      expect(subject.area).to eql ChunkyPNG::Dimension('1x1').area
     end
   end
 
   describe '#include?' do
     it "should return true if the coordinates are within bounds, false otherwise" do
-      subject.include_xy?( 0,  0).should == true
+      expect(subject.include_xy?( 0,  0)).to eql true
 
-      subject.include_xy?(-1,  0).should == false
-      subject.include_xy?( 1,  0).should == false
-      subject.include_xy?( 0, -1).should == false
-      subject.include_xy?( 0,  1).should == false
-      subject.include_xy?(-1, -1).should == false
-      subject.include_xy?(-1,  1).should == false
-      subject.include_xy?( 1, -1).should == false
-      subject.include_xy?( 1,  1).should == false
+      expect(subject.include_xy?(-1,  0)).to eql false
+      expect(subject.include_xy?( 1,  0)).to eql false
+      expect(subject.include_xy?( 0, -1)).to eql false
+      expect(subject.include_xy?( 0,  1)).to eql false
+      expect(subject.include_xy?(-1, -1)).to eql false
+      expect(subject.include_xy?(-1,  1)).to eql false
+      expect(subject.include_xy?( 1, -1)).to eql false
+      expect(subject.include_xy?( 1,  1)).to eql false
     end
 
     it "should accept strings, arrays, hashes and points as well" do
-      subject.should     include('0, 0')
+      expect(subject).to     include('0, 0')
       subject.should_not include('0, 1')
-      subject.should     include([0, 0])
+      expect(subject).to     include([0, 0])
       subject.should_not include([0, 1])
-      subject.should     include(:y => 0, :x => 0)
+      expect(subject).to     include(:y => 0, :x => 0)
       subject.should_not include(:y => 1, :x => 0)
-      subject.should     include(ChunkyPNG::Point.new(0, 0))
+      expect(subject).to     include(ChunkyPNG::Point.new(0, 0))
       subject.should_not include(ChunkyPNG::Point.new(0, 1))
     end
   end
 
   describe '#include_x?' do
     it "should return true if the x-coordinate is within bounds, false otherwise" do
-      subject.include_x?( 0).should == true
-      subject.include_x?(-1).should == false
-      subject.include_x?( 1).should == false
+      expect(subject.include_x?( 0)).to eql true
+      expect(subject.include_x?(-1)).to eql false
+      expect(subject.include_x?( 1)).to eql false
     end
   end
 
   describe '#include_y?' do
     it "should return true if the y-coordinate is within bounds, false otherwise" do
-      subject.include_y?( 0).should == true
-      subject.include_y?(-1).should == false
-      subject.include_y?( 1).should == false
+      expect(subject.include_y?( 0)).to eql true
+      expect(subject.include_y?(-1)).to eql false
+      expect(subject.include_y?( 1)).to eql false
     end
   end
 
@@ -117,7 +117,7 @@ describe ChunkyPNG::Canvas do
 
   describe '#[]' do
     it "should return the pixel value if the coordinates are within bounds" do
-      subject[0, 0].should == ChunkyPNG::Color::WHITE
+      expect(subject[0, 0]).to eql ChunkyPNG::Color::WHITE
     end
 
     it "should assert the coordinates to be within bounds" do
@@ -128,7 +128,7 @@ describe ChunkyPNG::Canvas do
 
   describe '#get_pixel' do
     it "should return the pixel value if the coordinates are within bounds" do
-      subject.get_pixel(0, 0).should == ChunkyPNG::Color::WHITE
+      expect(subject.get_pixel(0, 0)).to eql ChunkyPNG::Color::WHITE
     end
 
     it "should not assert nor check the coordinates" do
@@ -176,8 +176,8 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should do nothing if the coordinates are out of bounds" do
-      subject.set_pixel_if_within_bounds(-1, 1, ChunkyPNG::Color::BLACK).should be_nil
-      subject[0, 0].should == ChunkyPNG::Color::WHITE
+      expect(subject.set_pixel_if_within_bounds(-1, 1, ChunkyPNG::Color::BLACK)).to be_nil
+      expect(subject[0, 0]).to eql ChunkyPNG::Color::WHITE
     end
   end
 
@@ -191,8 +191,8 @@ describe ChunkyPNG::Canvas do
 
     it "should return the correct pixels" do
       data = @canvas.row(0)
-      data.length.should == @canvas.width
-      data.should == [65535, 268500991, 536936447, 805371903, 1073807359, 1342242815, 1610678271, 1879113727, 2147549183, 2415984639, 2684420095, 2952855551, 3221291007, 3489726463, 3758161919, 4026597375]
+      expect(data.length).to eql @canvas.width
+      expect(data).to eql [65535, 268500991, 536936447, 805371903, 1073807359, 1342242815, 1610678271, 1879113727, 2147549183, 2415984639, 2684420095, 2952855551, 3221291007, 3489726463, 3758161919, 4026597375]
     end
   end
 
@@ -206,8 +206,8 @@ describe ChunkyPNG::Canvas do
 
     it "should return the correct pixels" do
       data = @canvas.column(0)
-      data.length.should == @canvas.height
-      data.should == [65535, 1114111, 2162687, 3211263, 4259839, 5308415, 6356991, 7405567, 8454143, 9502719, 10551295, 11599871, 12648447, 13697023, 14745599, 15794175]
+      expect(data.length).to eql @canvas.height
+      expect(data).to eql [65535, 1114111, 2162687, 3211263, 4259839, 5308415, 6356991, 7405567, 8454143, 9502719, 10551295, 11599871, 12648447, 13697023, 14745599, 15794175]
     end
   end
 
@@ -223,7 +223,7 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should return itself" do
-      subject.send(:replace_canvas!, 2, 2, [1,2,3,4]).should equal(subject)
+      expect(subject.send(:replace_canvas!, 2, 2, [1,2,3,4])).to equal(subject)
     end
   end
 end

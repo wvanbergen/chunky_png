@@ -16,27 +16,27 @@ describe ChunkyPNG::Point do
 
   describe '#<=>' do
     it "should return 0 if the coordinates are identical" do
-      (subject <=> ChunkyPNG::Point.new(1, 2)).should == 0
+      expect((subject <=> ChunkyPNG::Point.new(1, 2))).to eql 0
     end
 
     it "should return -1 if the y coordinate is smaller than the other one" do
-      (subject <=> ChunkyPNG::Point.new(1, 3)).should == -1
-      (subject <=> ChunkyPNG::Point.new(0, 3)).should == -1 # x doesn't matter
-      (subject <=> ChunkyPNG::Point.new(2, 3)).should == -1 # x doesn't matter
+      expect((subject <=> ChunkyPNG::Point.new(1, 3))).to eql -1
+      expect((subject <=> ChunkyPNG::Point.new(0, 3))).to eql -1 # x doesn't matter
+      expect((subject <=> ChunkyPNG::Point.new(2, 3))).to eql -1 # x doesn't matter
     end
 
     it "should return 1 if the y coordinate is larger than the other one" do
-      (subject <=> ChunkyPNG::Point.new(1, 0)).should == 1
-      (subject <=> ChunkyPNG::Point.new(0, 0)).should == 1 # x doesn't matter
-      (subject <=> ChunkyPNG::Point.new(2, 0)).should == 1 # x doesn't matter
+      expect((subject <=> ChunkyPNG::Point.new(1, 0))).to eql 1
+      expect((subject <=> ChunkyPNG::Point.new(0, 0))).to eql 1 # x doesn't matter
+      expect((subject <=> ChunkyPNG::Point.new(2, 0))).to eql 1 # x doesn't matter
     end
 
     it "should return -1 if the x coordinate is smaller and y is the same" do
-      (subject <=> ChunkyPNG::Point.new(2, 2)).should == -1
+      expect((subject <=> ChunkyPNG::Point.new(2, 2))).to eql -1
     end
 
     it "should return 1 if the x coordinate is larger and y is the same" do
-      (subject <=> ChunkyPNG::Point.new(0, 2)).should == 1
+      expect((subject <=> ChunkyPNG::Point.new(0, 2))).to eql 1
     end
   end
 end
@@ -46,13 +46,13 @@ describe 'ChunkyPNG.Point' do
 
 
   it "should create a point from a 2-item array" do
-    ChunkyPNG::Point([1, 2]).should     == subject
-    ChunkyPNG::Point(['1', '2']).should == subject
+    expect(ChunkyPNG::Point([1, 2])).to     eql subject
+    expect(ChunkyPNG::Point(['1', '2'])).to eql subject
   end
 
   it "should create a point from a hash with x and y keys" do
-    ChunkyPNG::Point(:x => 1, :y => 2).should       == subject
-    ChunkyPNG::Point('x' => '1', 'y' => '2').should == subject
+    expect(ChunkyPNG::Point(:x => 1, :y => 2)).to       eql subject
+    expect(ChunkyPNG::Point('x' => '1', 'y' => '2')).to eql subject
   end
 
   it "should create a point from a ChunkyPNG::Dimension object" do
@@ -72,7 +72,7 @@ describe 'ChunkyPNG.Point' do
 
   it "should create a point from an object that responds to x and y" do
     mock_object = Struct.new(:x, :y).new(1, 2)
-    ChunkyPNG::Point(mock_object).should == subject
+    expect(ChunkyPNG::Point(mock_object)).to eql subject
   end
 
   it "should raise an exception if the input is not understood" do

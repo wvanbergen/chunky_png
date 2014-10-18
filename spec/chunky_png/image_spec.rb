@@ -5,8 +5,8 @@ describe ChunkyPNG::Image do
 
     it "should load metadata from an existing file" do
       image = ChunkyPNG::Image.from_file(resource_file('text_chunk.png'))
-      image.metadata['Title'].should  == 'My amazing icon!'
-      image.metadata['Author'].should == 'Willem van Bergen'
+      expect(image.metadata['Title']).to  eql 'My amazing icon!'
+      expect(image.metadata['Author']).to eql 'Willem van Bergen'
     end
 
     it "should write metadata to the file correctly" do
@@ -18,8 +18,8 @@ describe ChunkyPNG::Image do
       image.save(filename)
 
       metadata = ChunkyPNG::Datastream.from_file(filename).metadata
-      metadata['Title'].should  == 'My amazing icon!'
-      metadata['Author'].should == 'Willem van Bergen'
+      expect(metadata['Title']).to  eql 'My amazing icon!'
+      expect(metadata['Author']).to eql 'Willem van Bergen'
     end
 
     it "should load empty images correctly" do

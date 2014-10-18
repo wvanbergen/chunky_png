@@ -13,20 +13,20 @@ describe ChunkyPNG::Canvas::Masking do
   describe '#change_theme_color!' do
     it "should change the theme color correctly" do
       subject.change_theme_color!(@theme_color, @new_color)
-      subject.should == reference_canvas('clock_updated')
+      expect(subject).to eql reference_canvas('clock_updated')
     end
   end
 
   describe '#extract_mask' do
     it "should create the correct base and mask image" do
       base, mask = subject.extract_mask(@theme_color, @background_color)
-      base.should == reference_canvas('clock_base')
-      mask.should == reference_canvas('clock_mask')
+      expect(base).to eql reference_canvas('clock_base')
+      expect(mask).to eql reference_canvas('clock_mask')
     end
 
     it "should create a mask image with only one opaque color" do
       base, mask = subject.extract_mask(@theme_color, @background_color)
-      mask.palette.opaque_palette.size.should == 1
+      expect(mask.palette.opaque_palette.size).to eql 1
     end
   end
 
@@ -35,12 +35,12 @@ describe ChunkyPNG::Canvas::Masking do
 
     it "should replace the mask color correctly" do
       @mask.change_mask_color!(@new_color)
-      @mask.should == reference_canvas('clock_mask_updated')
+      expect(@mask).to eql reference_canvas('clock_mask_updated')
     end
 
     it "should still only have one opaque color" do
       @mask.change_mask_color!(@new_color)
-      @mask.palette.opaque_palette.size.should == 1
+      expect(@mask.palette.opaque_palette.size).to eql 1
     end
 
     it "should raise an exception when the mask image has more than once color" do

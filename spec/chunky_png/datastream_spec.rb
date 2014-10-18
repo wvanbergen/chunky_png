@@ -18,15 +18,15 @@ describe ChunkyPNG::Datastream do
     it "should load uncompressed tXTt chunks correctly" do
       filename = resource_file('text_chunk.png')
       ds = ChunkyPNG::Datastream.from_file(filename)
-      ds.metadata['Title'].should  == 'My amazing icon!'
-      ds.metadata['Author'].should == "Willem van Bergen"
+      expect(ds.metadata['Title']).to  eql 'My amazing icon!'
+      expect(ds.metadata['Author']).to eql "Willem van Bergen"
     end
 
     it "should load compressed zTXt chunks correctly" do
       filename = resource_file('ztxt_chunk.png')
       ds = ChunkyPNG::Datastream.from_file(filename)
-      ds.metadata['Title'].should == 'PngSuite'
-      ds.metadata['Copyright'].should == "Copyright Willem van Schaik, Singapore 1995-96"
+      expect(ds.metadata['Title']).to eql 'PngSuite'
+      expect(ds.metadata['Copyright']).to eql "Copyright Willem van Schaik, Singapore 1995-96"
     end
   end
 end

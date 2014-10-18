@@ -10,7 +10,7 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should convert the image correctly" do
-      subject.grayscale.should == reference_canvas('operations_grayscale')
+      expect(subject.grayscale).to eql reference_canvas('operations_grayscale')
     end
 
     it "should not adjust the current image" do
@@ -20,18 +20,18 @@ describe ChunkyPNG::Canvas::Operations do
 
   describe '#grayscale!' do
     it "should return itself" do
-      subject.grayscale!.should equal(subject)
+      expect(subject.grayscale!).to equal(subject)
     end
 
     it "should convert the image correctly" do
       subject.grayscale!
-      subject.should == reference_canvas('operations_grayscale')
+      expect(subject).to eql reference_canvas('operations_grayscale')
     end
   end
 
   describe '#crop' do
     it "should crop the right pixels from the original canvas" do
-      subject.crop(10, 5, 4, 8).should == reference_canvas('cropped')
+      expect(subject.crop(10, 5, 4, 8)).to eql reference_canvas('cropped')
     end
 
     it "should not return itself" do
@@ -50,7 +50,7 @@ describe ChunkyPNG::Canvas::Operations do
   describe '#crop!' do
     it "should crop the right pixels from the original canvas" do
       subject.crop!(10, 5, 4, 8)
-      subject.should == reference_canvas('cropped')
+      expect(subject).to eql reference_canvas('cropped')
     end
 
     it "should have a new width and height" do
@@ -63,19 +63,19 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should return itself" do
-      subject.crop!(10, 5, 4, 8).should equal(subject)
+      expect(subject.crop!(10, 5, 4, 8)).to equal(subject)
     end
   end
 
   describe '#compose' do
     it "should compose pixels correctly" do
       subcanvas = ChunkyPNG::Canvas.new(4, 8, ChunkyPNG::Color.rgba(0, 0, 0, 75))
-      subject.compose(subcanvas, 8, 4).should == reference_canvas('composited')
+      expect(subject.compose(subcanvas, 8, 4)).to eql reference_canvas('composited')
     end
 
     it "should leave the original intact" do
       subject.compose(ChunkyPNG::Canvas.new(1,1))
-      subject.should == reference_canvas('operations')
+      expect(subject).to eql reference_canvas('operations')
     end
 
     it "should not return itself" do
@@ -91,18 +91,18 @@ describe ChunkyPNG::Canvas::Operations do
     it "should compose pixels correctly" do
       subcanvas = ChunkyPNG::Canvas.new(4, 8, ChunkyPNG::Color.rgba(0, 0, 0, 75))
       subject.compose!(subcanvas, 8, 4)
-      subject.should == reference_canvas('composited')
+      expect(subject).to eql reference_canvas('composited')
     end
 
     it "should return itself" do
-      subject.compose!(ChunkyPNG::Canvas.new(1,1)).should equal(subject)
+      expect(subject.compose!(ChunkyPNG::Canvas.new(1,1))).to equal(subject)
     end
 
     it "should compose a base image and mask correctly" do
       base = reference_canvas('clock_base')
       mask = reference_canvas('clock_mask_updated')
       base.compose!(mask)
-      base.should == reference_canvas('clock_updated')
+      expect(base).to eql reference_canvas('clock_updated')
     end
 
     it "should raise an exception when the pixels to compose fall outside the image" do
@@ -113,7 +113,7 @@ describe ChunkyPNG::Canvas::Operations do
   describe '#replace' do
     it "should replace the correct pixels" do
       subcanvas = ChunkyPNG::Canvas.new(3, 2, ChunkyPNG::Color.rgb(200, 255, 0))
-      subject.replace(subcanvas, 5, 4).should == reference_canvas('replaced')
+      expect(subject.replace(subcanvas, 5, 4)).to eql reference_canvas('replaced')
     end
 
     it "should not return itself" do
@@ -122,7 +122,7 @@ describe ChunkyPNG::Canvas::Operations do
 
     it "should leave the original intact" do
       subject.replace(ChunkyPNG::Canvas.new(1,1))
-      subject.should == reference_canvas('operations')
+      expect(subject).to eql reference_canvas('operations')
     end
 
     it "should raise an exception when the pixels to replace fall outside the image" do
@@ -134,11 +134,11 @@ describe ChunkyPNG::Canvas::Operations do
     it "should replace the correct pixels" do
       subcanvas = ChunkyPNG::Canvas.new(3, 2, ChunkyPNG::Color.rgb(200, 255, 0))
       subject.replace!(subcanvas, 5, 4)
-      subject.should == reference_canvas('replaced')
+      expect(subject).to eql reference_canvas('replaced')
     end
 
     it "should return itself" do
-      subject.replace!(ChunkyPNG::Canvas.new(1,1)).should equal(subject)
+      expect(subject.replace!(ChunkyPNG::Canvas.new(1,1))).to equal(subject)
     end
 
     it "should raise an exception when the pixels to replace fall outside the image" do
@@ -154,17 +154,17 @@ describe ChunkyPNG::Canvas::Operations do
   describe '#flip_horizontally!' do
     it "should flip the pixels horizontally in place" do
       subject.flip_horizontally!
-      subject.should == ChunkyPNG::Canvas.new(2, 3, [5, 6, 3, 4, 1, 2])
+      expect(subject).to eql ChunkyPNG::Canvas.new(2, 3, [5, 6, 3, 4, 1, 2])
     end
 
     it "should return itself" do
-      subject.flip_horizontally!.should equal(subject)
+      expect(subject.flip_horizontally!).to equal(subject)
     end
   end
 
   describe '#flip_horizontally' do
     it "should flip the pixels horizontally" do
-      subject.flip_horizontally.should == ChunkyPNG::Canvas.new(2, 3, [5, 6, 3, 4, 1, 2])
+      expect(subject.flip_horizontally).to eql ChunkyPNG::Canvas.new(2, 3, [5, 6, 3, 4, 1, 2])
     end
 
     it "should not return itself" do
@@ -172,24 +172,24 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should return a copy of itself when applied twice" do
-      subject.flip_horizontally.flip_horizontally.should == subject
+      expect(subject.flip_horizontally.flip_horizontally).to eql subject
     end
   end
 
   describe '#flip_vertically!' do
     it "should flip the pixels vertically" do
       subject.flip_vertically!
-      subject.should == ChunkyPNG::Canvas.new(2, 3, [2, 1, 4, 3, 6, 5])
+      expect(subject).to eql ChunkyPNG::Canvas.new(2, 3, [2, 1, 4, 3, 6, 5])
     end
 
     it "should return itself" do
-      subject.flip_horizontally!.should equal(subject)
+      expect(subject.flip_horizontally!).to equal(subject)
     end
   end
 
   describe '#flip_vertically' do
     it "should flip the pixels vertically" do
-      subject.flip_vertically.should == ChunkyPNG::Canvas.new(2, 3, [2, 1, 4, 3, 6, 5])
+      expect(subject.flip_vertically).to eql ChunkyPNG::Canvas.new(2, 3, [2, 1, 4, 3, 6, 5])
     end
 
     it "should not return itself" do
@@ -197,13 +197,13 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should return a copy of itself when applied twice" do
-      subject.flip_vertically.flip_vertically.should == subject
+      expect(subject.flip_vertically.flip_vertically).to eql subject
     end
   end
 
   describe '#rotate_left' do
     it "should rotate the pixels 90 degrees counter-clockwise" do
-      subject.rotate_left.should == ChunkyPNG::Canvas.new(3, 2, [2, 4, 6, 1, 3, 5] )
+      expect(subject.rotate_left).to eql ChunkyPNG::Canvas.new(3, 2, [2, 4, 6, 1, 3, 5] )
     end
 
     it "should not return itself" do
@@ -215,26 +215,26 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "it should rotate 180 degrees when applied twice" do
-      subject.rotate_left.rotate_left.should == subject.rotate_180
+      expect(subject.rotate_left.rotate_left).to eql subject.rotate_180
     end
 
     it "it should rotate right when applied three times" do
-      subject.rotate_left.rotate_left.rotate_left.should == subject.rotate_right
+      expect(subject.rotate_left.rotate_left.rotate_left).to eql subject.rotate_right
     end
 
     it "should return itself when applied four times" do
-      subject.rotate_left.rotate_left.rotate_left.rotate_left.should == subject
+      expect(subject.rotate_left.rotate_left.rotate_left.rotate_left).to eql subject
     end
   end
 
   describe '#rotate_left!' do
     it "should rotate the pixels 90 degrees clockwise" do
       subject.rotate_left!
-      subject.should == ChunkyPNG::Canvas.new(3, 2, [2, 4, 6, 1, 3, 5] )
+      expect(subject).to eql ChunkyPNG::Canvas.new(3, 2, [2, 4, 6, 1, 3, 5] )
     end
 
     it "should return itself" do
-      subject.rotate_left!.should equal(subject)
+      expect(subject.rotate_left!).to equal(subject)
     end
 
     it "should change the image dimensions" do
@@ -245,7 +245,7 @@ describe ChunkyPNG::Canvas::Operations do
 
   describe '#rotate_right' do
     it "should rotate the pixels 90 degrees clockwise" do
-      subject.rotate_right.should == ChunkyPNG::Canvas.new(3, 2, [5, 3, 1, 6, 4, 2] )
+      expect(subject.rotate_right).to eql ChunkyPNG::Canvas.new(3, 2, [5, 3, 1, 6, 4, 2] )
     end
 
     it "should not return itself" do
@@ -257,26 +257,26 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "it should rotate 180 degrees when applied twice" do
-      subject.rotate_right.rotate_right.should == subject.rotate_180
+      expect(subject.rotate_right.rotate_right).to eql subject.rotate_180
     end
 
     it "it should rotate left when applied three times" do
-      subject.rotate_right.rotate_right.rotate_right.should == subject.rotate_left
+      expect(subject.rotate_right.rotate_right.rotate_right).to eql subject.rotate_left
     end
 
     it "should return itself when applied four times" do
-      subject.rotate_right.rotate_right.rotate_right.rotate_right.should == subject
+      expect(subject.rotate_right.rotate_right.rotate_right.rotate_right).to eql subject
     end
   end
 
   describe '#rotate_right!' do
     it "should rotate the pixels 90 degrees clockwise" do
       subject.rotate_right!
-      subject.should == ChunkyPNG::Canvas.new(3, 2, [5, 3, 1, 6, 4, 2] )
+      expect(subject).to eql ChunkyPNG::Canvas.new(3, 2, [5, 3, 1, 6, 4, 2] )
     end
 
     it "should return itself" do
-      subject.rotate_right!.should equal(subject)
+      expect(subject.rotate_right!).to equal(subject)
     end
 
     it "should change the image dimensions" do
@@ -287,7 +287,7 @@ describe ChunkyPNG::Canvas::Operations do
 
   describe '#rotate_180' do
     it "should rotate the pixels 180 degrees" do
-      subject.rotate_180.should == ChunkyPNG::Canvas.new(2, 3, [6, 5, 4, 3, 2, 1])
+      expect(subject.rotate_180).to eql ChunkyPNG::Canvas.new(2, 3, [6, 5, 4, 3, 2, 1])
     end
 
     it "should return not itself" do
@@ -295,18 +295,18 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should return a copy of itself when applied twice" do
-      subject.rotate_180.rotate_180.should == subject
+      expect(subject.rotate_180.rotate_180).to eql subject
     end
   end
 
   describe '#rotate_180!' do
     it "should rotate the pixels 180 degrees" do
       subject.rotate_180!
-      subject.should == ChunkyPNG::Canvas.new(2, 3, [6, 5, 4, 3, 2, 1])
+      expect(subject).to eql ChunkyPNG::Canvas.new(2, 3, [6, 5, 4, 3, 2, 1])
     end
 
     it "should return itself" do
-      subject.rotate_180!.should equal(subject)
+      expect(subject.rotate_180!).to equal(subject)
     end
   end
 end
@@ -317,7 +317,7 @@ describe ChunkyPNG::Canvas::Operations do
 
   describe "#trim" do
     it "should trim the border" do
-      subject.trim.should == ChunkyPNG::Canvas.new(2, 2, 255)
+      expect(subject.trim).to eql ChunkyPNG::Canvas.new(2, 2, 255)
     end
 
     it "should not return itself" do
@@ -329,18 +329,18 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should be the same after trimming an added border" do
-      subject.border(2).trim.should == subject
+      expect(subject.border(2).trim).to eql subject
     end
   end
 
   describe "#trim!" do
     it "should trim the border" do
       subject.trim!
-      subject.should == ChunkyPNG::Canvas.new(2, 2, 255)
+      expect(subject).to eql ChunkyPNG::Canvas.new(2, 2, 255)
     end
 
     it "should return itself" do
-      subject.trim!.should equal(subject)
+      expect(subject.trim!).to equal(subject)
     end
 
     it "should change the image dimensions" do
@@ -356,7 +356,7 @@ describe ChunkyPNG::Canvas::Operations do
 
   describe "#border" do
     it "should add the border" do
-      subject.border(2).should == reference_canvas('operations_border')
+      expect(subject.border(2)).to eql reference_canvas('operations_border')
     end
 
     it "should not return itself" do
@@ -364,23 +364,23 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should retain transparency" do
-      ChunkyPNG::Canvas.new(1, 1).border(1).pixels.should include(0)
+      expect(ChunkyPNG::Canvas.new(1, 1).border(1).pixels).to include(0)
     end
   end
 
   describe "#border!" do
     it "should add the border" do
       subject.border!(2)
-      subject.should == reference_canvas('operations_border')
+      expect(subject).to eql reference_canvas('operations_border')
     end
 
     it "should return itself" do
-      subject.border!(1).should equal(subject)
+      expect(subject.border!(1)).to equal(subject)
     end
 
     it "should retain transparency" do
       subject.border!(1)
-      subject.pixels.should include(0)
+      expect(subject.pixels).to include(0)
     end
 
     it "should change the image dimensions" do

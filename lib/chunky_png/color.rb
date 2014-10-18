@@ -582,16 +582,16 @@ module ChunkyPNG
     # @param [Integer] color The ChunkyPNG color to convert.
     # @param [Boolean] include_alpha Flag indicates whether a fourth element
     #    representing alpha channel should be included in the returned array.
-    # @return [Array<Fixnum>[0]] The hue of the color (0-360)
-    # @return [Array<Fixnum>[1]] The saturation of the color (0-1)
-    # @return [Array<Fixnum>[2]] The value of the color (0-1)
-    # @return [Array<Fixnum>[3]] Optional fourth element for alpha, included if
+    # @return [Array[0]] The hue of the color (0-360)
+    # @return [Array[1]] The saturation of the color (0-1)
+    # @return [Array[2]] The value of the color (0-1)
+    # @return [Array[3]] Optional fourth element for alpha, included if
     #    include_alpha=true (0-255)
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
     def to_hsv(color, include_alpha = false)
       hue, chroma, max, min = hue_and_chroma(color)
       value      = max
-      saturation = chroma.zero? ? 0 : chroma.fdiv(value)
+      saturation = chroma.zero? ? 0.0 : chroma.fdiv(value)
 
       include_alpha ? [hue, saturation, value, a(color)] :
                       [hue, saturation, value]
@@ -619,7 +619,7 @@ module ChunkyPNG
     def to_hsl(color, include_alpha = false)
       hue, chroma, max, min = hue_and_chroma(color)
       lightness  = 0.5 * (max + min)
-      saturation = chroma.zero? ? 0 : chroma.fdiv(1 - (2*lightness-1).abs)
+      saturation = chroma.zero? ? 0.0 : chroma.fdiv(1 - (2 * lightness - 1).abs)
 
       include_alpha ? [hue, saturation, lightness, a(color)] :
                       [hue, saturation, lightness]
@@ -650,7 +650,7 @@ module ChunkyPNG
                                      end
       hue = 60 * hue_prime
 
-      return hue, chroma, max, min
+      return hue.round, chroma, max, min
     end
     private :hue_and_chroma
 
