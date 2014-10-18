@@ -93,24 +93,24 @@ describe ChunkyPNG::Canvas do
 
   describe '#assert_xy!' do
     it "should not raise an exception if the coordinates are within bounds" do
-      subject.should_receive(:include_xy?).with(0, 0).and_return(true)
+      expect(subject).to receive(:include_xy?).with(0, 0).and_return(true)
       expect { subject.send(:assert_xy!, 0, 0) }.to_not raise_error
     end
 
     it "should raise an exception if the coordinates are out of bounds bounds" do
-      subject.should_receive(:include_xy?).with(0, -1).and_return(false)
+      expect(subject).to receive(:include_xy?).with(0, -1).and_return(false)
       expect { subject.send(:assert_xy!, 0, -1) }.to raise_error(ChunkyPNG::OutOfBounds)
     end
   end
 
   describe '#assert_x!' do
     it "should not raise an exception if the x-coordinate is within bounds" do
-      subject.should_receive(:include_x?).with(0).and_return(true)
+      expect(subject).to receive(:include_x?).with(0).and_return(true)
       expect { subject.send(:assert_x!, 0) }.to_not raise_error
     end
 
     it "should raise an exception if the x-coordinate is out of bounds bounds" do
-      subject.should_receive(:include_y?).with(-1).and_return(false)
+      expect(subject).to receive(:include_y?).with(-1).and_return(false)
       expect { subject.send(:assert_y!, -1) }.to raise_error(ChunkyPNG::OutOfBounds)
     end
   end
@@ -121,7 +121,7 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should assert the coordinates to be within bounds" do
-      subject.should_receive(:assert_xy!).with(0, 0)
+      expect(subject).to receive(:assert_xy!).with(0, 0)
       subject[0, 0]
     end
   end
@@ -132,8 +132,8 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should not assert nor check the coordinates" do
-      subject.should_not_receive(:assert_xy!)
-      subject.should_not_receive(:include_xy?)
+      expect(subject).to_not receive(:assert_xy!)
+      expect(subject).to_not receive(:include_xy?)
       subject.get_pixel(0, 0)
     end
   end
@@ -146,7 +146,7 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should assert the bounds of the image" do
-      subject.should_receive(:assert_xy!).with(0, 0)
+      expect(subject).to receive(:assert_xy!).with(0, 0)
       subject[0, 0] = ChunkyPNG::Color::BLACK
     end
   end
@@ -159,8 +159,8 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should not assert or check the bounds of the image" do
-      subject.should_not_receive(:assert_xy!)
-      subject.should_not_receive(:include_xy?)
+      expect(subject).to_not receive(:assert_xy!)
+      expect(subject).to_not receive(:include_xy?)
       subject.set_pixel(0, 0, ChunkyPNG::Color::BLACK)
     end
   end
@@ -173,8 +173,8 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should not assert, but only check the coordinates" do
-      subject.should_not_receive(:assert_xy!)
-      subject.should_receive(:include_xy?).with(0, 0)
+      expect(subject).to_not receive(:assert_xy!)
+      expect(subject).to receive(:include_xy?).with(0, 0)
       subject.set_pixel_if_within_bounds(0, 0, ChunkyPNG::Color::BLACK)
     end
 

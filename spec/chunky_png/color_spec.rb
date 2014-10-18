@@ -15,7 +15,7 @@ describe 'ChunyPNG.Color' do
   end
 
   it 'should interpret 1 argument as a color to parse' do
-    ChunkyPNG::Color.should_receive(:parse).with('0x0a649664')
+    expect(ChunkyPNG::Color).to receive(:parse).with('0x0a649664')
     ChunkyPNG::Color('0x0a649664')
   end
 end

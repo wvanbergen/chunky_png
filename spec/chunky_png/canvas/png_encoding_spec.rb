@@ -67,36 +67,36 @@ describe ChunkyPNG::Canvas::PNGEncoding do
 
     it "should save an image using the normal routine correctly" do
       canvas = reference_canvas('operations')
-      Zlib::Deflate.should_receive(:deflate).with(anything, Zlib::DEFAULT_COMPRESSION).and_return('')
+      expect(Zlib::Deflate).to receive(:deflate).with(anything, Zlib::DEFAULT_COMPRESSION).and_return('')
       canvas.to_blob
     end
 
     it "should save an image using the :fast_rgba routine correctly" do
       canvas = reference_canvas('operations')
-      canvas.should_not_receive(:encode_png_str_scanline_none)
-      canvas.should_not_receive(:encode_png_str_scanline_sub)
-      canvas.should_not_receive(:encode_png_str_scanline_up)
-      canvas.should_not_receive(:encode_png_str_scanline_average)
-      canvas.should_not_receive(:encode_png_str_scanline_paeth)
-      Zlib::Deflate.should_receive(:deflate).with(anything, Zlib::BEST_SPEED).and_return('')
+      expect(canvas).to_not receive(:encode_png_str_scanline_none)
+      expect(canvas).to_not receive(:encode_png_str_scanline_sub)
+      expect(canvas).to_not receive(:encode_png_str_scanline_up)
+      expect(canvas).to_not receive(:encode_png_str_scanline_average)
+      expect(canvas).to_not receive(:encode_png_str_scanline_paeth)
+      expect(Zlib::Deflate).to receive(:deflate).with(anything, Zlib::BEST_SPEED).and_return('')
       canvas.to_blob(:fast_rgba)
     end
 
     it "should save an image using the :good_compression routine correctly" do
       canvas = reference_canvas('operations')
-      canvas.should_not_receive(:encode_png_str_scanline_none)
-      canvas.should_not_receive(:encode_png_str_scanline_sub)
-      canvas.should_not_receive(:encode_png_str_scanline_up)
-      canvas.should_not_receive(:encode_png_str_scanline_average)
-      canvas.should_not_receive(:encode_png_str_scanline_paeth)
-      Zlib::Deflate.should_receive(:deflate).with(anything, Zlib::BEST_COMPRESSION).and_return('')
+      expect(canvas).to_not receive(:encode_png_str_scanline_none)
+      expect(canvas).to_not receive(:encode_png_str_scanline_sub)
+      expect(canvas).to_not receive(:encode_png_str_scanline_up)
+      expect(canvas).to_not receive(:encode_png_str_scanline_average)
+      expect(canvas).to_not receive(:encode_png_str_scanline_paeth)
+      expect(Zlib::Deflate).to receive(:deflate).with(anything, Zlib::BEST_COMPRESSION).and_return('')
       canvas.to_blob(:good_compression)
     end
 
     it "should save an image using the :best_compression routine correctly" do
       canvas = reference_canvas('operations')
-      canvas.should_receive(:encode_png_str_scanline_paeth).exactly(canvas.height).times
-      Zlib::Deflate.should_receive(:deflate).with(anything, Zlib::BEST_COMPRESSION).and_return('')
+      expect(canvas).to receive(:encode_png_str_scanline_paeth).exactly(canvas.height).times
+      expect(Zlib::Deflate).to receive(:deflate).with(anything, Zlib::BEST_COMPRESSION).and_return('')
       canvas.to_blob(:best_compression)
     end
 
