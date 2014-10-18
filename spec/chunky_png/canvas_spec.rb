@@ -140,9 +140,8 @@ describe ChunkyPNG::Canvas do
 
   describe '#[]=' do
     it "should change the pixel's color value" do
-      expect { subject[0, 0] = ChunkyPNG::Color::BLACK }.to change { subject[0, 0] }
-        .from(ChunkyPNG::Color::WHITE)
-        .to(ChunkyPNG::Color::BLACK)
+      expect { subject[0, 0] = ChunkyPNG::Color::BLACK }.to change { subject[0, 0] }.
+        from(ChunkyPNG::Color::WHITE).to(ChunkyPNG::Color::BLACK)
     end
 
     it "should assert the bounds of the image" do
@@ -153,9 +152,8 @@ describe ChunkyPNG::Canvas do
 
   describe 'set_pixel' do
     it "should change the pixel's color value" do
-      expect { subject.set_pixel(0, 0, ChunkyPNG::Color::BLACK) }.to change { subject[0, 0] }
-        .from(ChunkyPNG::Color::WHITE)
-        .to(ChunkyPNG::Color::BLACK)
+      expect { subject.set_pixel(0, 0, ChunkyPNG::Color::BLACK) }.to change { subject[0, 0] }.
+          from(ChunkyPNG::Color::WHITE).to(ChunkyPNG::Color::BLACK)
     end
 
     it "should not assert or check the bounds of the image" do
@@ -167,9 +165,8 @@ describe ChunkyPNG::Canvas do
 
   describe '#set_pixel_if_within_bounds' do
     it "should change the pixel's color value" do
-      expect { subject.set_pixel_if_within_bounds(0, 0, ChunkyPNG::Color::BLACK) }.to change { subject[0, 0] }
-        .from(ChunkyPNG::Color::WHITE)
-        .to(ChunkyPNG::Color::BLACK)
+      expect { subject.set_pixel_if_within_bounds(0, 0, ChunkyPNG::Color::BLACK) }.to change { subject[0, 0] }.
+          from(ChunkyPNG::Color::WHITE).to(ChunkyPNG::Color::BLACK)
     end
 
     it "should not assert, but only check the coordinates" do
@@ -216,15 +213,13 @@ describe ChunkyPNG::Canvas do
 
   describe '#replace_canvas' do
     it "should change the dimension of the canvas" do
-      expect { subject.send(:replace_canvas!, 2, 2, [1,2,3,4]) }.to change { subject.dimension }
-        .from(ChunkyPNG::Dimension('1x1'))
-        .to(ChunkyPNG::Dimension('2x2'))
+      expect { subject.send(:replace_canvas!, 2, 2, [1,2,3,4]) }.to change { subject.dimension }.
+          from(ChunkyPNG::Dimension('1x1')).to(ChunkyPNG::Dimension('2x2'))
     end
 
     it "should change the pixel array" do
-      expect { subject.send(:replace_canvas!, 2, 2, [1,2,3,4]) }.to change { subject.pixels }
-        .from([ChunkyPNG::Color('white')])
-        .to([1,2,3,4])
+      expect { subject.send(:replace_canvas!, 2, 2, [1,2,3,4]) }.to change { subject.pixels }.
+          from([ChunkyPNG::Color('white')]).to([1,2,3,4])
     end
 
     it "should return itself" do

@@ -54,9 +54,8 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should have a new width and height" do
-      expect { subject.crop!(10, 5, 4, 8) }.to change { subject.dimension }
-        .from(ChunkyPNG::Dimension('16x16'))
-        .to(ChunkyPNG::Dimension('4x8'))
+      expect { subject.crop!(10, 5, 4, 8) }.to change { subject.dimension }.
+          from(ChunkyPNG::Dimension('16x16')).to(ChunkyPNG::Dimension('4x8'))
     end
 
     it "should raise an exception when the cropped image falls outside the oiginal image" do
@@ -239,9 +238,8 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should change the image dimensions" do
-      expect { subject.rotate_left! }.to change { subject.dimension }
-        .from(ChunkyPNG::Dimension('2x3'))
-        .to(ChunkyPNG::Dimension('3x2'))
+      expect { subject.rotate_left! }.to change { subject.dimension }.
+          from(ChunkyPNG::Dimension('2x3')).to(ChunkyPNG::Dimension('3x2'))
     end
   end
 
@@ -282,9 +280,8 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should change the image dimensions" do
-      expect { subject.rotate_right! }.to change { subject.dimension }
-        .from(ChunkyPNG::Dimension('2x3'))
-        .to(ChunkyPNG::Dimension('3x2'))
+      expect { subject.rotate_right! }.to change { subject.dimension }.
+          from(ChunkyPNG::Dimension('2x3')).to(ChunkyPNG::Dimension('3x2'))
     end
   end
 
@@ -347,9 +344,8 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should change the image dimensions" do
-      expect { subject.trim! }.to change { subject.dimension }
-        .from(ChunkyPNG::Dimension('4x4'))
-        .to(ChunkyPNG::Dimension('2x2'))
+      expect { subject.trim! }.to change { subject.dimension }.
+          from(ChunkyPNG::Dimension('4x4')).to(ChunkyPNG::Dimension('2x2'))
     end
   end
 end
@@ -388,9 +384,8 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should change the image dimensions" do
-      expect { subject.border!(1) }.to change { subject.dimension }
-        .from(ChunkyPNG::Dimension('4x4'))
-        .to(ChunkyPNG::Dimension('6x6'))
+      expect { subject.border!(1) }.to change { subject.dimension }.
+          from(ChunkyPNG::Dimension('4x4')).to(ChunkyPNG::Dimension('6x6'))
     end
   end
 end
