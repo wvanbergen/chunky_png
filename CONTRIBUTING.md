@@ -34,6 +34,7 @@ Title and description:
 
 Code:
 
+- Don't break backwards compatibility.
 - Follow code conventions. They are not defined, so look at the code around you.
 - Add Yardoc comments as documentation.
 
