@@ -14,7 +14,7 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should not adjust the current image" do
-      lambda { subject.grayscale }.should_not change(subject, :pixels)
+      expect { subject.grayscale }.to_not change { subject.pixels }
     end
   end
 
@@ -39,11 +39,11 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should not adjust the current image" do
-      lambda { subject.crop(10, 5, 4, 8) }.should_not change(subject, :pixels)
+      expect { subject.crop(10, 5, 4, 8) }.to_not change { subject.pixels }
     end
 
     it "should raise an exception when the cropped image falls outside the oiginal image" do
-      lambda { subject.crop(16, 16, 2, 2) }.should raise_error(ChunkyPNG::OutOfBounds)
+      expect { subject.crop(16, 16, 2, 2) }.to raise_error(ChunkyPNG::OutOfBounds)
     end
   end
 
@@ -54,13 +54,13 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should have a new width and height" do
-      lambda { subject.crop!(10, 5, 4, 8) }.should change(subject, :dimension).
-          from(ChunkyPNG::Dimension('16x16')).
-          to(ChunkyPNG::Dimension('4x8'))
+      expect { subject.crop!(10, 5, 4, 8) }.to change { subject.dimension }
+        .from(ChunkyPNG::Dimension('16x16'))
+        .to(ChunkyPNG::Dimension('4x8'))
     end
 
     it "should raise an exception when the cropped image falls outside the oiginal image" do
-      lambda { subject.crop!(16, 16, 2, 2) }.should raise_error(ChunkyPNG::OutOfBounds)
+      expect { subject.crop!(16, 16, 2, 2) }.to raise_error(ChunkyPNG::OutOfBounds)
     end
 
     it "should return itself" do
@@ -84,7 +84,7 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should raise an exception when the pixels to compose fall outside the image" do
-      lambda { subject.compose(ChunkyPNG::Canvas.new(1,1), 16, 16) }.should raise_error(ChunkyPNG::OutOfBounds)
+      expect { subject.compose(ChunkyPNG::Canvas.new(1,1), 16, 16) }.to raise_error(ChunkyPNG::OutOfBounds)
     end
   end
 
@@ -107,7 +107,7 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should raise an exception when the pixels to compose fall outside the image" do
-      lambda { subject.compose!(ChunkyPNG::Canvas.new(1,1), 16, 16) }.should raise_error(ChunkyPNG::OutOfBounds)
+      expect { subject.compose!(ChunkyPNG::Canvas.new(1,1), 16, 16) }.to raise_error(ChunkyPNG::OutOfBounds)
     end
   end
 
@@ -127,7 +127,7 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should raise an exception when the pixels to replace fall outside the image" do
-      lambda { subject.replace(ChunkyPNG::Canvas.new(1,1), 16, 16) }.should raise_error(ChunkyPNG::OutOfBounds)
+      expect { subject.replace(ChunkyPNG::Canvas.new(1,1), 16, 16) }.to raise_error(ChunkyPNG::OutOfBounds)
     end
   end
 
@@ -143,7 +143,7 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should raise an exception when the pixels to replace fall outside the image" do
-      lambda { subject.replace!(ChunkyPNG::Canvas.new(1,1), 16, 16) }.should raise_error(ChunkyPNG::OutOfBounds)
+      expect { subject.replace!(ChunkyPNG::Canvas.new(1,1), 16, 16) }.to raise_error(ChunkyPNG::OutOfBounds)
     end
   end
 end
@@ -212,7 +212,7 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should not change the image dimensions" do
-      lambda { subject.rotate_left }.should_not change(subject, :dimension)
+      expect { subject.rotate_left }.to_not change { subject.dimension }
     end
 
     it "it should rotate 180 degrees when applied twice" do
@@ -239,7 +239,9 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should change the image dimensions" do
-      lambda { subject.rotate_left! }.should change(subject, :dimension).from(ChunkyPNG::Dimension('2x3')).to(ChunkyPNG::Dimension('3x2'))
+      expect { subject.rotate_left! }.to change { subject.dimension }
+        .from(ChunkyPNG::Dimension('2x3'))
+        .to(ChunkyPNG::Dimension('3x2'))
     end
   end
 
@@ -253,7 +255,7 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should not change the image dimensions" do
-      lambda { subject.rotate_right }.should_not change(subject, :dimension)
+      expect { subject.rotate_right }.to_not change { subject.dimension }
     end
 
     it "it should rotate 180 degrees when applied twice" do
@@ -280,7 +282,9 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should change the image dimensions" do
-      lambda { subject.rotate_right! }.should change(subject, :dimension).from(ChunkyPNG::Dimension('2x3')).to(ChunkyPNG::Dimension('3x2'))
+      expect { subject.rotate_right! }.to change { subject.dimension }
+        .from(ChunkyPNG::Dimension('2x3'))
+        .to(ChunkyPNG::Dimension('3x2'))
     end
   end
 
@@ -324,7 +328,7 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should be able to fail to trim a specified color" do
-      lambda { subject.trim(ChunkyPNG::Color::BLACK) }.should_not change(subject, :pixels)
+      expect { subject.trim(ChunkyPNG::Color::BLACK) }.to_not change { subject.pixels }
     end
 
     it "should be the same after trimming an added border" do
@@ -343,7 +347,9 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should change the image dimensions" do
-      lambda { subject.trim! }.should change(subject, :dimension).from(ChunkyPNG::Dimension('4x4')).to(ChunkyPNG::Dimension('2x2'))
+      expect { subject.trim! }.to change { subject.dimension }
+        .from(ChunkyPNG::Dimension('4x4'))
+        .to(ChunkyPNG::Dimension('2x2'))
     end
   end
 end
@@ -382,7 +388,9 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should change the image dimensions" do
-      lambda { subject.border!(1) }.should change(subject, :dimension).from(ChunkyPNG::Dimension('4x4')).to(ChunkyPNG::Dimension('6x6'))
+      expect { subject.border!(1) }.to change { subject.dimension }
+        .from(ChunkyPNG::Dimension('4x4'))
+        .to(ChunkyPNG::Dimension('6x6'))
     end
   end
 end

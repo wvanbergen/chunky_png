@@ -117,7 +117,7 @@ describe ChunkyPNG::Color do
       from_hsv(0, 0, 0).should        == @black
       from_hsv(100, 1, 0).should      == @black
       from_hsv(100, 0.5, 0).should    == @black
-      
+
       # At brightness 1 and sat 0, should be @white regardless of hue
       from_hsv(0, 0, 1).should        == @white
       from_hsv(100, 0, 1).should      == @white
@@ -147,17 +147,17 @@ describe ChunkyPNG::Color do
       from_hsl(0, 0, 0).should         == @black
       from_hsl(100, 0, 0).should       == @black
       from_hsl(54, 0.5, 0).should      == @black
-      
+
       # At 1 lightness, should always be white
       from_hsl(0, 0, 1).should         == @white
       from_hsl(0, 0.5, 1).should       == @white
       from_hsl(110, 0, 1).should       == @white
-      
+
       # 'Pure' colors should work
       from_hsl(0, 1, 0.5).should       == @red
       from_hsl(120, 1, 0.5).should     == @green
       from_hsl(240, 1, 0.5).should     == @blue
-      
+
       # Random colors
       from_hsl(87.27, 0.5, 0.5686)     == 0x96c85aff
       from_hsl(271.83, 0.5399, 0.4176) == 0x6e31a4ff
@@ -197,17 +197,17 @@ describe ChunkyPNG::Color do
     end
 
     it 'should raise for an unkown color name' do
-      lambda { html_color(:nonsense) }.should raise_error(ArgumentError)
+      expect { html_color(:nonsense) }.to raise_error(ArgumentError)
     end
   end
 
   describe '#opaque?' do
     it 'should correctly check for opaqueness' do
-      opaque?(@white).should be_true
-      opaque?(@black).should be_true
-      opaque?(@opaque).should be_true
-      opaque?(@non_opaque).should be_false
-      opaque?(@fully_transparent).should be_false
+      opaque?(@white).should == true
+      opaque?(@black).should == true
+      opaque?(@opaque).should == true
+      opaque?(@non_opaque).should == false
+      opaque?(@fully_transparent).should == false
     end
   end
 
