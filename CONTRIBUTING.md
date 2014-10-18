@@ -18,6 +18,7 @@ but are not sure if it will be in scope, feel free to reach out to me!
 
 ## Reporting bugs
 
+- First, see if somebody else has reported the problem already.
 - Try to include as much relevant information as possible, so I can recreate the problem.
 - If possible, include the PNG image that is causing the issue.
 - If possible, include a code snippet that exposes the problem.
@@ -29,6 +30,7 @@ Title and description:
 - If you are not yet done, please include `[WIP]` in the title of your pull request.
 - Explain why your changes are relevant in the description of your pull request.
 - If your changes improve performance, include benchmark methodology and results in the PR.
+  See BENCHMARKING.md for more information.
 
 Code:
 
@@ -37,7 +39,7 @@ Code:
 
 Specs:
 
-- Include specs that test your changes.
+- Always include specs that test your changes, to prevent me from breaking your code later.
 - If your specs use PNG files, try to keep them as small as possible to keep the test suite snappy.
 - Make sure that the specs are passing for all Rubies on [Travis CI](https://travis-ci.org/wvanbergen/chunky_png/).
 
