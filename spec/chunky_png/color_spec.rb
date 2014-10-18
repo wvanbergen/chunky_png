@@ -29,6 +29,9 @@ describe ChunkyPNG::Color do
     @opaque            = 0x0a6496ff
     @non_opaque        = 0x0a649664
     @fully_transparent = 0x0a649600
+    @red               = 0xff0000ff
+    @green             = 0x00ff00ff
+    @blue              = 0x0000ffff
   end
 
   describe '#parse' do
@@ -105,6 +108,69 @@ describe ChunkyPNG::Color do
       from_hex('#0a6496', 0x64).should  == @non_opaque
       from_hex('0xabc', 0xdd).should    == 0xaabbccdd
       from_hex('#abc', 0xdd).should     == 0xaabbccdd
+    end
+  end
+
+  describe '#from_hsv' do
+    it 'should load colors correctly from an HSV triple' do
+      # At 0 brightness, should be @black independent of hue or sat
+      from_hsv(0, 0, 0).should        == @black
+      from_hsv(100, 1, 0).should      == @black
+      from_hsv(100, 0.5, 0).should    == @black
+      
+      # At brightness 1 and sat 0, should be @white regardless of hue
+      from_hsv(0, 0, 1).should        == @white
+      from_hsv(100, 0, 1).should      == @white
+
+      # Converting the "pure" colors should work
+      from_hsv(0, 1, 1).should        == @red
+      from_hsv(120, 1, 1).should      == @green
+      from_hsv(240, 1, 1).should      == @blue
+
+      # And, finally, one random color
+      from_hsv(120, 0.5, 0.80).should == 0x66cc66ff
+    end
+
+    it 'should optionally accept a fourth param for alpha' do
+      from_hsv(0, 1, 1, 255).should   == @red
+      from_hsv(120, 1, 1, 255).should == @green
+      from_hsv(240, 1, 1, 255).should == @blue
+      from_hsv(0, 1, 1, 0).should     == 0xff000000 # transparent red
+      from_hsv(120, 1, 1, 0).should   == 0x00ff0000 # transparent green
+      from_hsv(240, 1, 1, 0).should   == 0x0000ff00 # transparent blue
+    end
+  end
+
+  describe '#from_hsl' do
+    it 'should load colors correctly from an HSL triple' do
+      # At 0 lightness, should always be black
+      from_hsl(0, 0, 0).should         == @black
+      from_hsl(100, 0, 0).should       == @black
+      from_hsl(54, 0.5, 0).should      == @black
+      
+      # At 1 lightness, should always be white
+      from_hsl(0, 0, 1).should         == @white
+      from_hsl(0, 0.5, 1).should       == @white
+      from_hsl(110, 0, 1).should       == @white
+      
+      # 'Pure' colors should work
+      from_hsl(0, 1, 0.5).should       == @red
+      from_hsl(120, 1, 0.5).should     == @green
+      from_hsl(240, 1, 0.5).should     == @blue
+      
+      # Random colors
+      from_hsl(87.27, 0.5, 0.5686)     == 0x96c85aff
+      from_hsl(271.83, 0.5399, 0.4176) == 0x6e31a4ff
+      from_hsl(63.6, 0.5984, 0.4882)   == 0xbec732ff
+    end
+
+    it 'should optionally accept a fourth param for alpha' do
+      from_hsl(0, 1, 0.5, 255).should   == @red
+      from_hsl(120, 1, 0.5, 255).should == @green
+      from_hsl(240, 1, 0.5, 255).should == @blue
+      from_hsl(0, 1, 0.5, 0).should     == 0xff000000 # transparent red
+      from_hsl(120, 1, 0.5, 0).should   == 0x00ff0000 # transparent green
+      from_hsl(240, 1, 0.5, 0).should   == 0x0000ff00 # transparent blue
     end
   end
 
@@ -190,6 +256,48 @@ describe ChunkyPNG::Color do
       to_hex(@opaque, false).should == '#0a6496'
       to_hex(@non_opaque, false).should == '#0a6496'
       to_hex(@fully_transparent, false).should == '#0a6496'
+    end
+  end
+
+  describe '#to_hsv' do
+    it 'should return a [hue, saturation, value] array' do
+      to_hsv(@white).should     == [0, 0, 1]
+      to_hsv(@black).should     == [0, 0, 0]
+      to_hsv(@red).should       == [0, 1, 1]
+      to_hsv(@blue).should      == [240, 1, 1]
+      to_hsv(@green).should     == [120, 1, 1]
+      to_hsv(0x805440ff)[0].should be_within(1).of(19)
+      to_hsv(0x805440ff)[1].should be_within(0.01).of(0.5)
+      to_hsv(0x805440ff)[2].should be_within(0.01).of(0.5)
+    end
+
+    it 'should optionally include the alpha channel' do
+      to_hsv(@white, true).should                == [0, 0, 1, 255]
+      to_hsv(@red, true).should                  == [0, 1, 1, 255]
+      to_hsv(@blue, true).should                 == [240, 1, 1, 255]
+      to_hsv(@green, true).should                == [120, 1, 1, 255]
+      to_hsv(@opaque, true)[3].should            == 255
+      to_hsv(@fully_transparent, true)[3].should == 0
+    end
+  end
+
+  describe '#to_hsl' do
+    it 'should return a [hue, saturation, lightness] array' do
+      to_hsl(@white).should == [0, 0, 1]
+      to_hsl(@black).should == [0, 0, 0]
+      to_hsl(@red).should   == [0, 1, 0.5]
+      to_hsl(@blue).should  == [240, 1, 0.5]
+      to_hsl(@green).should == [120, 1, 0.5]
+    end
+
+    it 'should optionally include the alpha channel in the returned array' do
+      to_hsl(@white, true).should          == [0, 0, 1, 255]
+      to_hsl(@black, true).should          == [0, 0, 0, 255]
+      to_hsl(@red, true).should            == [0, 1, 0.5, 255]
+      to_hsl(@blue, true).should           == [240, 1, 0.5, 255]
+      to_hsl(@green, true).should          == [120, 1, 0.5, 255]
+      to_hsl(@opaque, true)[3].should      == 255
+      to_hsl(@fully_transparent, true)[3].should == 0
     end
   end
 
