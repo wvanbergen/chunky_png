@@ -177,7 +177,7 @@ module ChunkyPNG
 
         new_pixels = []
         for cy in 0...crop_height do
-          new_pixels += pixels.slice((cy + y) * width + x, crop_width)
+          new_pixels.concat pixels.slice((cy + y) * width + x, crop_width)
         end
         replace_canvas!(crop_width, crop_height, new_pixels)
       end
