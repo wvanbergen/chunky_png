@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rspec', '~> 3')
 
   s.rdoc_options << '--title' << s.name << '--main' << 'README.rdoc' << '--line-numbers' << '--inline-source'
-  s.extra_rdoc_files = ['README.rdoc']
+  s.extra_rdoc_files = ['README.rdoc', 'BENCHMARKING.rdoc', 'CONTRIBUTING.rdoc']
 
   s.files = `git ls-files`.split($/)
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
