@@ -7,21 +7,58 @@ The file documents the changes to this library over the different versions.
 
 === Unreleased changes
 
+- Improved documentation using RDoc, so it is included on http://www.rubydoc.info/gems/chunky_png
+- Update chunkypng.com website; migrate some stuff from the wiki.
+
 === 1.3.3 - 2014-10-24
+
+- Improve performance of <tt>Canvas#crop</tt> and <tt>Canvas#crop!</tt> by doing less memory allocations.
+- Update to RSPEC 3
+- Add CONTRIBUTING.rdoc file.
 
 === 1.3.2 - 2014-10-18
 
+- Add HSV/HSL color conversions: <tt>Color.from_hsl</tt>, <tt>Color.to_hsl</tt>
+- Allow empty IDAT chunks to better conform to the PNG standard.
+- Small bugfix in image resampling.
+- Documentation and code readability improvements.
+
 === 1.3.1 - 2014-04-28
+
+- Improve performance of <tt>Palette.from_canvas</tt>.
+- Add <tt>Color.euclidean_distance_rgba</tt> to compare colors.
+- Bugix in <tt>Canvas.from_bgr_stream</tt>.
+- Documentation and code readibility improvements.
+- README updates, include mention of screencast.
 
 === 1.3.0 - 2014-02-10
 
+- Add support for parsing color that use three-hex notation. (e.g. <tt>#aaa</tt> instead of <tt>#aaaaaa</tt>)
+- Add <tt>Canvas#border!</tt> and <tt>Canvas#border</tt> to draw a border around a canvas.
+- Add <tt>Canvas#trim!</tt> and <tt>Canvas#trim</tt> to trim a border from a canvas.
+
 === 1.2.9 - 2013-10-17
+
+- Set license in chunky_png.gemspec for better discoverability.
+- Improve error messages for <tt>Canvas#crop</tt>.
+- Use better gem release management tasks from bundler.
 
 === 1.2.8 - 2013-03-30
 
+- Ruby 2.0 compatibility.
+- Fixed some encoding issues on JRuby.
+- Update Travis CI configuration to test on more Ruby versions.
+
 === 1.2.7 - 2013-01-07
 
+- Small PNG decoding performnace improvements by using bitwise math.
+
 === 1.2.6 - 2012-08-07
+
+- Add decompression bomb security warning to README.
+- Fix RMagick loading issue on case sensitive filesystems.
+- Some compatibility fixes for the upcoming Ruby 2.0.
+- Allow more data-url notations for <tt>ChunkyPNG::Canvas.from_data_url</tt>.
 
 === 1.2.5 - 2011-09-23
 
