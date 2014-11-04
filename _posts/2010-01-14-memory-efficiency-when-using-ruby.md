@@ -86,9 +86,9 @@ As you can see, some simply changes in the representation can really make a diff
 
 Because we are now using integers to represent a pixel, this can cause problems when the math requires you to use floating point numbers. For example, the formula for alpha composition of two pixels is as follows:
 
-![Alpha compositing formula]({{site.url}}/images/alpha-formula.png)
+\\[ C_o = C_a \alpha_a + C_b \alpha_b (1 - \alpha_a) \\]
 
-in which Ca is the color component of the foreground pixel, αa the alpha channel of the foreground pixel, Cb and αb the same values for the background pixel, all of which should be values between 0 and 1.
+in which \\(C_a\\) is the color component of the foreground pixel, \\(\alpha_a\\) the alpha channel of the foreground pixel, \\(C_b\\) and \\(\alpha_b\\) the same values for the background pixel, all of which should be values between 0 and 1.
 
 A naive implementation could convert the integer numbers to their floating point equivalents:
 
