@@ -24,8 +24,8 @@ Issue tracker:: http://github.com/wvanbergen/chunky_png/issues
   optimized saving routine.
 * Interoperability with RMagick if you really have to.
 
-Also, have a look at OilyPNG at http://github.com/wvanbergen/oily_png. OilyPNG is a 
-mixin module that implements some of the ChunkyPNG algorithms in C, which 
+Also, have a look at OilyPNG at http://github.com/wvanbergen/oily_png. OilyPNG is a
+mixin module that implements some of the ChunkyPNG algorithms in C, which
 provides a massive speed boost to encoding and decoding.
 
 == Usage
@@ -43,31 +43,31 @@ provides a massive speed boost to encoding and decoding.
   badge  = ChunkyPNG::Image.from_file('no_ie_badge.png')
   avatar.compose!(badge, 10, 10)
   avatar.save('composited.png', :fast_rgba) # Force the fast saving routine.
-  
+
   # Accessing metadata
   image = ChunkyPNG::Image.from_file('with_metadata.png')
   puts image.metadata['Title']
   image.metadata['Author'] = 'Willem van Bergen'
   image.save('with_metadata.png') # Overwrite file
-  
+
   # Low level access to PNG chunks
   png_stream = ChunkyPNG::Datastream.from_file('filename.png')
   png_stream.each_chunk { |chunk| p chunk.type }
 
-Also check out the following screencast by John Davison, which illustrates 
-basic usage of the library: http://devcasts.co/ruby-chunky_png-a-great-gem-for-on-the-fly-png-manipulation.
+Also check out the screencast on the ChunkyPNG homepage by John Davison,
+which illustrates basic usage of the library: http://chunkypng.com/
 
-For more information, see the project wiki on http://github.com/wvanbergen/chunky_png/wiki
-or the RDOC documentation on http://rdoc.info/gems/chunky_png/frames
+For more information, see the project wiki on https://github.com/wvanbergen/chunky_png/wiki
+or the RDOC documentation on http://www.rubydoc.info/gems/chunky_png/frames
 
 == Security warning
 
-ChunkyPNG is vulnerable to decompression bombs, which means that ChunkyPNG is vulnerable to 
-DOS attacks by running out of memory when loading a specifically crafted PNG file. Because 
-of the pure-Ruby nature of the library it is very hard to fix this problem in the library 
+ChunkyPNG is vulnerable to decompression bombs, which means that ChunkyPNG is vulnerable to
+DOS attacks by running out of memory when loading a specifically crafted PNG file. Because
+of the pure-Ruby nature of the library it is very hard to fix this problem in the library
 itself.
 
-In order to safely deal with untrusted images, you should make sure to do the image 
+In order to safely deal with untrusted images, you should make sure to do the image
 processing using ChunkyPNG in a separate process, e.g. by using fork or a background
 processing library.
 
@@ -80,5 +80,5 @@ remarks. Patches are greatly appreciated!
 Please check out the changelog on https://github.com/wvanbergen/chunky_png/wiki/Changelog
 to see what changed in all versions.
 
-P.S.: The name of this library is intentionally similar to Chunky Bacon and 
+P.S.: The name of this library is intentionally similar to Chunky Bacon and
 Chunky GIF. Use Google if you want to know _why. :-)
