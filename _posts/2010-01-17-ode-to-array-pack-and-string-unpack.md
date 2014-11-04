@@ -4,7 +4,7 @@ author: Willem van Bergen
 title: Ode to Array#pack and String#unpack
 ---
 
-Remember my last post, where I representing a pixel with a Fixnum, storing the R, G, B and A value in its 4 bytes of memory? Well, I have been working some more on my PNG library and I am now trying loading and saving an image.
+Remember [my last post]({% post_url 2010-01-14-memory-efficiency-when-using-ruby %}), where I representing a pixel with a Fixnum, storing the R, G, B and A value in its 4 bytes of memory? Well, I have been working some more on my PNG library and I am now trying loading and saving an image.
 
 Using the PNG specification, building a PNG encoder/decoder isn’t that hard, but the required algorithmic calculations make sure that performance in Ruby is less than stellar. I have rewritten all calculations to only use fast integer math (plus, minus, multiply and bitwise operators), but simply the amount of code that is getting executed is slowing Ruby down. What more can I do to improve the performance?
 
