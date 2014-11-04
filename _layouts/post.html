@@ -7,7 +7,8 @@
     <meta name="description" content="{{ site.title }} :: {{ site.description }}" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="{{site.baseurl}}/stylesheets/stylesheet.css">
-    <title>ChunkyPNG</title>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <title>{{page.title}}</title>
   </head>
 
   <body>
@@ -17,10 +18,14 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-      {{ content }}
+        <h1> {{ page.title }} </h1>
+        <p id="post-subheader"> Written by <span class="author">{{ page.author }}</span> on {{ page.date | date_to_long_string }} </p>
+
+        {{ content }}
       </section>
     </div>
 
     {% include footer.html %}
+
   </body>
 </html>

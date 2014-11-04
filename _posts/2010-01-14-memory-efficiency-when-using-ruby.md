@@ -1,9 +1,8 @@
 ---
-layout: default
+layout: post
+author: Willem van Bergen
 title: Memory efficiency when using Ruby
 ---
-
-# {{ page.title }}
 
 I have been spending some time creating a pure Ruby PNG library. For this library, I need to have some representation of the image, which is composed of RGB pixels, supporting an alpha channel. Because images can be composed of a lot of pixels, I want the implementation to be as memory efficient as possible. I also would like decent performance.
 

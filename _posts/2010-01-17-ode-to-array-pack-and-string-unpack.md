@@ -1,9 +1,8 @@
 ---
-layout: default
+layout: post
+author: Willem van Bergen
 title: Ode to Array#pack and String#unpack
 ---
-
-# {{ page.title }}
 
 Remember my last post, where I representing a pixel with a Fixnum, storing the R, G, B and A value in its 4 bytes of memory? Well, I have been working some more on my PNG library and I am now trying loading and saving an image.
 

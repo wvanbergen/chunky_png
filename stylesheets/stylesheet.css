@@ -366,7 +366,20 @@ Full-Width Styles
   background: #212121;
 }
 
+#project_title a {
+  color: inherit;
+  text-decoration: none;
+}
 
+#post-subheader {
+  color: #aaa;
+  font-size: 90%;
+  margin-top: -10px;
+}
+
+#post-subheader .author {
+  font-weight: bold;
+}
 
 /*******************************************************************************
 Small Device Styles
