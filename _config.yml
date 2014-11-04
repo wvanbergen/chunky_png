@@ -1,0 +1,11 @@
+# Site settings
+title: ChunkyPNG
+email: willem@railsdoctors.com
+description: >
+  Read/write access to PNG images in pure Ruby.
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "http://www.chunkypng.com" # the base hostname & protocol for your site
+
+# Build settings
+markdown: kramdown
+highlighter: pygments
