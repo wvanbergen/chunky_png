@@ -4,7 +4,7 @@ author: Willem van Bergen
 title: Memory efficiency when using Ruby
 ---
 
-I have been spending some time creating a pure Ruby PNG library. For this library, I need to have some representation of the image, which is composed of RGB pixels, supporting an alpha channel. Because images can be composed of a lot of pixels, I want the implementation to be as memory efficient as possible. I also would like decent performance.
+I have been spending some time creating [a pure Ruby PNG library](https://github.com/wvanbergen/chunky_png). For this library, I need to have some representation of the image, which is composed of RGB pixels, supporting an alpha channel. Because images can be composed of a lot of pixels, I want the implementation to be as memory efficient as possible. I also would like decent performance.
 
 A very naive Ruby implementation for an image represents the red, green, blue and alpha channel using a floating point number between 0.0 and 1.0, and might look something like this:
 
@@ -83,7 +83,7 @@ As you can see, some simply changes in the representation can really make a diff
 
 ## Integer math calculations
 
-Because we are now using integers to represent a pixel, this can cause problems when the math requires you to use floating point numbers. For example, the formula for alpha composition of two pixels is as follows:
+Because we are now using integers to represent a pixel, this can cause problems when the math requires you to use floating point numbers. For example, the formula for [alpha composition](http://en.wikipedia.org/wiki/Alpha_compositing) of two pixels is as follows:
 
 \\[ C_o = C_a \alpha_a + C_b \alpha_b (1 - \alpha_a) \\]
 

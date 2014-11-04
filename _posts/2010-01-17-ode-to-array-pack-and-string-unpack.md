@@ -4,9 +4,9 @@ author: Willem van Bergen
 title: Ode to Array#pack and String#unpack
 ---
 
-Remember [my last post]({% post_url 2010-01-14-memory-efficiency-when-using-ruby %}), where I representing a pixel with a Fixnum, storing the R, G, B and A value in its 4 bytes of memory? Well, I have been working some more on my PNG library and I am now trying loading and saving an image.
+Remember [my last post]({% post_url 2010-01-14-memory-efficiency-when-using-ruby %}), where I representing a pixel with a Fixnum, storing the R, G, B and A value in its 4 bytes of memory? Well, I have been working some more on [my PNG library](https://github.com/wvanbergen/chunky_png) and I am now trying loading and saving an image.
 
-Using the PNG specification, building a PNG encoder/decoder isn’t that hard, but the required algorithmic calculations make sure that performance in Ruby is less than stellar. I have rewritten all calculations to only use fast integer math (plus, minus, multiply and bitwise operators), but simply the amount of code that is getting executed is slowing Ruby down. What more can I do to improve the performance?
+Using the [PNG specification](http://www.w3.org/TR/PNG/), building a PNG encoder/decoder isn’t that hard, but the required algorithmic calculations make sure that performance in Ruby is less than stellar. I have rewritten all calculations to only use fast integer math (plus, minus, multiply and bitwise operators), but simply the amount of code that is getting executed is slowing Ruby down. What more can I do to improve the performance?
 
 ## Encoding RGBA images
 
@@ -24,7 +24,7 @@ Every line starts with a byte F indicating the filter method, followed by the fi
     0 Ro Go Bo Ao Ro Go Bo Ao Ro Go Bo Ao
     0 Ro Go Bo Ao Ro Go Bo Ao Ro Go Bo Ao
 
-Now, the original R, G, B and A byte from the original pixel’s Fixnum, occur in big-endian or network byte order, starting with the top left pixel, moving left to right and then top to bottom. Exactly like the pixels are stored in our image’s pixel array! This means that we can use the Array#pack method to encode into this format. The Array#pack-notation for this is "xN3" in which x get translated into a null byte, and every N as 4-byte integer in network byte order. For optimal performance, it is best to not split the original array in lines, but to pack the complete pixel array at once. So, we can encode all pixels with this command:
+Now, the original R, G, B and A byte from the original pixel’s Fixnum, occur in [big-endian or network byte order](http://en.wikipedia.org/wiki/Endianness), starting with the top left pixel, moving left to right and then top to bottom. Exactly like the pixels are stored in our image’s pixel array! This means that we can use the Array#pack method to encode into this format. The Array#pack-notation for this is "xN3" in which x get translated into a null byte, and every N as 4-byte integer in network byte order. For optimal performance, it is best to not split the original array in lines, but to pack the complete pixel array at once. So, we can encode all pixels with this command:
 
 {% highlight ruby %}
 pixeldata = pixels.pack("xN#{width}" * height)
@@ -48,7 +48,7 @@ This means that for every pixel that is encoded as a 4-byte integer, the last by
 pixeldata = pixels.pack(("x" + ('NX' * width)) * height)
 {% endhighlight %}
 
-Because all the encoding steps can get skipped once again, the speed improvement is again 1500%! And the result is 25% smaller than the RGBA method. This method is actually so speedy, that saving an image using Ruby 1.9.1 is only a little bit slower (< 10%) than saving a PNG image using RMagick! See my performance comparison.
+Because all the encoding steps can get skipped once again, the speed improvement is again 1500%! And the result is 25% smaller than the RGBA method. This method is actually so speedy, that saving an image using Ruby 1.9.1 is only a little bit slower (< 10%) than saving a PNG image using RMagick! See my [performance comparison](https://github.com/wvanbergen/chunky_png/wiki/performance-comparison).
 
 ## Loading image
 
