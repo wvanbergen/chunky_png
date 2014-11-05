@@ -47,7 +47,7 @@ For more information on the API, see the project's [RDoc documentation](http://w
 ## Articles
 
 {% for post in site.posts %}
-- [{{ post.title }}]({ post.url }})
+- [{{ post.title }}]({{ post.url }})
 {% endfor %}
 
 ## Notes and caveats
