@@ -122,7 +122,18 @@ a:hover, a:focus {text-decoration: underline;}
 
 footer a {
   color: #F2F2F2;
+  text-decoration: none;
+}
+footer a:hover {
   text-decoration: underline;
+}
+
+
+.icon > svg {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
 }
 
 em {
@@ -201,7 +212,7 @@ ul, ol, dl {
 }
 
 ul {
-  list-style: inside;
+  list-style: disc outside;
   padding-left: 20px;
 }
 
