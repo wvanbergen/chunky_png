@@ -4,17 +4,17 @@ author: Willem van Bergen
 title: The value of pure Ruby libraries
 ---
 
-I started working on ChunkyPNG [early 2010](https://github.com/wvanbergen/chunky_png/commit/aa8a9378eedfc02aa1d0d1e05c313badc76594a7). At the time, my employer [Floorplanner](http://www.floorplanner.com) was struggling with memory leaks and stability issues of [RMagick](http://www.imagemagick.org/RMagick/doc/), the Ruby wrapper aorund [ImageMagick](http://www.imagemagick.org/). Because our needs were pretty simple (saving a stream of pixels into a PNG files), I thought I could write a simple library to do that for us, so we could get rid of RMagick. Not much later, ChunkyPNG was born.
+In late 2009, my employer at the time &mdash; [Floorplanner](http://www.floorplanner.com) &mdash; was struggling with memory leaks and stability issues of [RMagick](http://www.imagemagick.org/RMagick/doc/), the Ruby wrapper around the image manipulation library [ImageMagick](http://www.imagemagick.org/). Because we only needed a small subset of RMagick's functionality, I decided to write a simple library so we could get rid of RMagick. Not much later, [ChunkyPNG was born](https://github.com/wvanbergen/chunky_png/commit/aa8a9378eedfc02aa1d0d1e05c313badc76594a7).
 
-Even though ChunkyPNG has grown in scope and complexity, it still is a pure Ruby library. Initially, this was purely for practical reasons: I had no idea how to write Ruby C extensions. Performance was not an important concern for the problem at hand, and wasn't RMagick being a C extension not the cause of the memory leaks? By writing pure Ruby, I could get results faster and let the Ruby interpreter do the hard work of managing memory for me. <sup>[1]</sup>
+Even though ChunkyPNG has grown in scope and complexity to cover the entire PNG standard, it still is a "pure Ruby" library: all of the code is Ruby, and it doesn't have any dependencies besides Ruby itself. Initially, this was purely for practical reasons: I knew Ruby wasn't the fastest language in the world, but I had no idea how to write Ruby C extensions. Performance was not an important concern for the problem at hand, and was RMagick being a C extension not the cause of its memory leaks? By writing pure Ruby, I could get results faster and let the Ruby interpreter do the hard work of managing memory for me. <sup>[1]</sup>
 
 ### Performance becomes important
 
-As ChunkyPNG turned into a more full implementation of the PNG standard, more people started using it for a broader set of problems. Performance becomes more important. I put a decent effort into optimizing the [memory efficiency]({% post_url 2010-01-14-memory-efficiency-when-using-ruby %}) and [performance]({% post_url 2010-01-17-ode-to-array-pack-and-string-unpack %}) of the library, with some noticable gains for both.
+Mostly as a learning project, I ended up implementing the entire PNG standard. This made the library suitable for a broader set of problems, and more people started using it. Performance then became more important. I put a decent effort into optimizing the memory efficiency by [optimizing storing pixels in memory]({% post_url 2010-01-14-memory-efficiency-when-using-ruby %}), and I boosted performance by [short-circuiting the PNG encoding routine using Array#pack]({% post_url 2010-01-17-ode-to-array-pack-and-string-unpack %}).
 
-However, it becomes clear that there are limits on how far you can push performance in Ruby. The fact that I am implementing a library that by nature requires a lot of memory and computation is not going to change.
+Even though these efforts resulted in sizable improvements, it became clear that there are limits on how far you can push performance in Ruby. The fact that I am implementing a library that by nature requires a lot of memory and computation is not going to change.
 
-So what are the options? I could start telling people asking for more performance to use RMagick instead. But that is not going to happen after all my ImageMagick bashing. <sup>[2]</sup> In the end, I would have to do some C programming.
+So what are the options? I could recommend people asking for more performance to use RMagick instead. But that is not going to happen after all my ImageMagick bashing. <sup>[2]</sup> In the end, I had to roll up my sleeves and program some C.
 
 ### Being pure Ruby is a feature
 
@@ -30,9 +30,9 @@ In short: being pure Ruby can be a feature, and is not just an implementation de
 
 ### OilyPNG: a mixin library
 
-So instead of adding a C extension, I started working on a separate library, [OilyPNG](https://github.com/wvanbergen/oily_png). Instead of making this a standalone library, I designed it to be a mixin module that depends on ChunkyPNG.
+So instead of adding a C extension, I started working on a separate library, [OilyPNG](https://github.com/wvanbergen/oily_png). Rather than making this a standalone library, I designed it to be a mixin module that depends on ChunkyPNG.
 
-The approach is simple: OilyPNG contains some modules that implement some of the methods of ChunkyPNG in C. When  OilyPNG is loaded with `require 'oily_png'`, is first loads ChunkyPNG and uses `Module#include` and `Module#extend` to [overwrite some methods in ChunkyPNG with OilyPNG's faster implementation](https://github.com/wvanbergen/oily_png/blob/master/lib/oily_png.rb).
+The approach is simple: OilyPNG consists of modules that implement some of the methods of ChunkyPNG in C. When  OilyPNG is loaded with `require 'oily_png'`, it first loads ChunkyPNG and uses `Module#include` and `Module#extend` to [overwrite some methods in ChunkyPNG with OilyPNG's faster implementation](https://github.com/wvanbergen/oily_png/blob/master/lib/oily_png.rb).
 
 This approach allows us to keep ChunkyPNG pure Ruby, and make OilyPNG 100% API comptaible with ChunkyPNG. It is even possible to make OilyPNG optional in your project:
 
@@ -44,21 +44,23 @@ rescue LoadError
 end
 {% endhighlight %}
 
-This approach has some other advantages as well. Instead of having to implement everything at once to get to a library that implements most of ChunkyPNG, we can do this step by step while always providing 100% functional parity. Profile ChunkyPNG, find a slow method, implement it in OilyPNG, and iterate. This way OilyPNG doesn't suffer from a bootstrapping problem, and can grow the scope of the library organically.
+This approach has some other advantages as well. Instead of having to implement everything at once to get to a library that implements most of ChunkyPNG, we can do this step by step while always providing 100% functional parity. Profile ChunkyPNG to find a slow method, implement it in OilyPNG, and iterate. This way OilyPNG doesn't suffer from a bootstrapping problem of having to implement and minimum viable subset of ChunkyPNG right from the start. It can grow organically, one optimized method at the time.
 
-And because we have a well tested, pure Ruby implementation available to which OilyPNG is supposed to be 100% compatible, testing OilyPNG is simple. We just call a method on ChunkyPNG, and do the exact same call on an OilyPNG-enhanced ChunkyPNG, and compare the results.
+And because we have a well tested, pure Ruby implementation available to which OilyPNG is supposed to be 100% compatible, testing OilyPNG is simple. We just call a method on ChunkyPNG, run the exact same call on an OilyPNG-enhanced ChunkyPNG, and compare the results.
 
 ### To conclude
 
-Being pure Ruby can be a feature of a library, don't give it up too easily, even though performance may be an issue. Using a hybrid approach of a pure Ruby library, with a native companion library is feasible. <sup>[6]</sup>
+Being pure Ruby can be a feature of a library. Don't give it up too easily, even though performance may be an issue. Using a hybrid approach of a pure Ruby library, with a native companion library is a great way to have the best of both worlds. <sup>[6]</sup>
 
 ---------------------------------------
 
 #### Footnotes
 
 1. This is also why I avoided using the [png gem](https://github.com/seattlerb/png), an "almost-pure-ruby" library that was available at the time. It uses [inline C](https://github.com/seattlerb/rubyinline) to speed up some of the algorithms.
-2. I should note that I haven't used ImageMagick and RMagick since 2010. SO my knowledge about the current state of these libraries is extremely outdated at this point.
+2. Disclaimer: I should note that I haven't used ImageMagick and RMagick since 2010. So my knowledge about the current state of these libraries is extremely outdated at this point.
 3. I could have leveraged the work of [libpng](http://www.libpng.org/pub/png/libpng.html) instead of implementing the algorithms myself. I decided not to, because libpng's API doesn't lend itself very well for the cherry-picking of hotspots approach I took with OilyPNG. You basically have to go all in if you want to use libpng. I think a Ruby PNG library that simply wraps libpng still has potential, but because of the reasons outlined in this article, I will leave that as an exercise to the reader. :)
 4. As an interesting side note: the Rubinius and JRuby developers have used ChunkyPNG as a performance benchmarking tool, because it contains a non-trivial amount of code and is computation heavy.
 5. Unfortunately, OilyPNG is [not an exception](https://github.com/wvanbergen/oily_png/issues/12) to this rule.
-6. I am happy that my current employer is using the same approach with [Liquid](http://liquidmarkup.org/), and it's C extension library [liquid-c](https://github.com/Shopify/liquid-c). Even though this requires copying Liquid's quirky parsing behavior in certain edge cases.
+6. I am happy that my current employer is using the same approach with [Liquid](http://liquidmarkup.org/), and its C companion library [liquid-c](https://github.com/Shopify/liquid-c). Even though this requires copying Liquid's quirky parsing behavior in certain edge cases.
+
+Thanks to Simon Hørup Eskildsen, Emilie Noël, and Lydia Krupp-Hunter for reviewing drafts of this post.
