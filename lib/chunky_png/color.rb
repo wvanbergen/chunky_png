@@ -352,7 +352,7 @@ module ChunkyPNG
     # this compositing function is used by default.
     #
     # @param [Integer] fg The foreground color.
-    # @param [Integer] bg The foreground color.
+    # @param [Integer] bg The background color.
     # @return [Integer] The composited color.
     # @see ChunkyPNG::Color#compose_precise
     def compose_quick(fg, bg)
@@ -374,7 +374,7 @@ module ChunkyPNG
     # slower than the version based on integer math, that version is preferred.
     #
     # @param [Integer] fg The foreground color.
-    # @param [Integer] bg The foreground color.
+    # @param [Integer] bg The background color.
     # @return [Integer] The composited color.
     # @see ChunkyPNG::Color#compose_quick
     def compose_precise(fg, bg)
