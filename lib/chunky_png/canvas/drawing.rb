@@ -111,8 +111,9 @@ module ChunkyPNG
 
 
       def line_xiaolin_wu_float(x0, y0, x1, y1, stroke_color, inclusive = true)
+        puts '******************'
+puts "x0: #{x0}" + " y0: #{y0}", "x1: #{x1}" + " y1: #{y1}"
         steep = (y1 - y0).abs > (x1 - x0).abs
-
         if steep
           x0, y0 = y0, x0
           x1, y1 = y1, x1
@@ -125,8 +126,9 @@ module ChunkyPNG
 
         dx = x1 - x0
         dy = y1 - y0
+        puts "dx: #{dx} dy: #{dy}"
         gradient = dy / dx
-
+        puts "gradient: #{gradient}"
         # handle first endpoint
         xend = round(x0)
         yend = y0 + gradient * (xend - x0)

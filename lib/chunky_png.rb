@@ -3,7 +3,6 @@ require 'set'
 require 'zlib'
 require 'stringio'
 require 'enumerator'
-
 # ChunkyPNG - the pure ruby library to access PNG files.
 #
 # The ChunkyPNG module defines some constants that are used in the
