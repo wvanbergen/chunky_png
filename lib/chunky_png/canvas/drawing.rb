@@ -367,10 +367,10 @@ module Skalp
           rmf2 = (radius - feather/2)**2
 
           # Determine bounds:
-          lx = SkalpHatch.max((centerx - rpf2).floor, 0)
-          rx = SkalpHatch.min((centerx + rpf2).ceil, width - 1)
-          ly = SkalpHatch.max((centery - rpf2).floor, 0)
-          ry = SkalpHatch.min((centery + rpf2).ceil, height - 1)
+          lx = [(centerx - rpf2).floor, 0].max
+          rx = [(centerx + rpf2).ceil, width - 1].min
+          ly = [(centery - rpf2).floor, 0].max
+          ry = [(centery + rpf2).ceil, height - 1].min
 
           # Optimization run: find squares of X first
           sqX=[]
