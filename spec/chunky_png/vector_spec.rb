@@ -7,43 +7,43 @@ describe ChunkyPNG::Vector do
 
   describe '#length' do
     it "shopuld have 3 items" do
-      expect(subject.length).to eql 3
+      expect(subject.length).to eql(3)
     end
   end
 
   describe '#x_range' do
     it "should get the right range of x values" do
-      expect(subject.x_range).to eql (1..4)
+      expect(subject.x_range).to eql(1..4)
     end
 
     it "should find the minimum x-coordinate" do
-      expect(subject.min_x).to eql 1
+      expect(subject.min_x).to eql(1)
     end
 
     it "should find the maximum x-coordinate" do
-      expect(subject.max_x).to eql 4
+      expect(subject.max_x).to eql(4)
     end
 
     it "should calculate the width correctly" do
-      expect(subject.width).to eql 4
+      expect(subject.width).to eql(4)
     end
   end
 
   describe '#y_range' do
     it "should get the right range of y values" do
-      expect(subject.y_range).to eql (3..6)
+      expect(subject.y_range).to eql(3..6)
     end
 
     it "should find the minimum x-coordinate" do
-      expect(subject.min_y).to eql 3
+      expect(subject.min_y).to eql(3)
     end
 
     it "should find the maximum x-coordinate" do
-      expect(subject.max_y).to eql 6
+      expect(subject.max_y).to eql(6)
     end
 
     it "should calculate the height correctly" do
-      expect(subject.height).to eql 4
+      expect(subject.height).to eql(4)
     end
   end
 
