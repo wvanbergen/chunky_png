@@ -5,6 +5,7 @@ the scope and complexity of this project relatively small. This way, with the li
 dedicate to this project, this library remains a solid piece of software that many people rely on in
 their workflow.
 
+
 == Project scope
 
 The scope of this library is defined as:
@@ -16,12 +17,14 @@ The scope of this library is defined as:
 I will close issues and pull requests that go beyond this scope. If you want to work on something,
 but are not sure if it will be in scope, feel free to reach out to me!
 
+
 == Reporting bugs
 
 - First, see if somebody else has reported the problem already.
 - Try to include as much relevant information as possible, so I can recreate the problem.
 - If possible, include the PNG image that is causing the issue.
 - If possible, include a code snippet that exposes the problem.
+
 
 == Pull requests
 
@@ -48,3 +51,11 @@ Misc:
 
 - Add an entry to CHANGELOG.rdoc.
 - Do not change <tt>ChunkyPNG::VERSION</tt>
+
+
+== Releases
+
+- Ensure the latest master is passing on Travis CI.
+- Update <tt>CHANGELOG.rdoc</tt>
+- Update <tt>ChunkyPNG::VERSION</tt>
+- Run <tt>bundle exec rake release</tt>
