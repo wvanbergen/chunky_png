@@ -256,7 +256,7 @@ module ChunkyPNG
       when (2...3); [0, chroma, x]
       when (3...4); [0, x, chroma]
       when (4...5); [x, 0, chroma]
-      when (5...6); [chroma, 0, x]
+      when (5..6);  [chroma, 0, x]
       end
     end
     private :cylindrical_to_cubic

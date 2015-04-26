@@ -129,6 +129,10 @@ describe ChunkyPNG::Color do
 
       # And, finally, one random color
       expect(from_hsv(120, 0.5, 0.80)).to eql 0x66cc66ff
+
+      # Hue 0 and hue 360 should be equivalent
+      expect(from_hsv(0, 0.5, 0.5)).to eql from_hsv(360, 0.5, 0.5)
+      expect(from_hsv(0, 0.5, 0.5)).to eql from_hsv(360.0, 0.5, 0.5)
     end
 
     it 'should optionally accept a fourth param for alpha' do
@@ -162,6 +166,10 @@ describe ChunkyPNG::Color do
       from_hsl(87.27, 0.5, 0.5686)     == 0x96c85aff
       from_hsl(271.83, 0.5399, 0.4176) == 0x6e31a4ff
       from_hsl(63.6, 0.5984, 0.4882)   == 0xbec732ff
+
+      # Hue 0 and hue 360 should be equivalent
+      expect(from_hsl(0, 0.5, 0.5)).to eql from_hsl(360, 0.5, 0.5)
+      expect(from_hsl(0, 0.5, 0.5)).to eql from_hsl(360.0, 0.5, 0.5)
     end
 
     it 'should optionally accept a fourth param for alpha' do
