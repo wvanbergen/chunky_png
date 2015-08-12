@@ -5,12 +5,17 @@ describe ChunkyPNG::Datastream do
   describe '.from_io'do
     it "should raise an error when loading a file with a bad signature" do
       filename = resource_file('damaged_signature.png')
-      expect { ChunkyPNG::Datastream.from_file(filename) }.to raise_error
+      expect { ChunkyPNG::Datastream.from_file(filename) }.to raise_error(ChunkyPNG::SignatureMismatch)
     end
 
     it "should raise an error if the CRC of a chunk is incorrect" do
       filename = resource_file('damaged_chunk.png')
       expect { ChunkyPNG::Datastream.from_file(filename) }.to raise_error
+    end
+
+    it "should raise an error for a stream that is too short" do
+      stream = StringIO.new
+      expect { ChunkyPNG::Datastream.from_io(stream) }.to raise_error(ChunkyPNG::SignatureMismatch)
     end
   end
 
