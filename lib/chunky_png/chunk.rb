@@ -245,7 +245,11 @@ module ChunkyPNG
 
     class ImageData < Generic
       def self.combine_chunks(data_chunks)
-        Zlib::Inflate.inflate(data_chunks.map { |c| c.content }.join(''))
+        zstream = Zlib::Inflate.new
+        data_chunks.each { |c| zstream << c.content }
+        inflated = zstream.finish
+        zstream.close
+        inflated
       end
 
       def self.split_in_chunks(data, level = Zlib::DEFAULT_COMPRESSION, chunk_size = 2147483647)
