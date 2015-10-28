@@ -10,7 +10,7 @@ describe ChunkyPNG::Datastream do
 
     it "should raise an error if the CRC of a chunk is incorrect" do
       filename = resource_file('damaged_chunk.png')
-      expect { ChunkyPNG::Datastream.from_file(filename) }.to raise_error
+      expect { ChunkyPNG::Datastream.from_file(filename) }.to raise_error(ChunkyPNG::CRCMismatch)
     end
 
     it "should raise an error for a stream that is too short" do
