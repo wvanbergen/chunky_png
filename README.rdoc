@@ -1,4 +1,4 @@
-= Chunky PNG {<img src="https://travis-ci.org/wvanbergen/chunky_png.png?branch=master" alt="Build Status" />}[https://travis-ci.org/wvanbergen/chunky_png]
+= Chunky PNG {<img src="https://travis-ci.org/wvanbergen/chunky_png.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/wvanbergen/chunky_png]
 
 This library can read and write PNG files. It is written in pure Ruby for
 maximum portability. Let me rephrase: it does NOT require RMagick or any other
