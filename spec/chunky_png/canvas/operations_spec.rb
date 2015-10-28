@@ -66,6 +66,24 @@ describe ChunkyPNG::Canvas::Operations do
       end
     end
 
+    context "when cropping just the height" do
+      let(:crop_opts) { [0, 5, 16, 8] }
+
+      it "should crop the right pixels from the original canvas" do
+        subject.crop!(*crop_opts)
+        expect(subject).to eql reference_canvas('cropped_height')
+      end
+
+      it "should have a new width and height" do
+        expect { subject.crop!(*crop_opts) }.to change { subject.dimension }.
+            from(ChunkyPNG::Dimension('16x16')).to(ChunkyPNG::Dimension('16x8'))
+      end
+
+      it "should return itself" do
+        expect(subject.crop!(*crop_opts)).to equal(subject)
+      end
+    end
+
     context "when the cropped image falls outside the original image" do
       it "should raise an exception" do
         expect { subject.crop!(16, 16, 2, 2) }.to raise_error(ChunkyPNG::OutOfBounds)
