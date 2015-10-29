@@ -65,7 +65,7 @@ For more information, see the project wiki on
 https://github.com/wvanbergen/chunky_png/wiki or the RDOC documentation on
 http://www.rubydoc.info/gems/chunky_png/frames
 
-== Security warning
+## Security warning
 
 ChunkyPNG is vulnerable to decompression bombs, which means that ChunkyPNG is
 vulnerable to DOS attacks by running out of memory when loading a specifically
