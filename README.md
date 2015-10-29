@@ -1,4 +1,4 @@
-# Chunky PNG [![Build Status](https://travis-ci.org/wvanbergen/chunky_png.svg?branch=master)](https://travis-ci.org/wvanbergen/chunky_png)
+# ChunkyPNG [![Build Status](https://travis-ci.org/wvanbergen/chunky_png.svg?branch=master)](https://travis-ci.org/wvanbergen/chunky_png)
 
 This library can read and write PNG files. It is written in pure Ruby for
 maximum portability. Let me rephrase: it does NOT require RMagick or any other
@@ -12,9 +12,9 @@ memory leaking image library.
 ## Features
 
 - Decodes any image that the PNG standard allows. This includes all standard
-  color modes, all bit depths and all transparency, interlacing and filtering
+  color modes, all bit depths, all transparency, and interlacing and filtering
   options.
-- Encodes images supports all color modes (true color, grayscale and indexed)
+- Encodes images supports all color modes (true color, grayscale, and indexed)
   and transparency for all these color modes. The best color mode will be
   chosen automatically, based on the amount of used colors.
 - R/W access to the image's pixels.
@@ -25,7 +25,7 @@ memory leaking image library.
   optimized saving routine.
 - Interoperability with RMagick if you really have to.
 
-Also, have a look at OilyPNG at http://github.com/wvanbergen/oily_png. OilyPNG
+Also, have a look at [OilyPNG](http://github.com/wvanbergen/oily_png) which
 is a mixin module that implements some of the ChunkyPNG algorithms in C, which
 provides a massive speed boost to encoding and decoding.
 
@@ -58,12 +58,12 @@ png_stream.each_chunk { |chunk| p chunk.type }
 ```
 
 Also check out the screencast on the ChunkyPNG homepage by John Davison,
-which illustrates basic usage of the library on the ChunkyPNG website:
-http://chunkypng.com/
+which illustrates basic usage of the library on the [ChunkyPNG
+website](http://chunkypng.com/).
 
-For more information, see the project wiki on
-https://github.com/wvanbergen/chunky_png/wiki or the RDOC documentation on
-http://www.rubydoc.info/gems/chunky_png/frames
+For more information, see the [project
+wiki](https://github.com/wvanbergen/chunky_png/wiki) or the [RDOC
+documentation](http://www.rubydoc.info/gems/chunky_png/frames).
 
 ## Security warning
 
@@ -85,4 +85,4 @@ remarks. Patches are greatly appreciated!
 Please check out CHANGELOG.rdoc to see what changed in all versions.
 
 P.S.: The name of this library is intentionally similar to Chunky Bacon and
-Chunky GIF. Use Google if you want to know _why. :-)
+Chunky GIF. Use Google if you want to know _why_. :-)
