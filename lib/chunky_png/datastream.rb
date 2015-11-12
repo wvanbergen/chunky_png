@@ -175,7 +175,6 @@ module ChunkyPNG
     # @return [String] The encoded PNG datastream.
     def to_blob
       str = StringIO.new
-      str.set_encoding('ASCII-8BIT')
       write(str)
       return str.string
     end
