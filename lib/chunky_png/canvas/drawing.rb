@@ -299,12 +299,12 @@ module ChunkyPNG
         end
 
         unless fill_color == ChunkyPNG::Color::TRANSPARENT
-          lines.each_with_index do |length, y|
+          lines.each_with_index do |length, y_offset|
             if length > 0
-              line(x0 - length, y0 - y, x0 + length, y0 - y, fill_color)
+              line(x0 - length, y0 - y_offset, x0 + length, y0 - y_offset, fill_color)
             end
-            if length > 0 && y > 0
-              line(x0 - length, y0 + y, x0 + length, y0 + y, fill_color)
+            if length > 0 && y_offset > 0
+              line(x0 - length, y0 + y_offset, x0 + length, y0 + y_offset, fill_color)
             end
           end
         end

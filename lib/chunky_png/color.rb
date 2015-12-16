@@ -589,7 +589,7 @@ module ChunkyPNG
     #    include_alpha=true (0-255)
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
     def to_hsv(color, include_alpha = false)
-      hue, chroma, max, min = hue_and_chroma(color)
+      hue, chroma, max, _ = hue_and_chroma(color)
       value      = max
       saturation = chroma.zero? ? 0.0 : chroma.fdiv(value)
 

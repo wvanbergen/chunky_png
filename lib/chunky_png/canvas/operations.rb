@@ -273,7 +273,6 @@ module ChunkyPNG
       # @return [ChunkyPNG::Canvas] Itself, but rotated clockwise.
       # @see #rotate_right for a version that leaves the current canvas intact
       def rotate_right!
-        rotated = self.class.new(height, width)
         new_pixels = []
         0.upto(width - 1) { |i| new_pixels += column(i).reverse }
         replace_canvas!(height, width, new_pixels)
