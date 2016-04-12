@@ -129,12 +129,12 @@ module ChunkyPNG
   # set correctly to ASCII-8BIT (binary) in Ruby 1.9.
   # @return [String] An empty string, with encoding set to binary in Ruby 1.9
   # @private
-  EMPTY_BYTEARRAY = force_binary("").freeze
+  EMPTY_BYTEARRAY = force_binary(String.new).freeze
 
   # Null-byte, with the encoding set correctly to ASCII-8BIT (binary) in Ruby 1.9.
   # @return [String] A binary string, consisting of one NULL-byte. 
   # @private
-  EXTRA_BYTE = force_binary("\0").freeze
+  EXTRA_BYTE = force_binary(String.new("\0")).freeze
 end
 
 require 'chunky_png/version'
