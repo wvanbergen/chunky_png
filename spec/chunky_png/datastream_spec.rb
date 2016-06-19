@@ -17,6 +17,12 @@ describe ChunkyPNG::Datastream do
       stream = StringIO.new
       expect { ChunkyPNG::Datastream.from_io(stream) }.to raise_error(ChunkyPNG::SignatureMismatch)
     end
+
+    it "should read a stream with trailing data without failing" do
+      filename = resource_file('trailing_bytes_after_iend_chunk.png')
+      image = ChunkyPNG::Datastream.from_file(filename)
+      expect(image).to be_instance_of(ChunkyPNG::Datastream)
+    end
   end
 
   describe '#metadata' do
