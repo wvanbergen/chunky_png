@@ -74,7 +74,7 @@ module ChunkyPNG
         verify_signature!(io)
 
         ds = self.new
-        until io.eof?
+        while ds.end_chunk.nil?
           chunk = ChunkyPNG::Chunk.read(io)
           case chunk
             when ChunkyPNG::Chunk::Header;       ds.header_chunk = chunk
