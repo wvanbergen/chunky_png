@@ -9,6 +9,12 @@ The file documents the changes to this library over the different versions.
 
 - Nothing yet!
 
+=== 1.3.6 - 2016-06-19
+
+- Allow reading images from streams that have trailing data after the IEND chunk.
+- Add compatibility for Ruby 2.3's frozen string literals.
+- Documentation updates and small cleanups.
+
 === 1.3.5 - 2015-10-28
 
 - Performance improvements for <tt>Canvas#crop!</tt> and <tt>ImageData.combine_chunks</tt>
