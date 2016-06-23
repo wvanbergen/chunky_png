@@ -29,14 +29,6 @@ module ChunkyPNG
     # @see http://www.w3.org/TR/PNG/ The W3C PNG format specification
     module PNGDecoding
 
-      # The palette that is used to decode the image, loading from the PLTE and
-      # tRNS chunk from the PNG stream. For RGB(A) images, no palette is required.
-      # @return [ChunkyPNG::Palette]
-      attr_accessor :decoding_palette
-
-      # The color to be replaced with fully transparent pixels.
-      attr_accessor :transparent_color
-
       # Decodes a Canvas from a PNG encoded string.
       # @param [String] str The string to read from.
       # @return [ChunkyPNG::Canvas] The canvas decoded from the PNG encoded string.
@@ -76,16 +68,17 @@ module ChunkyPNG
           raise ExpectationFailed, "Invalid image size, width: #{width}, height: #{height}"
         end
 
+        decoding_palette, transparent_color = nil, nil
         case color_mode
           when ChunkyPNG::COLOR_INDEXED
-            self.decoding_palette = ChunkyPNG::Palette.from_chunks(ds.palette_chunk, ds.transparency_chunk)
+            decoding_palette = ChunkyPNG::Palette.from_chunks(ds.palette_chunk, ds.transparency_chunk)
           when ChunkyPNG::COLOR_TRUECOLOR
-            self.transparent_color = ds.transparency_chunk.truecolor_entry(depth) if ds.transparency_chunk
+            transparent_color = ds.transparency_chunk.truecolor_entry(depth) if ds.transparency_chunk
           when ChunkyPNG::COLOR_GRAYSCALE
-            self.transparent_color = ds.transparency_chunk.grayscale_entry(depth) if ds.transparency_chunk
+            transparent_color = ds.transparency_chunk.grayscale_entry(depth) if ds.transparency_chunk
         end
 
-        decode_png_pixelstream(ds.imagedata, width, height, color_mode, depth, interlace)
+        decode_png_pixelstream(ds.imagedata, width, height, color_mode, depth, interlace, decoding_palette, transparent_color)
       end
 
       # Decodes a canvas from a PNG encoded pixelstream, using a given width, height,
@@ -96,13 +89,15 @@ module ChunkyPNG
       # @param [Integer] color_mode The color mode of the encoded pixelstream.
       # @param [Integer] depth The bit depth of the pixel samples.
       # @param [Integer] interlace The interlace method of the encoded pixelstream.
+      # @param [ChunkyPNG::Palette] decoding_palette The palette to use to decode colors.
+      # @param [Integer] transparent_color The color that should be considered fully transparent.
       # @return [ChunkyPNG::Canvas] The decoded Canvas instance.
-      def decode_png_pixelstream(stream, width, height, color_mode, depth, interlace)
+      def decode_png_pixelstream(stream, width, height, color_mode, depth, interlace, decoding_palette, transparent_color)
         raise ChunkyPNG::ExpectationFailed, "This palette is not suitable for decoding!" if decoding_palette && !decoding_palette.can_decode?
 
         image = case interlace
-          when ChunkyPNG::INTERLACING_NONE;  decode_png_without_interlacing(stream, width, height, color_mode, depth)
-          when ChunkyPNG::INTERLACING_ADAM7; decode_png_with_adam7_interlacing(stream, width, height, color_mode, depth)
+          when ChunkyPNG::INTERLACING_NONE;  decode_png_without_interlacing(stream, width, height, color_mode, depth, decoding_palette)
+          when ChunkyPNG::INTERLACING_ADAM7; decode_png_with_adam7_interlacing(stream, width, height, color_mode, depth, decoding_palette)
           else raise ChunkyPNG::NotSupported, "Don't know how the handle interlacing method #{interlace}!"
         end
 
@@ -119,9 +114,10 @@ module ChunkyPNG
       # @param height (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       # @param color_mode (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       # @param depth (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @param [ChunkyPNG::Palette] decoding_palette The palette to use to decode colors.
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
-      def decode_png_without_interlacing(stream, width, height, color_mode, depth)
-        decode_png_image_pass(stream, width, height, color_mode, depth, 0)
+      def decode_png_without_interlacing(stream, width, height, color_mode, depth, decoding_palette)
+        decode_png_image_pass(stream, width, height, color_mode, depth, 0, decoding_palette)
       end
 
       # Decodes a canvas from a Adam 7 interlaced PNG encoded pixelstream, using a
@@ -131,13 +127,14 @@ module ChunkyPNG
       # @param height (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       # @param color_mode (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       # @param depth (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
+      # @param [ChunkyPNG::Palette] decoding_palette The palette to use to decode colors.
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
-      def decode_png_with_adam7_interlacing(stream, width, height, color_mode, depth)
+      def decode_png_with_adam7_interlacing(stream, width, height, color_mode, depth, decoding_palette)
         canvas = new(width, height)
         start_pos = 0
         for pass in 0...7
           sm_width, sm_height = adam7_pass_size(pass, width, height)
-          sm = decode_png_image_pass(stream, sm_width, sm_height, color_mode, depth, start_pos)
+          sm = decode_png_image_pass(stream, sm_width, sm_height, color_mode, depth, start_pos, decoding_palette)
           adam7_merge_pass(pass, canvas, sm)
           start_pos += ChunkyPNG::Color.pass_bytesize(color_mode, depth, sm_width, sm_height)
         end
@@ -213,8 +210,9 @@ module ChunkyPNG
       # @param [String] stream The stream to decode from.
       # @param [Integer] pos The position in the stream on which the scanline starts (including the filter byte).
       # @param [Integer] width The width in pixels of the scanline.
+      # @param [ChunkyPNG::Palette] decoding_palette The palette to use to decode colors.
       # @return [Array<Integer>] An array of decoded pixels.
-      def decode_png_pixels_from_scanline_indexed_1bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_indexed_1bit(stream, pos, width, decoding_palette)
         (0...width).map do |index|
           palette_pos = decode_png_extract_1bit_value(stream.getbyte(pos + 1 + (index >> 3)), index)
           decoding_palette[palette_pos]
@@ -224,7 +222,7 @@ module ChunkyPNG
       # Decodes a scanline of a 2-bit, indexed image into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_indexed_2bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_indexed_2bit(stream, pos, width, decoding_palette)
         (0...width).map do |index|
           palette_pos = decode_png_extract_2bit_value(stream.getbyte(pos + 1 + (index >> 2)), index)
           decoding_palette[palette_pos]
@@ -234,7 +232,7 @@ module ChunkyPNG
       # Decodes a scanline of a 4-bit, indexed image into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_indexed_4bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_indexed_4bit(stream, pos, width, decoding_palette)
         (0...width).map do |index|
           palette_pos = decode_png_extract_4bit_value(stream.getbyte(pos + 1 + (index >> 1)), index)
           decoding_palette[palette_pos]
@@ -244,21 +242,21 @@ module ChunkyPNG
       # Decodes a scanline of a 8-bit, indexed image into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_indexed_8bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_indexed_8bit(stream, pos, width, decoding_palette)
         (1..width).map { |i| decoding_palette[stream.getbyte(pos + i)] }
       end
 
       # Decodes a scanline of an 8-bit, true color image with transparency into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_truecolor_alpha_8bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_truecolor_alpha_8bit(stream, pos, width, _decoding_palette)
         stream.unpack("@#{pos + 1}N#{width}")
       end
 
       # Decodes a scanline of a 16-bit, true color image with transparency into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_truecolor_alpha_16bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_truecolor_alpha_16bit(stream, pos, width, _decoding_palette)
         pixels = []
         stream.unpack("@#{pos + 1}n#{width * 4}").each_slice(4) do |r, g, b, a|
           pixels << ChunkyPNG::Color.rgba(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g),
@@ -270,14 +268,14 @@ module ChunkyPNG
       # Decodes a scanline of an 8-bit, true color image into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_truecolor_8bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_truecolor_8bit(stream, pos, width, _decoding_palette)
         stream.unpack("@#{pos + 1}" << ('NX' * width)).map { |c| c | 0x000000ff }
       end
 
       # Decodes a scanline of a 16-bit, true color image into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_truecolor_16bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_truecolor_16bit(stream, pos, width, _decoding_palette)
         pixels = []
         stream.unpack("@#{pos + 1}n#{width * 3}").each_slice(3) do |r, g, b|
           pixels << ChunkyPNG::Color.rgb(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(b))
@@ -288,14 +286,14 @@ module ChunkyPNG
       # Decodes a scanline of an 8-bit, grayscale image with transparency into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_grayscale_alpha_8bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_grayscale_alpha_8bit(stream, pos, width, _decoding_palette)
         (0...width).map { |i| ChunkyPNG::Color.grayscale_alpha(stream.getbyte(pos + (i * 2) + 1), stream.getbyte(pos + (i * 2) + 2)) }
       end
 
       # Decodes a scanline of a 16-bit, grayscale image with transparency into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_grayscale_alpha_16bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_grayscale_alpha_16bit(stream, pos, width, _decoding_palette)
         pixels = []
         stream.unpack("@#{pos + 1}n#{width * 2}").each_slice(2) do |g, a|
           pixels << ChunkyPNG::Color.grayscale_alpha(decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(a))
@@ -306,7 +304,7 @@ module ChunkyPNG
       # Decodes a scanline of a 1-bit, grayscale image into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_grayscale_1bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_grayscale_1bit(stream, pos, width, _decoding_palette)
         (0...width).map do |index|
           value = decode_png_extract_1bit_value(stream.getbyte(pos + 1 + (index >> 3)), index)
           value == 1 ? ChunkyPNG::Color::WHITE : ChunkyPNG::Color::BLACK
@@ -316,7 +314,7 @@ module ChunkyPNG
       # Decodes a scanline of a 2-bit, grayscale image into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_grayscale_2bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_grayscale_2bit(stream, pos, width, _decoding_palette)
         (0...width).map do |index|
           value = decode_png_extract_2bit_value(stream.getbyte(pos + 1 + (index >> 2)), index)
           ChunkyPNG::Color.grayscale(decode_png_resample_2bit_value(value))
@@ -326,7 +324,7 @@ module ChunkyPNG
       # Decodes a scanline of a 4-bit, grayscale image into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_grayscale_4bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_grayscale_4bit(stream, pos, width, _decoding_palette)
         (0...width).map do |index|
           value = decode_png_extract_4bit_value(stream.getbyte(pos + 1 + (index >> 1)), index)
           ChunkyPNG::Color.grayscale(decode_png_resample_4bit_value(value))
@@ -336,14 +334,14 @@ module ChunkyPNG
       # Decodes a scanline of an 8-bit, grayscale image into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_grayscale_8bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_grayscale_8bit(stream, pos, width, _decoding_palette)
         (1..width).map { |i| ChunkyPNG::Color.grayscale(stream.getbyte(pos + i)) }
       end
 
       # Decodes a scanline of a 16-bit, grayscale image into a row of pixels.
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
-      def decode_png_pixels_from_scanline_grayscale_16bit(stream, pos, width)
+      def decode_png_pixels_from_scanline_grayscale_16bit(stream, pos, width, _decoding_palette)
         values = stream.unpack("@#{pos + 1}n#{width}")
         values.map { |value| ChunkyPNG::Color.grayscale(decode_png_resample_16bit_value(value)) }
       end
@@ -378,8 +376,9 @@ module ChunkyPNG
       # @param height (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       # @param color_mode (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       # @param [Integer] start_pos The position in the pixel stream to start reading.
+      # @param [ChunkyPNG::Palette] decoding_palette The palette to use to decode colors.
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
-      def decode_png_image_pass(stream, width, height, color_mode, depth, start_pos)
+      def decode_png_image_pass(stream, width, height, color_mode, depth, start_pos, decoding_palette)
 
         pixels = []
         if width > 0 && height > 0
@@ -394,7 +393,7 @@ module ChunkyPNG
           pos, prev_pos = start_pos, nil
           for _ in 0...height do
             decode_png_str_scanline(stream, pos, prev_pos, line_length, pixel_size)
-            pixels.concat(send(pixel_decoder, stream, pos, width))
+            pixels.concat(send(pixel_decoder, stream, pos, width, decoding_palette))
 
             prev_pos = pos
             pos += line_length + 1
