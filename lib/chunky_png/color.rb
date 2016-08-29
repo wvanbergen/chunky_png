@@ -714,6 +714,8 @@ module ChunkyPNG
     # @param pixel_before [Integer]
     # @return [Float]
     def euclidean_distance_rgba(pixel_after, pixel_before)
+      return 0.0 if pixel_after == pixel_before
+
       Math.sqrt(
         (r(pixel_after) - r(pixel_before))**2 +
         (g(pixel_after) - g(pixel_before))**2 +
