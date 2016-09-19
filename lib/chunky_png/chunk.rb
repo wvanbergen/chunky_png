@@ -319,6 +319,45 @@ module ChunkyPNG
       end
     end
 
+    # The Physical (pHYs) chunk specifies the intended pixel size or aspect
+    # ratio for display of the image.
+    #
+    # http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html#C.pHYs
+    #
+    class Physical < Generic
+      attr_accessor :ppux, :ppuy, :unit
+
+      def initialize(ppux, ppuy, unit=:unknown)
+        raise ArgumentError, 'unit must be either :meters or :unknown' unless [:meters, :unknown].member?(unit)
+        super('pHYs')
+        @ppux, @ppuy, @unit = ppux, ppuy, unit
+      end
+
+      def dpix
+        ppux * INCHES_PER_METER if unit == :meters
+      end
+
+      def dpiy
+        ppuy * INCHES_PER_METER if unit == :meters
+      end
+
+      def self.read(type, content)
+        ppux, ppuy, unit = content.unpack('NNC')
+        unit = unit == 1 ? :meters : :unknown
+        new(ppux, ppuy, unit)
+      end
+
+      # Creates the content to write to the stream, by concatenating the
+      # keyword with the deflated value, joined by a null character.
+      #
+      # @return The content that should be written to the datastream.
+      def content
+        [ppux, ppuy, unit == :meters ? 1 : 0].pack('NNC')
+      end
+
+      INCHES_PER_METER = 0.0254
+    end
+
     # The Text (iTXt) chunk contains keyword/value metadata about the PNG
     # stream.
     #
@@ -352,6 +391,7 @@ module ChunkyPNG
       'tEXt' => Text,
       'zTXt' => CompressedText,
       'iTXt' => InternationalText,
+      'pHYs' => Physical,
     }
   end
 end

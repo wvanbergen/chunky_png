@@ -29,6 +29,10 @@ module ChunkyPNG
     # @return [ChunkyPNG::Chunk::Transparency]
     attr_accessor :transparency_chunk
 
+    # The chunk containing the physical dimensions of the PNG's pixels.
+    # @return [ChunkyPNG::Chunk::Physical]
+    attr_accessor :physical_chunk
+
     # The chunks that together compose the images pixel data.
     # @return [Array<ChunkyPNG::Chunk::ImageData>]
     attr_accessor :data_chunks
@@ -81,6 +85,7 @@ module ChunkyPNG
             when ChunkyPNG::Chunk::Palette;      ds.palette_chunk = chunk
             when ChunkyPNG::Chunk::Transparency; ds.transparency_chunk = chunk
             when ChunkyPNG::Chunk::ImageData;    ds.data_chunks << chunk
+            when ChunkyPNG::Chunk::Physical;     ds.physical_chunk = chunk
             when ChunkyPNG::Chunk::End;          ds.end_chunk = chunk
             else ds.other_chunks << chunk
           end

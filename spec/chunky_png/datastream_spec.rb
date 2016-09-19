@@ -40,4 +40,13 @@ describe ChunkyPNG::Datastream do
       expect(ds.metadata['Copyright']).to eql "Copyright Willem van Schaik, Singapore 1995-96"
     end
   end
+
+  describe '#physical_chunk' do
+    it 'should load pHYs chunks correctly' do
+      filename = resource_file('clock.png')
+      ds = ChunkyPNG::Datastream.from_file(filename)
+      expect(ds.physical_chunk.dpix.round).to eql 72
+      expect(ds.physical_chunk.dpiy.round).to eql 72
+    end
+  end
 end
