@@ -334,11 +334,13 @@ module ChunkyPNG
       end
 
       def dpix
-        ppux * INCHES_PER_METER if unit == :meters
+        raise ChunkyPNG::UnitsUnknown, 'the PNG specifies its physical aspect ratio, but does not specify the units of its pixels\' physical dimensions' unless unit == :meters
+        ppux * INCHES_PER_METER
       end
 
       def dpiy
-        ppuy * INCHES_PER_METER if unit == :meters
+        raise ChunkyPNG::UnitsUnknown, 'the PNG specifies its physical aspect ratio, but does not specify the units of its pixels\' physical dimensions' unless unit == :meters
+        ppuy * INCHES_PER_METER
       end
 
       def self.read(type, content)

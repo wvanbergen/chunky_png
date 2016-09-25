@@ -121,6 +121,11 @@ module ChunkyPNG
   class OutOfBounds < ChunkyPNG::ExpectationFailed
   end
 
+  # Exception that is raised when requesting the DPI of a PNG that doesn't
+  # specify the units of its physical pixel dimensions.
+  class UnitsUnknown < ChunkyPNG::Exception
+  end
+
   def self.force_binary(str)
     str.respond_to?(:force_encoding) ? str.force_encoding('BINARY') : str
   end
