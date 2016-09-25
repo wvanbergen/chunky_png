@@ -327,7 +327,7 @@ module ChunkyPNG
     class Physical < Generic
       attr_accessor :ppux, :ppuy, :unit
 
-      def initialize(ppux, ppuy, unit=:unknown)
+      def initialize(ppux, ppuy, unit = :unknown)
         raise ArgumentError, 'unit must be either :meters or :unknown' unless [:meters, :unknown].member?(unit)
         super('pHYs')
         @ppux, @ppuy, @unit = ppux, ppuy, unit
