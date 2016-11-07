@@ -338,9 +338,19 @@ module ChunkyPNG
         ppux * METERS_PER_INCH
       end
 
+      def dpix=(value)
+        @unit = :meters
+        @ppux = (value / METERS_PER_INCH).round
+      end
+
       def dpiy
         raise ChunkyPNG::UnitsUnknown, 'the PNG specifies its physical aspect ratio, but does not specify the units of its pixels\' physical dimensions' unless unit == :meters
         ppuy * METERS_PER_INCH
+      end
+
+      def dpiy=(value)
+        @unit = :meters
+        @ppuy = (value / METERS_PER_INCH).round
       end
 
       def self.read(type, content)
