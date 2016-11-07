@@ -335,12 +335,12 @@ module ChunkyPNG
 
       def dpix
         raise ChunkyPNG::UnitsUnknown, 'the PNG specifies its physical aspect ratio, but does not specify the units of its pixels\' physical dimensions' unless unit == :meters
-        ppux * INCHES_PER_METER
+        ppux * METERS_PER_INCH
       end
 
       def dpiy
         raise ChunkyPNG::UnitsUnknown, 'the PNG specifies its physical aspect ratio, but does not specify the units of its pixels\' physical dimensions' unless unit == :meters
-        ppuy * INCHES_PER_METER
+        ppuy * METERS_PER_INCH
       end
 
       def self.read(type, content)
@@ -357,7 +357,7 @@ module ChunkyPNG
         [ppux, ppuy, unit == :meters ? 1 : 0].pack('NNC')
       end
 
-      INCHES_PER_METER = 0.0254
+      METERS_PER_INCH = 0.0254
     end
 
     # The Text (iTXt) chunk contains keyword/value metadata about the PNG
