@@ -42,12 +42,14 @@ describe ChunkyPNG::Datastream do
   end
 
   describe '#physical_chunk' do
-    it 'should load pHYs chunks correctly' do
+    it 'should read and write pHYs chunks correctly' do
       filename = resource_file('clock.png')
       ds = ChunkyPNG::Datastream.from_file(filename)
       expect(ds.physical_chunk.unit).to eql :meters
       expect(ds.physical_chunk.dpix.round).to eql 72
       expect(ds.physical_chunk.dpiy.round).to eql 72
+      ds = ChunkyPNG::Datastream.from_blob(ds.to_blob)
+      expect(ds.physical_chunk).not_to be_nil
     end
 
     it 'should raise ChunkyPNG::UnitsUnknown if we request dpi but the units are unknown' do
