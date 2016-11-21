@@ -20,6 +20,10 @@ require 'enumerator'
 # {ChunkyPNG::Dimension}::  geometry helper class representing a dimension (i.e. width x height).
 # {ChunkyPNG::Vector}::     geometry helper class representing a series of points.
 #
+# {ChunkyPNG::Animation::           class to represent Animated PNG (APNG) images.
+# {ChunkyPNG::Frame::               class to represent each frames that construct the animation.
+# {ChunkyPNG::AnimationDatastream:: represents the internal structure of an APNG {ChunkyPNG::Animation}
+#
 # @author Willem van Bergen
 module ChunkyPNG
 
@@ -163,3 +167,6 @@ require 'chunky_png/dimension'
 # Canvas / Image classes
 require 'chunky_png/canvas'
 require 'chunky_png/image'
+
+# APNG
+require 'chunky_png/animation'

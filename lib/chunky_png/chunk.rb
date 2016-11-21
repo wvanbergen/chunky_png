@@ -377,6 +377,113 @@ module ChunkyPNG
       # TODO
     end
 
+    # The animation control (acTL) chunk contains information about the animated
+    # image, and must appear before the first IDAT chunk.
+    #
+    # https://wiki.mozilla.org/APNG_Specification#.60acTL.60:_The_Animation_Control_Chunk
+    class AnimationControl < Base
+      # The attribute to indicate the total number of frames.
+      # @return [Integer]
+      attr_accessor :num_frames
+
+      # The attribute to indicate the number of times that this animation should
+      # play. If it is 0, the animation should play indefinitely.
+      # @return [Integer]
+      attr_accessor :num_plays
+
+      def initialize(attrs = {})
+        super('acTL', attrs)
+        @num_frames ||= 0
+        @num_plays  ||= Animation::INFINITE_LOOP
+      end
+
+      def self.read(type, content)
+        fields = content.unpack('NN')
+        new(:num_frames => fields[0],
+            :num_plays  => fields[1])
+      end
+
+      def content
+        [num_frames, num_plays].pack('NN')
+      end
+    end
+
+    # The frame control (fcTL) chunk contains information about the frame in
+    # animation. It must appear before the IDAT or fdAT chunks of the frame to
+    # which it applies. It has a 4 byte sequence number which shared with fdAT
+    # chunks.
+    #
+    # https://wiki.mozilla.org/APNG_Specification#.60fcTL.60:_The_Frame_Control_Chunk
+    class FrameControl < Base
+      attr_accessor :sequence_number, :width, :height,
+                    :x_offset, :y_offset, :delay_num, :delay_den,
+                    :dispose_op, :blend_op
+
+      def initialize(attrs = {})
+        super('fcTL', attrs)
+        @sequence_number ||= 0
+        @width           ||= 1
+        @height          ||= 1
+        @x_offset        ||= 0
+        @y_offset        ||= 0
+        @delay_num       ||= 1
+        @delay_den       ||= 1
+        @dispose_op      ||= Animation::APNG_DISPOSE_OP_NONE
+        @blend_op        ||= Animation::APNG_BLEND_OP_SOURCE
+      end
+
+      def self.read(type, content)
+        fields = content.unpack('N5nnCC')
+        new(:sequence_number => fields[0],
+            :width           => fields[1],
+            :height          => fields[2],
+            :x_offset        => fields[3],
+            :y_offset        => fields[4],
+            :delay_num       => fields[5],
+            :delay_den       => fields[6],
+            :dispose_op      => fields[7],
+            :blend_op        => fields[8])
+      end
+
+      def content
+        [sequence_number, width, height,
+         x_offset, y_offset, delay_num, delay_den,
+         dispose_op, blend_op].pack('N5nnCC')
+      end
+    end
+
+    class FrameData < Base
+      attr_accessor :sequence_number, :frame_data
+
+      # The frame data (fdAT) chunk contains the atual image data, and has a 4
+      # byte sequence number which shared with fcTL chunks.
+      # It has the same structure as an `IDAT` chunk, except preceded by a
+      # sequence number.
+      #
+      # https://wiki.mozilla.org/APNG_Specification#.60fdAT.60:_The_Frame_Data_Chunk
+      def initialize(attrs = {})
+        super('fdAT', attrs)
+        @sequence_number ||= 0
+      end
+
+      def self.read(type, content)
+        new(:sequence_number => content[0..3].unpack('N').first,
+            :frame_data      => content[4..-1])
+      end
+
+      def self.combine_chunks(frame_data_chunks)
+        zstream = Zlib::Inflate.new
+        frame_data_chunks.each { |c| zstream << c.frame_data }
+        inflated = zstream.finish
+        zstream.close
+        inflated
+      end
+
+      def content
+        [[sequence_number].pack('N'), frame_data].join
+      end
+    end
+
     # Maps chunk types to classes, based on the four byte chunk type indicator
     # at the beginning of a chunk.
     #
@@ -394,6 +501,9 @@ module ChunkyPNG
       'zTXt' => CompressedText,
       'iTXt' => InternationalText,
       'pHYs' => Physical,
+      'acTL' => AnimationControl,
+      'fcTL' => FrameControl,
+      'fdAT' => FrameData,
     }
   end
 end
