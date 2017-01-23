@@ -161,6 +161,10 @@ describe ChunkyPNG::Canvas do
       expect(subject).to_not receive(:include_xy?)
       subject.set_pixel(0, 0, ChunkyPNG::Color::BLACK)
     end
+
+    it "should handle float values for x and y as though they were integers" do
+      lambda { subject.set_pixel(0.5, 0, ChunkyPNG::Color::BLACK) }.should change { subject[0, 0] }.from(ChunkyPNG::Color::WHITE).to(ChunkyPNG::Color::BLACK)
+    end
   end
 
   describe '#set_pixel_if_within_bounds' do

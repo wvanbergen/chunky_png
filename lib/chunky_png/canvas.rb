@@ -133,7 +133,7 @@ module ChunkyPNG
     # @see #set_pixel
     def []=(x, y, color)
       assert_xy!(x, y)
-      @pixels[y * width + x] = ChunkyPNG::Color.parse(color)
+      @pixels[y.to_i * width + x] = ChunkyPNG::Color.parse(color)
     end
 
     # Replaces a single pixel in this canvas, without bounds checking.
@@ -147,7 +147,7 @@ module ChunkyPNG
     # @return [Integer] The new color value for this pixel, i.e.
     #   <tt>color</tt>.
     def set_pixel(x, y, color)
-      @pixels[y * width + x] = color
+      @pixels[y.to_i * width + x] = color
     end
 
     # Replaces a single pixel in this canvas, with bounds checking. It will do
@@ -160,7 +160,7 @@ module ChunkyPNG
     #   <tt>color</tt>, or <tt>nil</tt> if the coordinates are out of bounds.
     def set_pixel_if_within_bounds(x, y, color)
       return unless include_xy?(x, y)
-      @pixels[y * width + x] = color
+      @pixels[y.to_i * width + x] = color
     end
 
     # Returns a single pixel's color value from this canvas.
@@ -172,7 +172,7 @@ module ChunkyPNG
     # @see #get_pixel
     def [](x, y)
       assert_xy!(x, y)
-      @pixels[y * width + x]
+      @pixels[y.to_i * width + x]
     end
 
     # Returns a single pixel from this canvas, without checking bounds. The
@@ -182,7 +182,7 @@ module ChunkyPNG
     # @param (see #[])
     # @return [Integer] The current pixel at the provided coordinates.
     def get_pixel(x, y)
-      @pixels[y * width + x]
+      @pixels[y.to_i * width + x]
     end
 
     # Returns an extracted row as vector of pixels
