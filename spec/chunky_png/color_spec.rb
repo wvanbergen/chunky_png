@@ -127,6 +127,10 @@ describe ChunkyPNG::Color do
       expect(from_hsv(120, 1, 1)).to      eql @green
       expect(from_hsv(240, 1, 1)).to      eql @blue
 
+      # A hue should be mapped to the range 0...360
+      expect(from_hsv(360, 0, 0)).to eql from_hsv(0, 0, 0)
+      expect(from_hsv(540, 0, 0)).to eql from_hsv(180, 0, 0)
+
       # And, finally, one random color
       expect(from_hsv(120, 0.5, 0.80)).to eql 0x66cc66ff
 
@@ -161,6 +165,10 @@ describe ChunkyPNG::Color do
       expect(from_hsl(0, 1, 0.5)).to       eql @red
       expect(from_hsl(120, 1, 0.5)).to     eql @green
       expect(from_hsl(240, 1, 0.5)).to     eql @blue
+
+      # A hue should be mapped to the range 0...360
+      expect(from_hsl(360, 0, 0)).to eql from_hsl(0, 0, 0)
+      expect(from_hsl(540, 0, 0)).to eql from_hsl(180, 0, 0)
 
       # Random colors
       from_hsl(87.27, 0.5, 0.5686)     == 0x96c85aff

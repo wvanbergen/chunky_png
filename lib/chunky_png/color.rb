@@ -183,7 +183,8 @@ module ChunkyPNG
     # in descriptions of this colorspace. This implementation follows the modern
     # convention of 0 degrees hue indicating red.
     #
-    # @param [Fixnum] hue The hue component (0-360)
+    # @param [Fixnum] hue The hue component.  Nominally 0...360;
+    #   values outside this range are mapped to it.
     # @param [Fixnum] saturation The saturation component (0-1)
     # @param [Fixnum] value The value (brightness) component (0-1)
     # @param [Fixnum] alpha Defaults to opaque (255).
@@ -191,7 +192,6 @@ module ChunkyPNG
     # @raise [ArgumentError] if the hsv triple is invalid.
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
     def from_hsv(hue, saturation, value, alpha = 255)
-      raise ArgumentError, "Hue must be between 0 and 360" unless (0..360).include?(hue)
       raise ArgumentError, "Saturation must be between 0 and 1" unless (0..1).include?(saturation)
       raise ArgumentError, "Value/brightness must be between 0 and 1" unless (0..1).include?(value)
       chroma = value * saturation
@@ -207,7 +207,8 @@ module ChunkyPNG
     # This implementation follows the modern convention of 0 degrees hue
     # indicating red.
     #
-    # @param [Fixnum] hue The hue component (0-360)
+    # @param [Fixnum] hue The hue component.  Nominally 0...360;
+    #   values outside this range are mapped to it.
     # @param [Fixnum] saturation The saturation component (0-1)
     # @param [Fixnum] lightness The lightness component (0-1)
     # @param [Fixnum] alpha Defaults to opaque (255).
@@ -215,7 +216,6 @@ module ChunkyPNG
     # @raise [ArgumentError] if the hsl triple is invalid.
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
     def from_hsl(hue, saturation, lightness, alpha = 255)
-      raise ArgumentError, "Hue #{hue} was not between 0 and 360" unless (0..360).include?(hue)
       raise ArgumentError, "Saturation #{saturation} was not between 0 and 1" unless (0..1).include?(saturation)
       raise ArgumentError, "Lightness #{lightness} was not between 0 and 1" unless (0..1).include?(lightness)
       chroma = (1 - (2 * lightness - 1).abs) * saturation
@@ -236,7 +236,8 @@ module ChunkyPNG
     # is calculated differently for each colorspace, it must be passed in as
     # a parameter.
     #
-    # @param [Fixnum] hue The hue-component (0-360)
+    # @param [Fixnum] hue The hue component.  Nominally 0...360;
+    #   values outside this range are mapped to it.
     # @param [Fixnum] saturation The saturation-component (0-1)
     # @param [Fixnum] y_component The y_component can represent either lightness
     #     or brightness/value (0-1) depending on which scheme (HSV/HSL) is being used.
@@ -247,6 +248,7 @@ module ChunkyPNG
     # @see http://www.tomjewett.com/colors/hsb.html
     # @private
     def cylindrical_to_cubic(hue, saturation, y_component, chroma)
+      hue %= 360
       hue_prime = hue.fdiv(60)
       x = chroma * (1 - (hue_prime % 2 - 1).abs)
 
