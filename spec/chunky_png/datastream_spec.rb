@@ -90,15 +90,28 @@ describe ChunkyPNG::Datastream do
       expect(coach_us.compressed).to eq(ChunkyPNG::COMPRESSED_CONTENT)
       expect(coach_us.compression).to eq(ChunkyPNG::COMPRESSION_DEFAULT)
     end
-  end
 
-  it 'should write iTXt chunks correctly' do
-    expected_hex = %w(0000 001d 6954 5874 436f 6d6d 656e 7400 0000 0000 4372 6561 7465 6420 7769 7468 2047 494d 5064 2e65 07).join('')
-    stream = StringIO.new
-    itext = ChunkyPNG::Chunk::InternationalText.new('Comment', 'Created with GIMP')
-    itext.write(stream)
-    generated_hex = stream.string.unpack('H*').join('')
+    it 'should write iTXt chunks correctly' do
+      expected_hex = %w(0000 001d 6954 5874 436f 6d6d 656e 7400 0000 0000 4372 6561 7465 6420 7769 7468 2047 494d 5064 2e65 07).join('')
+      stream = StringIO.new
+      itext = ChunkyPNG::Chunk::InternationalText.new('Comment', 'Created with GIMP')
+      itext.write(stream)
+      generated_hex = stream.string.unpack('H*').join('')
 
-    expect(generated_hex).to eq(expected_hex)
+      expect(generated_hex).to eq(expected_hex)
+    end
+
+    it 'should handle UTF-8 in iTXt chunks correctly' do
+      stream = StringIO.new
+      text = '☼☕'.force_encoding('utf-8')
+      translated_keyword = '⚡'.force_encoding('utf-8')
+      itext = ChunkyPNG::Chunk::InternationalText.new('Comment', text, '', translated_keyword)
+      itext.write(stream)
+
+      parsed = ChunkyPNG::Chunk.read(StringIO.new(stream.string))
+      expect(parsed.keyword).to eq('Comment')
+      expect(parsed.text).to eq(text)
+      expect(parsed.translated_keyword).to eq(translated_keyword)
+    end
   end
 end

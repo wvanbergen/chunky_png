@@ -390,7 +390,7 @@ module ChunkyPNG
         raise ChunkyPNG::NotSupported, "Compression flag #{compressed.inspect} not supported!" unless compressed == ChunkyPNG::UNCOMPRESSED_CONTENT || compressed == ChunkyPNG::COMPRESSED_CONTENT
         raise ChunkyPNG::NotSupported, "Compression method #{compression.inspect} not supported!" unless compression == ChunkyPNG::COMPRESSION_DEFAULT
         text = (compressed == ChunkyPNG::COMPRESSED_CONTENT) ? Zlib::Inflate.inflate(text_field) : text_field
-        new(keyword, text, language_tag, translated_keyword, compressed, compression)
+        new(keyword, text.force_encoding('utf-8'), language_tag, translated_keyword.force_encoding('utf-8'), compressed, compression)
       end
 
       def content
