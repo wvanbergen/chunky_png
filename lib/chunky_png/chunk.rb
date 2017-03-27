@@ -377,7 +377,7 @@ module ChunkyPNG
 
       def initialize(keyword, text, language_tag = '', translated_keyword = '', compressed = ChunkyPNG::UNCOMPRESSED_CONTENT, compression = ChunkyPNG::COMPRESSION_DEFAULT)
         super('iTXt')
-        @keyword =keyword
+        @keyword = keyword
         @text = text
         @language_tag = language_tag
         @translated_keyword = translated_keyword
