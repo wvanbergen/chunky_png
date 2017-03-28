@@ -102,6 +102,18 @@ describe ChunkyPNG::Datastream do
       expect(generated_hex).to eq(expected_hex)
     end
 
+    it 'should handle incorrect UTF-8 encoding in iTXt chunks' do
+      incorrect_text_encoding = [0, 0, 0, 14, 105, 84, 88, 116, 67, 111, 109, 109, 101, 110, 116, 0, 0, 0, 0, 0, 195, 40, 17, 87, 97, 213].pack('C*')
+      incorrect_translated_keyword_encoding = [0, 0, 0, 19, 105, 84, 88, 116, 67, 111, 109, 109, 101, 110, 116, 0, 0, 0, 0, 226, 130, 40, 0, 116, 101, 115, 116, 228, 53, 113, 182].pack('C*')
+
+      expect {
+        ChunkyPNG::Chunk.read(StringIO.new(incorrect_text_encoding))
+      }.to raise_error(ChunkyPNG::NotSupported, 'Invalid encoding in iTXt text field detected("\xC3(")!')
+      expect {
+        ChunkyPNG::Chunk.read(StringIO.new(incorrect_translated_keyword_encoding))
+      }.to raise_error(ChunkyPNG::NotSupported, 'Invalid encoding in iTXt translated_keyword field detected("\xE2\x82(")!')
+    end
+
     it 'should handle UTF-8 in iTXt chunks correctly' do
       stream = StringIO.new
       text = '☼☕'
@@ -112,8 +124,10 @@ describe ChunkyPNG::Datastream do
       parsed = ChunkyPNG::Chunk.read(StringIO.new(stream.string))
       expect(parsed.keyword).to eq('Comment')
       expect(parsed.text.encoding).to eq(Encoding::UTF_8)
+      expect(parsed.text.valid_encoding?).to be true
       expect(parsed.text).to eq(text)
       expect(parsed.translated_keyword.encoding).to eq(Encoding::UTF_8)
+      expect(parsed.translated_keyword.valid_encoding?).to be true
       expect(parsed.translated_keyword).to eq(translated_keyword)
     end
   end
