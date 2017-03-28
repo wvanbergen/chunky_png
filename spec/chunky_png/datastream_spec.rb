@@ -104,14 +104,16 @@ describe ChunkyPNG::Datastream do
 
     it 'should handle UTF-8 in iTXt chunks correctly' do
       stream = StringIO.new
-      text = '☼☕'.force_encoding('utf-8')
-      translated_keyword = '⚡'.force_encoding('utf-8')
+      text = '☼☕'
+      translated_keyword = '⚡'
       itext = ChunkyPNG::Chunk::InternationalText.new('Comment', text, '', translated_keyword)
       itext.write(stream)
 
       parsed = ChunkyPNG::Chunk.read(StringIO.new(stream.string))
       expect(parsed.keyword).to eq('Comment')
+      expect(parsed.text.encoding).to eq(Encoding::UTF_8)
       expect(parsed.text).to eq(text)
+      expect(parsed.translated_keyword.encoding).to eq(Encoding::UTF_8)
       expect(parsed.translated_keyword).to eq(translated_keyword)
     end
   end
