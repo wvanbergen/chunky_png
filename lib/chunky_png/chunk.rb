@@ -368,13 +368,39 @@ module ChunkyPNG
     # a translation of the keyword name. Finally, it supports bot compressed
     # and uncompressed values.
     #
-    # @todo This chunk is currently not implemented, but merely read and
-    #   written back intact.
+    # http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html#C.iTXt
     #
     # @see ChunkyPNG::Chunk::Text
     # @see ChunkyPNG::Chunk::CompressedText
     class InternationalText < Generic
-      # TODO
+      attr_accessor :keyword, :text, :language_tag, :translated_keyword, :compressed, :compression
+
+      def initialize(keyword, text, language_tag = '', translated_keyword = '', compressed = ChunkyPNG::UNCOMPRESSED_CONTENT, compression = ChunkyPNG::COMPRESSION_DEFAULT)
+        super('iTXt')
+        @keyword = keyword
+        @text = text
+        @language_tag = language_tag
+        @translated_keyword = translated_keyword
+        @compressed = compressed
+        @compression = compression
+      end
+
+      def self.read(type, content)
+        keyword, compressed, compression, language_tag, translated_keyword, text_field = content.unpack('Z*CCZ*Z*a*')
+        raise ChunkyPNG::NotSupported, "Compression flag #{compressed.inspect} not supported!" unless compressed == ChunkyPNG::UNCOMPRESSED_CONTENT || compressed == ChunkyPNG::COMPRESSED_CONTENT
+        raise ChunkyPNG::NotSupported, "Compression method #{compression.inspect} not supported!" unless compression == ChunkyPNG::COMPRESSION_DEFAULT
+        text = (compressed == ChunkyPNG::COMPRESSED_CONTENT) ? Zlib::Inflate.inflate(text_field) : text_field
+        text = text.force_encoding('utf-8')
+        raise ChunkyPNG::NotSupported, "Invalid encoding in iTXt text field detected(#{text.inspect})!" unless text.valid_encoding?
+        translated_keyword = translated_keyword.force_encoding('utf-8')
+        raise ChunkyPNG::NotSupported, "Invalid encoding in iTXt translated_keyword field detected(#{translated_keyword.inspect})!" unless translated_keyword.valid_encoding?
+        new(keyword, text, language_tag, translated_keyword.force_encoding('utf-8'), compressed, compression)
+      end
+
+      def content
+        text_field = (compressed == ChunkyPNG::COMPRESSED_CONTENT) ? Zlib::Deflate.deflate(text) : text
+        [keyword, compressed, compression, language_tag, translated_keyword, text_field].pack('Z*CCZ*Z*a*')
+      end
     end
 
     # Maps chunk types to classes, based on the four byte chunk type indicator

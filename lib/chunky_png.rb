@@ -57,6 +57,16 @@ module ChunkyPNG
   # @private
   COMPRESSION_DEFAULT   = 0
 
+  # Indicates that the PNG chunk content is not compressed
+  # flag used in iTXt chunk
+  # @private
+  UNCOMPRESSED_CONTENT  = 0
+
+  # Indicates that the PNG chunk content is compressed
+  # flag used in iTXt chunk
+  # @private
+  COMPRESSED_CONTENT    = 1
+
   # Indicates that the image does not use interlacing.
   # @private
   INTERLACING_NONE      = 0
