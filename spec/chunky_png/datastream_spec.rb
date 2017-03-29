@@ -103,17 +103,33 @@ describe ChunkyPNG::Datastream do
       expect { ChunkyPNG::Chunk.read(StringIO.new(incorrect_translated_keyword_encoding)) }.to raise_error(ChunkyPNG::InvalidUTF8)
     end
 
-    it 'should handle UTF-8 in iTXt chunks correctly' do
-      itext = ChunkyPNG::Chunk::InternationalText.new('Comment', '✨', '', '💩')
-      itext.write(stream = StringIO.new)
+    it 'should handle UTF-8 in iTXt compressed chunks correctly' do
+      parsed = serialized_chunk(ChunkyPNG::Chunk::InternationalText.new('Comment', '✨', '', '💩', ChunkyPNG::COMPRESSED_CONTENT))
 
-      stream.rewind
-      parsed = ChunkyPNG::Chunk.read(stream)
+      expect(parsed.text).to eq('✨')
+      expect(parsed.text.encoding).to eq(Encoding::UTF_8)
+
+      expect(parsed.translated_keyword).to eq('💩')
+      expect(parsed.translated_keyword.encoding).to eq(Encoding::UTF_8)
+    end
+
+    it 'should handle UTF-8 in iTXt chunks correctly' do
+      parsed = serialized_chunk(ChunkyPNG::Chunk::InternationalText.new('Comment', '✨', '', '💩'))
 
       expect(parsed.text).to eq('✨')
       expect(parsed.text.encoding).to eq(Encoding::UTF_8)
       
       expect(parsed.translated_keyword).to eq('💩')      
+      expect(parsed.translated_keyword.encoding).to eq(Encoding::UTF_8)
+    end
+
+    it 'should transform non UTF-8 iTXt fields to UTF-8 on write' do
+      parsed = serialized_chunk(ChunkyPNG::Chunk::InternationalText.new('Comment', '®'.encode('Windows-1252'), '', 'ƒ'.encode('Windows-1252')))
+
+      expect(parsed.text).to eq('®')
+      expect(parsed.text.encoding).to eq(Encoding::UTF_8)
+
+      expect(parsed.translated_keyword).to eq('ƒ')
       expect(parsed.translated_keyword.encoding).to eq(Encoding::UTF_8)
     end
   end
