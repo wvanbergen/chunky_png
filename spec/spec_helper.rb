@@ -45,10 +45,20 @@ module ResourceFileHelper
   end
 end
 
+module ChunkOperationsHelper
+
+  def serialized_chunk(chunk)
+    chunk.write(stream = StringIO.new)
+    stream.rewind
+    ChunkyPNG::Chunk.read(stream)
+  end
+end
+
 RSpec.configure do |config|
   config.extend PNGSuite
   config.include PNGSuite
   config.include ResourceFileHelper
+  config.include ChunkOperationsHelper
 
   config.expect_with :rspec do |c|
     c.syntax = [:should, :expect]
