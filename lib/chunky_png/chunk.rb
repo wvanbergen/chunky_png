@@ -170,7 +170,7 @@ module ChunkyPNG
       # @param content [String] The content read from the chunk. Should be
       #   empty.
       # @return [ChunkyPNG::Chunk::End] The new End chunk instance.
-      # @raise [RuntimeError] Raises an exception if the content was not empty.
+      # @raise [ChunkyPNG::ExpectationFailed] Raises an exception if the content was not empty.
       def self.read(type, content)
         raise ExpectationFailed, 'The IEND chunk should be empty!' if content.bytesize > 0
         self.new
@@ -323,7 +323,6 @@ module ChunkyPNG
     # ratio for display of the image.
     #
     # http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html#C.pHYs
-    #
     class Physical < Base
       attr_accessor :ppux, :ppuy, :unit
 
@@ -349,10 +348,8 @@ module ChunkyPNG
         new(ppux, ppuy, unit)
       end
 
-      # Creates the content to write to the stream, by concatenating the
-      # keyword with the deflated value, joined by a null character.
-      #
-      # @return The content that should be written to the datastream.
+      # Assembles the content to write to the stream for this chunk.
+      # @return [String] The binary content that should be written to the datastream.
       def content
         [ppux, ppuy, unit == :meters ? 1 : 0].pack('NNC')
       end
@@ -360,8 +357,8 @@ module ChunkyPNG
       INCHES_PER_METER = 0.0254
     end
 
-    # The Text (iTXt) chunk contains keyword/value metadata about the PNG
-    # stream.
+    # The InternationalText (iTXt) chunk contains keyword/value metadata about the PNG
+    # stream, translated to a given locale.
     #
     # The metadata in this chunk can be encoded using UTF-8 characters.
     # Moreover, it is possible to define the language of the metadata, and give
@@ -385,6 +382,13 @@ module ChunkyPNG
         @compression = compression
       end
 
+      # Reads the tTXt chunk.
+      # @param type [String] The four character chunk type indicator (= "iTXt").
+      # @param content [String] The content read from the chunk.
+      # @return [ChunkyPNG::Chunk::InternationalText] The new End chunk instance.
+      # @raise [ChunkyPNG::InvalidUTF8] If the chunk contains data that is not UTF8-encoded text.
+      # @raise [ChunkyPNG::NotSupported] If the chunk refers to an unsupported compression method.
+      #  Currently uncompressed data and deflate are supported.
       def self.read(type, content)
         keyword, compressed, compression, language_tag, translated_keyword, text = content.unpack('Z*CCZ*Z*a*')
         raise ChunkyPNG::NotSupported, "Compression flag #{compressed.inspect} not supported!" unless compressed == ChunkyPNG::UNCOMPRESSED_CONTENT || compressed == ChunkyPNG::COMPRESSED_CONTENT
@@ -401,6 +405,8 @@ module ChunkyPNG
         new(keyword, text, language_tag, translated_keyword, compressed, compression)
       end
 
+      # Assembles the content to write to the stream for this chunk.
+      # @return [String] The binary content that should be written to the datastream.
       def content
         text_field = (compressed == ChunkyPNG::COMPRESSED_CONTENT) ? Zlib::Deflate.deflate(text) : text
         [keyword, compressed, compression, language_tag, translated_keyword, text_field].pack('Z*CCZ*Z*a*')
