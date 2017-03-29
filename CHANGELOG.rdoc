@@ -7,7 +7,7 @@ The file documents the changes to this library over the different versions.
 
 === Unreleased changes
 
-- Nothing yet!
+- Add support for reading and writing an international textual data (iTXt chunks).
 
 === 1.3.8 - 2016-08-31
 
