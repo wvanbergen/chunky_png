@@ -324,7 +324,7 @@ module ChunkyPNG
     #
     # http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html#C.pHYs
     #
-    class Physical < Generic
+    class Physical < Base
       attr_accessor :ppux, :ppuy, :unit
 
       def initialize(ppux, ppuy, unit = :unknown)
