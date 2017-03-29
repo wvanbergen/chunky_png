@@ -372,7 +372,7 @@ module ChunkyPNG
     #
     # @see ChunkyPNG::Chunk::Text
     # @see ChunkyPNG::Chunk::CompressedText
-    class InternationalText < Generic
+    class InternationalText < Base
       attr_accessor :keyword, :text, :language_tag, :translated_keyword, :compressed, :compression
 
       def initialize(keyword, text, language_tag = '', translated_keyword = '', compressed = ChunkyPNG::UNCOMPRESSED_CONTENT, compression = ChunkyPNG::COMPRESSION_DEFAULT)
@@ -386,15 +386,19 @@ module ChunkyPNG
       end
 
       def self.read(type, content)
-        keyword, compressed, compression, language_tag, translated_keyword, text_field = content.unpack('Z*CCZ*Z*a*')
+        keyword, compressed, compression, language_tag, translated_keyword, text = content.unpack('Z*CCZ*Z*a*')
         raise ChunkyPNG::NotSupported, "Compression flag #{compressed.inspect} not supported!" unless compressed == ChunkyPNG::UNCOMPRESSED_CONTENT || compressed == ChunkyPNG::COMPRESSED_CONTENT
         raise ChunkyPNG::NotSupported, "Compression method #{compression.inspect} not supported!" unless compression == ChunkyPNG::COMPRESSION_DEFAULT
-        text = (compressed == ChunkyPNG::COMPRESSED_CONTENT) ? Zlib::Inflate.inflate(text_field) : text_field
-        text = text.force_encoding('utf-8')
-        raise ChunkyPNG::NotSupported, "Invalid encoding in iTXt text field detected(#{text.inspect})!" unless text.valid_encoding?
-        translated_keyword = translated_keyword.force_encoding('utf-8')
-        raise ChunkyPNG::NotSupported, "Invalid encoding in iTXt translated_keyword field detected(#{translated_keyword.inspect})!" unless translated_keyword.valid_encoding?
-        new(keyword, text, language_tag, translated_keyword.force_encoding('utf-8'), compressed, compression)
+
+        text = Zlib::Inflate.inflate(text) if compressed == ChunkyPNG::COMPRESSED_CONTENT
+
+        text.force_encoding('utf-8')
+        raise ChunkyPNG::InvalidUTF8, "Invalid unicode encountered in iTXt chunk" unless text.valid_encoding?
+
+        translated_keyword.force_encoding('utf-8')
+        raise ChunkyPNG::InvalidUTF8, "Invalid unicode encountered in iTXt chunk" unless translated_keyword.valid_encoding?
+
+        new(keyword, text, language_tag, translated_keyword, compressed, compression)
       end
 
       def content
