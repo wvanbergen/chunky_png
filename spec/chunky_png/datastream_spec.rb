@@ -40,6 +40,12 @@ describe ChunkyPNG::Datastream do
       expect(ds.metadata['Title']).to eql 'PngSuite'
       expect(ds.metadata['Copyright']).to eql "Copyright Willem van Schaik, Singapore 1995-96"
     end
+
+    it "should load iTXt chunks correctly" do
+      filename = resource_file('itxt_chunk.png')
+      ds = ChunkyPNG::Datastream.from_file(filename)
+      expect(ds.metadata['coach']).to eql "US extracurricular sports teacher at a school (UK: PE teacher) lowest class on a passenger aircraft (UK: economy)"
+    end
   end
 
   describe '#physical_chunk' do

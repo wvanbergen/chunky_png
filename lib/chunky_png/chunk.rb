@@ -371,6 +371,8 @@ module ChunkyPNG
     # @see ChunkyPNG::Chunk::CompressedText
     class InternationalText < Base
       attr_accessor :keyword, :text, :language_tag, :translated_keyword, :compressed, :compression
+      
+      alias_method :value, :text
 
       def initialize(keyword, text, language_tag = '', translated_keyword = '', compressed = ChunkyPNG::UNCOMPRESSED_CONTENT, compression = ChunkyPNG::COMPRESSION_DEFAULT)
         super('iTXt')
