@@ -6,11 +6,13 @@ rvm:
 - "2.0"
 - "2.1"
 - "2.2"
+- "2.3"
+- "2.4"
+- "2.5"
 - ruby-head
-- rbx-19mode
 - jruby-19mode
 
 matrix:
   allow_failures:
-  - rvm: rbx-19mode
   - rvm: ruby-head
+  - rvm: "2.5" # Broken on Travis on 2018-01-23
