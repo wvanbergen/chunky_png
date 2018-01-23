@@ -40,6 +40,12 @@ describe ChunkyPNG::Datastream do
       expect(ds.metadata['Title']).to eql 'PngSuite'
       expect(ds.metadata['Copyright']).to eql "Copyright Willem van Schaik, Singapore 1995-96"
     end
+
+    it "ignores iTXt chunks" do
+      filename = resource_file('itxt_chunk.png')
+      ds = ChunkyPNG::Datastream.from_file(filename)
+      p ds.metadata
+    end
   end
 
   describe '#physical_chunk' do
@@ -118,8 +124,8 @@ describe ChunkyPNG::Datastream do
 
       expect(parsed.text).to eq('✨')
       expect(parsed.text.encoding).to eq(Encoding::UTF_8)
-      
-      expect(parsed.translated_keyword).to eq('💩')      
+
+      expect(parsed.translated_keyword).to eq('💩')
       expect(parsed.translated_keyword.encoding).to eq(Encoding::UTF_8)
     end
 
