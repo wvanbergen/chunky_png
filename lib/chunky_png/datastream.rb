@@ -143,7 +143,7 @@ module ChunkyPNG
     def metadata
       metadata = {}
       other_chunks.select do |chunk|
-        metadata[chunk.keyword] = chunk.value if chunk.respond_to?(:keyword)
+        metadata[chunk.keyword] = chunk.value if chunk.respond_to?(:keyword) && chunk.respond_to?(:value)
       end
       metadata
     end
