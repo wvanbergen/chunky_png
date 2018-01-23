@@ -44,7 +44,7 @@ describe ChunkyPNG::Datastream do
     it "ignores iTXt chunks" do
       filename = resource_file('itxt_chunk.png')
       ds = ChunkyPNG::Datastream.from_file(filename)
-      p ds.metadata
+      expect(ds.metadata).to be_empty
     end
   end
 

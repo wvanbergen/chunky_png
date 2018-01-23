@@ -142,7 +142,7 @@ module ChunkyPNG
     # @return [Hash] A hash containing metadata fields and their values.
     def metadata
       metadata = {}
-      other_chunks.select do |chunk|
+      other_chunks.each do |chunk|
         metadata[chunk.keyword] = chunk.value if chunk.respond_to?(:keyword) && chunk.respond_to?(:value)
       end
       metadata
