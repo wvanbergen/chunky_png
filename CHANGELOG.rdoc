@@ -9,6 +9,10 @@ The file documents the changes to this library over the different versions.
 
 *Noething yet*
 
+=== 1.3.10 - 2018-01-23
+
+- Fixed a regression in Datastream#metadata, which was not able to deal with iTXt chunks.
+
 === 1.3.9 - 2018-01-23
 
 - Add support for reading and writing an international textual data (iTXt chunks).
