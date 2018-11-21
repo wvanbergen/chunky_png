@@ -107,6 +107,12 @@ module ChunkyPNG
 
     alias_method :==, :eql?
 
+    # Calculates a hash for the dimension object, based on width and height
+    # @return [Integer] A hashed value of the dimensions
+    def hash
+      [width, height].hash
+    end
+
     # Compares the size of 2 dimensions.
     # @param [ChunkyPNG::Dimension] The dimension to compare with.
     # @return [-1, 0, 1] -1 if the other dimension has a larger area, 1 of this
