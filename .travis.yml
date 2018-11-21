@@ -3,8 +3,6 @@ script: bundle exec rake
 sudo: false
 
 rvm:
-- "2.0"
-- "2.1"
 - "2.2"
 - "2.3"
 - "2.4"
@@ -15,4 +13,3 @@ rvm:
 matrix:
   allow_failures:
   - rvm: ruby-head
-  - rvm: "2.5" # Broken on Travis on 2018-01-23
