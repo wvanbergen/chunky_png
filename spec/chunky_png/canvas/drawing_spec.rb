@@ -47,6 +47,14 @@ describe ChunkyPNG::Canvas::Drawing do
       canvas = ChunkyPNG::Canvas.new(16, 16, ChunkyPNG::Color::WHITE)
       expect(canvas.line(1, 1, 10, 10, :black)).to equal(canvas)
     end
+
+    it "should draw a single pixel when the start and end point are the same" do
+      canvas = ChunkyPNG::Canvas.new(5, 5, ChunkyPNG::Color::WHITE)
+      canvas.line(2, 2, 2, 2, ChunkyPNG::Color::BLACK)
+
+      non_white_pixels = canvas.pixels.count { |pixel| pixel != ChunkyPNG::Color::WHITE }
+      expect(non_white_pixels).to eql 1
+    end
   end
 
   describe '#rect' do
