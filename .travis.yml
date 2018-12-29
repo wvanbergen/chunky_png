@@ -1,6 +1,7 @@
 language: ruby
-script: bundle exec rake
 sudo: false
+
+script: bundle exec rake
 
 rvm:
 - "2.2"
@@ -9,7 +10,8 @@ rvm:
 - "2.5"
 - "2.6"
 - ruby-head
-- jruby-19mode
+- jruby
+- truffleruby
 
 matrix:
   allow_failures:
