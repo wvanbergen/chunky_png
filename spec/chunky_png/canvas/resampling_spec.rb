@@ -118,4 +118,27 @@ describe ChunkyPNG::Canvas::Resampling do
       expect { subject.resample_bilinear!(1, 1) }.to change { subject.dimension }.to(ChunkyPNG::Dimension('1x1'))
     end
   end
+
+  
+  describe '#resize_to_fit!' do
+    it "should size it correctly" do
+      expect{subject.resize_to_fit!(45,30)}.to change {subject.width}.to(30).and change{subject.height}.to(30)
+      expect(subject).to eql reference_canvas('clock_30x30')
+    end
+    
+    context "tall" do
+      subject { reference_canvas('clock_bl_xdown_yup') }
+      it "should size it correctly" do
+        expect{subject.resize_to_fit!(45,30)}.to change {subject.width}.to(12).and change{subject.height}.to(30)
+        expect(subject).to eql reference_canvas('clock_12x30')
+      end
+    end
+    context "wide" do
+      subject { reference_canvas('submarine') }
+      it "should size it correctly" do
+        expect{subject.resize_to_fit!(30,45)}.to change {subject.width}.to(30).and change{subject.height}.to(19)
+        expect(subject).to eql reference_canvas('submarine_30x19')
+      end
+    end
+  end
 end
