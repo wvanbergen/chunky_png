@@ -140,17 +140,26 @@ module ChunkyPNG
         dup.resample_bilinear!(new_width, new_height)
       end
 
-      def resize_to_fit!(new_width, new_height)
+      # Resamples the canvas to fit a given bounding box
+      #
+      # Maintains the aspect ratio.
+      # Only shrinks if needed, will not enlarge.
+      #
+      # @param [Integer] new_width The width of the destination
+      # @param [Integer] new_height The height of the destination
+      # @return [ChunkyPNG::Canvas] A new canvas instance with the resampled pixels as needed.
+      def resize_to_fit!(new_width, new_height=new_width)
         shrink_x = new_width.to_f/width
         shrink_y = new_height.to_f/height
         if shrink_x < 1.0 && shrink_x < shrink_y
           self.resize!( new_width, (height * shrink_x).to_i)
         elsif shrink_y < 1.0
           self.resize!( (width * shrink_y).to_i, new_height)
+        #else the image fits in the new dimensions, so leave it alone
         end
       end
 
-      def resize_to_fit(new_width, new_height)
+      def resize_to_fit(new_width, new_height=new_width)
         dup.resize_to_fit!(new_width, new_height)
       end
       

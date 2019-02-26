@@ -128,6 +128,10 @@ describe ChunkyPNG::Canvas::Resampling do
     it "should not change the original image's dimensions" do
       expect { subject.resize_to_fit(45,30) }.to_not change { subject.dimension }
     end
+    it "should do nothing if it fits in a square" do
+      expect { subject.resize_to_fit(100) }.to_not change { subject.dimension }
+      expect(subject).to eql reference_canvas('clock')
+    end
     
     context "tall" do
       subject { reference_canvas('clock_bl_xdown_yup') }
