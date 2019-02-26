@@ -125,21 +125,25 @@ describe ChunkyPNG::Canvas::Resampling do
       expect{subject.resize_to_fit!(45,30)}.to change {subject.width}.to(30).and change{subject.height}.to(30)
       expect(subject).to eql reference_canvas('clock_30x30')
     end
+    
     it "should not change the original image's dimensions" do
-      expect { subject.resize_to_fit(45,30) }.to_not change { subject.dimension }
+      expect { subject.resize_to_fit(45, 30) }.to_not change { subject.dimension }
     end
     
-    context "tall" do
+    context "a tall image" do
       subject { reference_canvas('clock_bl_xdown_yup') }
+      
       it "should size it correctly" do
-        expect{subject.resize_to_fit!(45,30)}.to change {subject.width}.to(12).and change{subject.height}.to(30)
+        expect { subject.resize_to_fit!(45, 30) }.to change { subject.width }.to(12).and change { subject.height }.to(30)
         expect(subject).to eql reference_canvas('clock_12x30')
       end
     end
-    context "wide" do
+    
+    context "a wide image" do
       subject { reference_canvas('submarine') }
+      
       it "should size it correctly" do
-        expect{subject.resize_to_fit!(30,45)}.to change {subject.width}.to(30).and change{subject.height}.to(19)
+        expect { subject.resize_to_fit!(30, 45) }.to change { subject.width }.to(30).and change { subject.height }.to(19)
         expect(subject).to eql reference_canvas('submarine_30x19')
       end
     end
