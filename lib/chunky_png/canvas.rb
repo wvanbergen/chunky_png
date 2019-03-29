@@ -68,7 +68,7 @@ module ChunkyPNG
     #   @param [Integer] height The height in pixels of this canvas
     #   @param [Integer, ...] background_color The initial background color of
     #     this canvas. This can be a color value or any value that
-    #     {ChunkyPNG::Color.parse} can handle.
+    #     {ChunkyPNG::Color#parse} can handle.
     #
     # @overload initialize(width, height, initial)
     #   @param [Integer] width The width in pixels of this canvas
@@ -143,7 +143,7 @@ module ChunkyPNG
     #
     # @param [Integer] x The x-coordinate of the pixel (column)
     # @param [Integer] y The y-coordinate of the pixel (row)
-    # @param [Integer] pixel The new color for the provided coordinates.
+    # @param [Integer] color The new color for the provided coordinates.
     # @return [Integer] The new color value for this pixel, i.e.
     #   <tt>color</tt>.
     def set_pixel(x, y, color)
@@ -155,7 +155,7 @@ module ChunkyPNG
     #
     # @param [Integer] x The x-coordinate of the pixel (column)
     # @param [Integer] y The y-coordinate of the pixel (row)
-    # @param [Integer] pixel The new color value for the provided coordinates.
+    # @param [Integer] color The new color value for the provided coordinates.
     # @return [Integer] The new color value for this pixel, i.e.
     #   <tt>color</tt>, or <tt>nil</tt> if the coordinates are out of bounds.
     def set_pixel_if_within_bounds(x, y, color)

@@ -33,7 +33,8 @@ module ChunkyPNG
       end
 
       # Draws a Bezier curve
-      # @param [Array, Point] A collection of control points
+      # @param [Array, Point] points A collection of control points
+      # @param [Integer] stroke_color
       # @return [Chunky:PNG::Canvas] Itself, with the curve drawn
       def bezier_curve(points, stroke_color = ChunkyPNG::Color::BLACK)
         points = ChunkyPNG::Vector(*points)
@@ -162,7 +163,7 @@ module ChunkyPNG
       # Draws a polygon on the canvas using the stroke_color, filled using the
       # fill_color if any.
       #
-      # @param [Array, String] The control point vector. Accepts everything
+      # @param [Array, String] path The control point vector. Accepts everything
       #   {ChunkyPNG.Vector} accepts.
       # @param [Integer] stroke_color The stroke color to use for this polygon.
       # @param [Integer] fill_color The fill color to use for this polygon.
