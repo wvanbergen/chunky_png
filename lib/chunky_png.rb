@@ -140,20 +140,16 @@ module ChunkyPNG
   class UnitsUnknown < ChunkyPNG::Exception
   end
 
-  def self.force_binary(str)
-    str.respond_to?(:force_encoding) ? str.force_encoding('BINARY') : str
-  end
-
   # Empty byte array. This basically is an empty string, but with the encoding
   # set correctly to ASCII-8BIT (binary) in Ruby 1.9.
   # @return [String] An empty string, with encoding set to binary in Ruby 1.9
   # @private
-  EMPTY_BYTEARRAY = force_binary(String.new).freeze
+  EMPTY_BYTEARRAY = "".force_encoding(Encoding::BINARY).freeze
 
   # Null-byte, with the encoding set correctly to ASCII-8BIT (binary) in Ruby 1.9.
   # @return [String] A binary string, consisting of one NULL-byte.
   # @private
-  EXTRA_BYTE = force_binary(String.new("\0")).freeze
+  EXTRA_BYTE = "\0".force_encoding(Encoding::BINARY).freeze
 end
 
 require 'chunky_png/version'
