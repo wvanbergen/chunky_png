@@ -3,8 +3,8 @@
 
 module ChunkyPNG
   class Canvas
-    
-    # The ChunkyPNG::Canvas::Resampling module defines methods to perform image resampling to 
+
+    # The ChunkyPNG::Canvas::Resampling module defines methods to perform image resampling to
     # a {ChunkyPNG::Canvas}.
     #
     # Currently, only the nearest neighbor algorithm is implemented. Bilinear and cubic
@@ -18,12 +18,12 @@ module ChunkyPNG
       # Used for generating indicies for interpolation (eg, nearest
       # neighbour).
       #
-      # @param [Integer] width The width of the source 
+      # @param [Integer] width The width of the source
       # @param [Integer] new_width The width of the destination
       # @return [Array<Integer>] An Array of Integer indicies
       def steps(width, new_width)
         indicies, residues = steps_residues(width, new_width)
-        
+
         for i in 1..new_width
           indicies[i-1] = (indicies[i-1] + (residues[i-1] + 127)/255)
         end
@@ -41,7 +41,7 @@ module ChunkyPNG
       def steps_residues(width, new_width)
         indicies = Array.new(new_width, obj=nil)
         residues = Array.new(new_width, obj=nil)
-        
+
         # This works by accumulating the fractional error and
         # overflowing when necessary.
 
@@ -50,7 +50,7 @@ module ChunkyPNG
         base_step = width / new_width
         err_step = (width % new_width) << 1
         denominator = (new_width) << 1
-                
+
         # Initial pixel
         index = (width - new_width) / denominator
         err = (width - new_width) % denominator
@@ -70,7 +70,7 @@ module ChunkyPNG
         return indicies, residues
       end
 
-      
+
       # Resamples the canvas using nearest neighbor interpolation.
       # @param [Integer] new_width The width of the resampled canvas.
       # @param [Integer] new_height The height of the resampled canvas.
@@ -88,10 +88,10 @@ module ChunkyPNG
             i += 1
           end
         end
-        
+
         replace_canvas!(new_width.to_i, new_height.to_i, pixels)
       end
-      
+
       def resample_nearest_neighbor(new_width, new_height)
         dup.resample_nearest_neighbor!(new_width, new_height)
       end
@@ -139,9 +139,9 @@ module ChunkyPNG
       def resample_bilinear(new_width, new_height)
         dup.resample_bilinear!(new_width, new_height)
       end
-      
-      alias_method :resample, :resample_nearest_neighbor
-      alias_method :resize, :resample
+
+      alias resample resample_nearest_neighbor
+      alias resize resample
     end
   end
 end

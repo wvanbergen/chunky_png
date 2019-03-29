@@ -60,7 +60,7 @@ module ChunkyPNG
         from_io(StringIO.new(str, 'rb'))
       end
 
-      alias :from_string :from_blob
+      alias from_string from_blob
 
       # Reads a PNG datastream from a file.
       # @param [String] filename The path of the file to load from.
@@ -187,7 +187,7 @@ module ChunkyPNG
       return str.string
     end
 
-    alias :to_string :to_blob
-    alias :to_s :to_blob
+    alias to_string to_blob
+    alias to_s to_blob
   end
 end

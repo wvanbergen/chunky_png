@@ -93,7 +93,7 @@ module ChunkyPNG
       other.x == x && other.y == y
     end
 
-    alias_method :==, :eql?
+    alias == eql?
 
     # Compares 2 points.
     #
@@ -115,7 +115,7 @@ module ChunkyPNG
       [x, y]
     end
 
-    alias_method :to_ary, :to_a
+    alias to_ary to_a
 
     # Checks whether the point falls into a dimension
     # @param [ChunkyPNG::Dimension, ...] dimension_like The dimension of which the bounds

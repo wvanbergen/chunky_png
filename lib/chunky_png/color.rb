@@ -199,7 +199,8 @@ module ChunkyPNG
       rgb << alpha
       self.rgba(*rgb)
     end
-    alias_method :from_hsb, :from_hsv
+
+    alias from_hsb from_hsv
 
     # Creates a new color from an HSL triple.
     #
@@ -391,7 +392,7 @@ module ChunkyPNG
       rgba(new_r, new_g, new_b, new_a)
     end
 
-    alias :compose :compose_quick
+    alias compose compose_quick
 
     # Blends the foreground and background color by taking the average of
     # the components.
@@ -596,7 +597,8 @@ module ChunkyPNG
       include_alpha ? [hue, saturation, value, a(color)] :
                       [hue, saturation, value]
     end
-    alias_method :to_hsb, :to_hsv
+
+    alias to_hsb to_hsv
 
     # Returns an array with the separate HSL components of a color.
     #

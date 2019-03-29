@@ -100,7 +100,7 @@ module ChunkyPNG
       other.points == points
     end
 
-    alias_method :==, :eql?
+    alias == eql?
 
     # Returns the range in x-coordinates for all the points in this vector.
     # @return [Range] The (inclusive) range of x-coordinates.

@@ -50,8 +50,8 @@ module ChunkyPNG
         to_datastream(constraints).to_blob
       end
 
-      alias_method :to_string, :to_blob
-      alias_method :to_s, :to_blob
+      alias to_string to_blob
+      alias to_s to_blob
 
       # Converts this Canvas to a datastream, so that it can be saved as a PNG image.
       # @param [Hash, Symbol] constraints The constraints to use when encoding the canvas.

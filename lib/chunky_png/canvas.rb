@@ -233,7 +233,7 @@ module ChunkyPNG
       dimension.include?(ChunkyPNG::Point(*point_like))
     end
 
-    alias_method :include?,    :include_point?
+    alias include? include_point?
 
     # Checks whether the given x- and y-coordinate are in the range of the
     # canvas
@@ -278,7 +278,7 @@ module ChunkyPNG
             other.width == self.width && other.height == self.height
     end
 
-    alias :== :eql?
+    alias == eql?
 
     #################################################################
     # EXPORTING

@@ -158,7 +158,7 @@ module ChunkyPNG
         self
       end
 
-      alias_method :line, :line_xiaolin_wu
+      alias line line_xiaolin_wu
 
       # Draws a polygon on the canvas using the stroke_color, filled using the
       # fill_color if any.

@@ -105,7 +105,7 @@ module ChunkyPNG
       other.width == width && other.height == height
     end
 
-    alias_method :==, :eql?
+    alias == eql?
 
     # Calculates a hash for the dimension object, based on width and height
     # @return [Integer] A hashed value of the dimensions
@@ -127,6 +127,6 @@ module ChunkyPNG
       [width, height]
     end
 
-    alias_method :to_ary, :to_a
+    alias to_ary to_a
   end
 end
