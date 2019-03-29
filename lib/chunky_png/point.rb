@@ -106,7 +106,7 @@ module ChunkyPNG
     # @return [-1, 0, 1] <tt>-1</tt> If this point comes before the other one, <tt>1</tt>
     #   if after, and <tt>0</tt> if the points are identical.
     def <=>(other)
-      ((y <=> other.y) == 0) ? x <=> other.x : y <=> other.y
+      (y <=> other.y) == 0 ? x <=> other.x : y <=> other.y
     end
 
     # Converts the point instance to an array.

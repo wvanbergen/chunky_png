@@ -146,7 +146,7 @@ module ChunkyPNG
       #        the value will be modded by 2 to enforce this.
       # @return [Integer] The extracted 4bit value (0..15)
       def decode_png_extract_4bit_value(byte, index)
-        (index & 0x01 == 0) ? ((byte & 0xf0) >> 4) : (byte & 0x0f)
+        index & 0x01 == 0 ? ((byte & 0xf0) >> 4) : (byte & 0x0f)
       end
 
       # Extract 2 consecutive bits from a byte.
@@ -461,7 +461,7 @@ module ChunkyPNG
       # @return [void]
       def decode_png_str_scanline_average(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
-          a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
+          a = i > pixel_size ? stream.getbyte(pos + i - pixel_size) : 0
           b = prev_pos ? stream.getbyte(prev_pos + i) : 0
           stream.setbyte(pos + i, (stream.getbyte(pos + i) + ((a + b) >> 1)) & 0xff)
         end
@@ -474,14 +474,14 @@ module ChunkyPNG
       def decode_png_str_scanline_paeth(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
           cur_pos = pos + i
-          a = (i > pixel_size) ? stream.getbyte(cur_pos - pixel_size) : 0
+          a = i > pixel_size ? stream.getbyte(cur_pos - pixel_size) : 0
           b = prev_pos ? stream.getbyte(prev_pos + i) : 0
-          c = (prev_pos && i > pixel_size) ? stream.getbyte(prev_pos + i - pixel_size) : 0
+          c = prev_pos && i > pixel_size ? stream.getbyte(prev_pos + i - pixel_size) : 0
           p = a + b - c
           pa = (p - a).abs
           pb = (p - b).abs
           pc = (p - c).abs
-          pr = (pa <= pb) ? (pa <= pc ? a : c) : (pb <= pc ? b : c)
+          pr = pa <= pb ? (pa <= pc ? a : c) : (pb <= pc ? b : c)
           stream.setbyte(cur_pos, (stream.getbyte(cur_pos) + pr) & 0xff)
         end
       end

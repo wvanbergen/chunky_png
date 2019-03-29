@@ -222,7 +222,7 @@ module ChunkyPNG
         if filter_method
           (height - 1).downto(0) do |y|
             pos = start_pos + y * (line_width + 1)
-            prev_pos = (y == 0) ? nil : pos - (line_width + 1)
+            prev_pos = y == 0 ? nil : pos - (line_width + 1)
             send(filter_method, stream, pos, prev_pos, line_width, pixel_size)
           end
         end
@@ -389,7 +389,7 @@ module ChunkyPNG
       # @return [void]
       def encode_png_str_scanline_sub(stream, pos, prev_pos, line_width, pixel_size)
         line_width.downto(1) do |i|
-          a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
+          a = i > pixel_size ? stream.getbyte(pos + i - pixel_size) : 0
           stream.setbyte(pos + i, (stream.getbyte(pos + i) - a) & 0xff)
         end
         stream.setbyte(pos, ChunkyPNG::FILTER_SUB)
@@ -411,7 +411,7 @@ module ChunkyPNG
       # @return [void]
       def encode_png_str_scanline_average(stream, pos, prev_pos, line_width, pixel_size)
         line_width.downto(1) do |i|
-          a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
+          a = i > pixel_size ? stream.getbyte(pos + i - pixel_size) : 0
           b = prev_pos ? stream.getbyte(prev_pos + i) : 0
           stream.setbyte(pos + i, (stream.getbyte(pos + i) - ((a + b) >> 1)) & 0xff)
         end
@@ -423,14 +423,14 @@ module ChunkyPNG
       # @return [void]
       def encode_png_str_scanline_paeth(stream, pos, prev_pos, line_width, pixel_size)
         line_width.downto(1) do |i|
-          a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
-          b = (prev_pos) ? stream.getbyte(prev_pos + i) : 0
-          c = (prev_pos && i > pixel_size) ? stream.getbyte(prev_pos + i - pixel_size) : 0
+          a = i > pixel_size ? stream.getbyte(pos + i - pixel_size) : 0
+          b = prev_pos ? stream.getbyte(prev_pos + i) : 0
+          c = prev_pos && i > pixel_size ? stream.getbyte(prev_pos + i - pixel_size) : 0
           p = a + b - c
           pa = (p - a).abs
           pb = (p - b).abs
           pc = (p - c).abs
-          pr = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c)
+          pr = pa <= pb && pa <= pc ? a : (pb <= pc ? b : c)
           stream.setbyte(pos + i, (stream.getbyte(pos + i) - pr) & 0xff)
         end
         stream.setbyte(pos, ChunkyPNG::FILTER_PAETH)
