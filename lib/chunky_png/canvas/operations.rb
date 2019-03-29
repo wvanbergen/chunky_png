@@ -221,8 +221,8 @@ module ChunkyPNG
         self
       end
 
-      alias_method :flip!, :flip_horizontally!
-      alias_method :flip,  :flip_horizontally
+      alias flip! flip_horizontally!
+      alias flip flip_horizontally
 
       # Flips the image vertically, leaving the original intact.
       #
@@ -253,8 +253,8 @@ module ChunkyPNG
         self
       end
 
-      alias_method :mirror!, :flip_vertically!
-      alias_method :mirror,  :flip_vertically
+      alias mirror! flip_vertically!
+      alias mirror flip_vertically
 
       # Returns a new canvas instance that is rotated 90 degrees clockwise.
       #
@@ -278,8 +278,8 @@ module ChunkyPNG
         replace_canvas!(height, width, new_pixels)
       end
 
-      alias_method :rotate_clockwise,  :rotate_right
-      alias_method :rotate_clockwise!, :rotate_right!
+      alias rotate_clockwise rotate_right
+      alias rotate_clockwise! rotate_right!
 
       # Returns an image that is rotated 90 degrees counter-clockwise.
       #
@@ -305,8 +305,8 @@ module ChunkyPNG
         replace_canvas!(height, width, new_pixels)
       end
 
-      alias_method :rotate_counter_clockwise,  :rotate_left
-      alias_method :rotate_counter_clockwise!, :rotate_left!
+      alias rotate_counter_clockwise rotate_left
+      alias rotate_counter_clockwise! rotate_left!
 
       # Rotates the image 180 degrees.
       #

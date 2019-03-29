@@ -104,6 +104,6 @@ describe 'ChunkyPNG.Vector' do
   end
 
   it "should create a vector from a nested array" do
-    expect(ChunkyPNG::Vector('(2,4)', [1, 2], :x => 3, :y => 6)).to eql example
+    expect(ChunkyPNG::Vector('(2,4)', [1, 2], x: 3, y: 6)).to eql example
   end
 end

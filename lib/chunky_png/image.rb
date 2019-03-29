@@ -5,7 +5,6 @@ module ChunkyPNG
   #
   # @see ChunkyPNG::Canvas
   class Image < Canvas
-
     # The minimum size of bytes the value of a metadata field should be before compression
     # is enabled for the chunk.
     METADATA_COMPRESSION_TRESHOLD = 300
@@ -61,7 +60,7 @@ module ChunkyPNG
     def to_datastream(constraints = {})
       ds = super(constraints)
       ds.other_chunks += metadata_chunks
-      return ds
+      ds
     end
 
     # Reads a ChunkyPNG::Image instance from a data stream.
@@ -73,7 +72,7 @@ module ChunkyPNG
     def self.from_datastream(ds)
       image = super(ds)
       image.metadata = ds.metadata
-      return image
+      image
     end
   end
 end

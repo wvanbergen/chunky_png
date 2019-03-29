@@ -9,7 +9,6 @@ module ChunkyPNG
   #
   # @see ChunkyPNG::Chunk
   class Datastream
-
     # The signature that each PNG file or stream should begin with.
     SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10].pack('C8').force_encoding(Encoding::BINARY).freeze
 
@@ -52,7 +51,6 @@ module ChunkyPNG
     ##############################################################################
 
     class << self
-
       # Reads a PNG datastream from a string.
       # @param [String] str The PNG encoded string to load from.
       # @return [ChunkyPNG::Datastream] The loaded datastream instance.
@@ -60,7 +58,7 @@ module ChunkyPNG
         from_io(StringIO.new(str, 'rb'))
       end
 
-      alias :from_string :from_blob
+      alias from_string from_blob
 
       # Reads a PNG datastream from a file.
       # @param [String] filename The path of the file to load from.
@@ -78,20 +76,20 @@ module ChunkyPNG
         io.set_encoding(Encoding::BINARY)
         verify_signature!(io)
 
-        ds = self.new
+        ds = new
         while ds.end_chunk.nil?
           chunk = ChunkyPNG::Chunk.read(io)
           case chunk
-            when ChunkyPNG::Chunk::Header;       ds.header_chunk = chunk
-            when ChunkyPNG::Chunk::Palette;      ds.palette_chunk = chunk
-            when ChunkyPNG::Chunk::Transparency; ds.transparency_chunk = chunk
-            when ChunkyPNG::Chunk::ImageData;    ds.data_chunks << chunk
-            when ChunkyPNG::Chunk::Physical;     ds.physical_chunk = chunk
-            when ChunkyPNG::Chunk::End;          ds.end_chunk = chunk
+            when ChunkyPNG::Chunk::Header       then ds.header_chunk = chunk
+            when ChunkyPNG::Chunk::Palette      then ds.palette_chunk = chunk
+            when ChunkyPNG::Chunk::Transparency then ds.transparency_chunk = chunk
+            when ChunkyPNG::Chunk::ImageData    then ds.data_chunks << chunk
+            when ChunkyPNG::Chunk::Physical     then ds.physical_chunk = chunk
+            when ChunkyPNG::Chunk::End          then ds.end_chunk = chunk
             else ds.other_chunks << chunk
           end
         end
-        return ds
+        ds
       end
 
       # Verifies that the current stream is a PNG datastream by checking its signature.
@@ -184,10 +182,10 @@ module ChunkyPNG
       str = StringIO.new
       str.set_encoding('ASCII-8BIT')
       write(str)
-      return str.string
+      str.string
     end
 
-    alias :to_string :to_blob
-    alias :to_s :to_blob
+    alias to_string to_blob
+    alias to_s to_blob
   end
 end

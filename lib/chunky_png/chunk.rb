@@ -96,7 +96,7 @@ module ChunkyPNG
       attr_accessor :content
 
       def initialize(type, content = '')
-        super(type, :content => content)
+        super(type, content: content)
       end
 
       # Creates an instance, given the chunk's type and content.
@@ -138,28 +138,36 @@ module ChunkyPNG
       #   variables set to the values according to the content.
       def self.read(type, content)
         fields = content.unpack('NNC5')
-        new(:width => fields[0],
-            :height => fields[1],
-            :depth => fields[2],
-            :color => fields[3],
-            :compression => fields[4],
-            :filtering => fields[5],
-            :interlace => fields[6])
+        new(
+          width: fields[0],
+          height: fields[1],
+          depth: fields[2],
+          color: fields[3],
+          compression: fields[4],
+          filtering: fields[5],
+          interlace: fields[6]
+        )
       end
 
       # Returns the content for this chunk when it gets written to a file, by
       # packing the image information variables into the correct format.
       # @return [String] The 13-byte content for the header chunk.
       def content
-        [width, height, depth, color, compression, filtering, interlace].
-          pack('NNC5')
+        [
+          width,
+          height,
+          depth,
+          color,
+          compression,
+          filtering,
+          interlace
+        ].pack('NNC5')
       end
     end
 
     # The End (IEND) chunk indicates the last chunk of a PNG stream. It does
     # not contain any data.
     class End < Base
-
       def initialize
         super('IEND')
       end
@@ -173,7 +181,7 @@ module ChunkyPNG
       # @raise [ChunkyPNG::ExpectationFailed] Raises an exception if the content was not empty.
       def self.read(type, content)
         raise ExpectationFailed, 'The IEND chunk should be empty!' if content.bytesize > 0
-        self.new
+        new
       end
 
       # Returns an empty string, because this chunk should always be empty.
@@ -314,8 +322,11 @@ module ChunkyPNG
       #
       # @return The content that should be written to the datastream.
       def content
-        [keyword, ChunkyPNG::COMPRESSION_DEFAULT, Zlib::Deflate.deflate(value)].
-          pack('Z*Ca*')
+        [
+          keyword,
+          ChunkyPNG::COMPRESSION_DEFAULT,
+          Zlib::Deflate.deflate(value)
+        ].pack('Z*Ca*')
       end
     end
 
@@ -409,7 +420,7 @@ module ChunkyPNG
       # @return [String] The binary content that should be written to the datastream.
       def content
         text_field = text.encode('utf-8')
-        text_field = (compressed == ChunkyPNG::COMPRESSED_CONTENT) ? Zlib::Deflate.deflate(text_field) : text_field
+        text_field = compressed == ChunkyPNG::COMPRESSED_CONTENT ? Zlib::Deflate.deflate(text_field) : text_field
 
         [keyword, compressed, compression, language_tag, translated_keyword.encode('utf-8'), text_field].pack('Z*CCZ*Z*a*')
       end

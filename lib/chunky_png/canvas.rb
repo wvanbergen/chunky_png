@@ -233,7 +233,7 @@ module ChunkyPNG
       dimension.include?(ChunkyPNG::Point(*point_like))
     end
 
-    alias_method :include?,    :include_point?
+    alias include? include_point?
 
     # Checks whether the given x- and y-coordinate are in the range of the
     # canvas
@@ -274,11 +274,13 @@ module ChunkyPNG
     # @return [true, false] True if the size and pixel values of the other
     #   canvas are exactly the same as this canvas's size and pixel values.
     def eql?(other)
-      other.kind_of?(self.class) && other.pixels == self.pixels &&
-            other.width == self.width && other.height == self.height
+      other.kind_of?(self.class) &&
+        other.pixels == pixels &&
+        other.width == width &&
+        other.height == height
     end
 
-    alias :== :eql?
+    alias == eql?
 
     #################################################################
     # EXPORTING

@@ -51,7 +51,7 @@ describe 'ChunkyPNG.Point' do
   end
 
   it "should create a point from a hash with x and y keys" do
-    expect(ChunkyPNG::Point(:x => 1, :y => 2)).to       eql subject
+    expect(ChunkyPNG::Point(x: 1, y: 2)).to             eql subject
     expect(ChunkyPNG::Point('x' => '1', 'y' => '2')).to eql subject
   end
 

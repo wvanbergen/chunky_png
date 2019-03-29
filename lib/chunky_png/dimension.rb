@@ -29,8 +29,8 @@ module ChunkyPNG
   # @see ChunkyPNG::Dimension
   def self.Dimension(*args)
     case args.length
-    when 2; ChunkyPNG::Dimension.new(*args)
-    when 1; build_dimension_from_object(args.first)
+    when 2 then ChunkyPNG::Dimension.new(*args)
+    when 1 then build_dimension_from_object(args.first)
     else raise ArgumentError,
       "Don't know how to construct a dimension from #{args.inspect}"
     end
@@ -58,13 +58,13 @@ module ChunkyPNG
       end
     end
   end
+
   private_class_method :build_dimension_from_object
 
   # Class that represents the dimension of something, e.g. a {ChunkyPNG::Canvas}.
   #
   # This class contains some methods to simplify performing dimension related checks.
   class Dimension
-
     # @return [Regexp] The regexp to parse dimensions from a string.
     # @private
     DIMENSION_REGEXP = /^[\(\[\{]?(\d+)\s*[x,]?\s*(\d+)[\)\]\}]?$/
@@ -105,7 +105,7 @@ module ChunkyPNG
       other.width == width && other.height == height
     end
 
-    alias_method :==, :eql?
+    alias == eql?
 
     # Calculates a hash for the dimension object, based on width and height
     # @return [Integer] A hashed value of the dimensions
@@ -127,6 +127,6 @@ module ChunkyPNG
       [width, height]
     end
 
-    alias_method :to_ary, :to_a
+    alias to_ary to_a
   end
 end

@@ -1,6 +1,5 @@
 module ChunkyPNG
   class Canvas
-
     # The PNGDecoding contains methods for decoding PNG datastreams to create a
     # Canvas object. The datastream can be provided as filename, string or IO
     # stream.
@@ -36,7 +35,7 @@ module ChunkyPNG
         from_datastream(ChunkyPNG::Datastream.from_blob(str))
       end
 
-      alias_method :from_string, :from_blob
+      alias from_string from_blob
 
       # Decodes a Canvas from a PNG encoded file.
       # @param [String] filename The file to read from.
@@ -52,7 +51,7 @@ module ChunkyPNG
         from_datastream(ChunkyPNG::Datastream.from_io(io))
       end
 
-      alias_method :from_stream, :from_io
+      alias from_stream from_io
 
       # Decodes the Canvas from a PNG datastream instance.
       # @param [ChunkyPNG::Datastream] ds The datastream to decode.
@@ -96,13 +95,13 @@ module ChunkyPNG
         raise ChunkyPNG::ExpectationFailed, "This palette is not suitable for decoding!" if decoding_palette && !decoding_palette.can_decode?
 
         image = case interlace
-          when ChunkyPNG::INTERLACING_NONE;  decode_png_without_interlacing(stream, width, height, color_mode, depth, decoding_palette)
-          when ChunkyPNG::INTERLACING_ADAM7; decode_png_with_adam7_interlacing(stream, width, height, color_mode, depth, decoding_palette)
+          when ChunkyPNG::INTERLACING_NONE  then decode_png_without_interlacing(stream, width, height, color_mode, depth, decoding_palette)
+          when ChunkyPNG::INTERLACING_ADAM7 then decode_png_with_adam7_interlacing(stream, width, height, color_mode, depth, decoding_palette)
           else raise ChunkyPNG::NotSupported, "Don't know how the handle interlacing method #{interlace}!"
         end
 
         image.pixels.map! { |c| c == transparent_color ? ChunkyPNG::Color::TRANSPARENT : c } if transparent_color
-        return image
+        image
       end
 
       protected
@@ -147,7 +146,7 @@ module ChunkyPNG
       #        the value will be modded by 2 to enforce this.
       # @return [Integer] The extracted 4bit value (0..15)
       def decode_png_extract_4bit_value(byte, index)
-        (index & 0x01 == 0) ? ((byte & 0xf0) >> 4) : (byte & 0x0f)
+        index & 0x01 == 0 ? ((byte & 0xf0) >> 4) : (byte & 0x0f)
       end
 
       # Extract 2 consecutive bits from a byte.
@@ -262,7 +261,7 @@ module ChunkyPNG
           pixels << ChunkyPNG::Color.rgba(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g),
                                           decode_png_resample_16bit_value(b), decode_png_resample_16bit_value(a))
         end
-        return pixels
+        pixels
       end
 
       # Decodes a scanline of an 8-bit, true color image into a row of pixels.
@@ -280,7 +279,7 @@ module ChunkyPNG
         stream.unpack("@#{pos + 1}n#{width * 3}").each_slice(3) do |r, g, b|
           pixels << ChunkyPNG::Color.rgb(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(b))
         end
-        return pixels
+        pixels
       end
 
       # Decodes a scanline of an 8-bit, grayscale image with transparency into a row of pixels.
@@ -298,7 +297,7 @@ module ChunkyPNG
         stream.unpack("@#{pos + 1}n#{width * 2}").each_slice(2) do |g, a|
           pixels << ChunkyPNG::Color.grayscale_alpha(decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(a))
         end
-        return pixels
+        pixels
       end
 
       # Decodes a scanline of a 1-bit, grayscale image into a row of pixels.
@@ -353,11 +352,11 @@ module ChunkyPNG
       # @raise [ChunkyPNG::NotSupported] when the color_mode and/or bit depth is not supported.
       def decode_png_pixels_from_scanline_method(color_mode, depth)
         decoder_method = case color_mode
-          when ChunkyPNG::COLOR_TRUECOLOR;       :"decode_png_pixels_from_scanline_truecolor_#{depth}bit"
-          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA; :"decode_png_pixels_from_scanline_truecolor_alpha_#{depth}bit"
-          when ChunkyPNG::COLOR_INDEXED;         :"decode_png_pixels_from_scanline_indexed_#{depth}bit"
-          when ChunkyPNG::COLOR_GRAYSCALE;       :"decode_png_pixels_from_scanline_grayscale_#{depth}bit"
-          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA; :"decode_png_pixels_from_scanline_grayscale_alpha_#{depth}bit"
+          when ChunkyPNG::COLOR_TRUECOLOR       then :"decode_png_pixels_from_scanline_truecolor_#{depth}bit"
+          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then :"decode_png_pixels_from_scanline_truecolor_alpha_#{depth}bit"
+          when ChunkyPNG::COLOR_INDEXED         then :"decode_png_pixels_from_scanline_indexed_#{depth}bit"
+          when ChunkyPNG::COLOR_GRAYSCALE       then :"decode_png_pixels_from_scanline_grayscale_#{depth}bit"
+          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then :"decode_png_pixels_from_scanline_grayscale_alpha_#{depth}bit"
           else nil
         end
 
@@ -419,11 +418,11 @@ module ChunkyPNG
       # @return [void]
       def decode_png_str_scanline(stream, pos, prev_pos, line_length, pixel_size)
         case stream.getbyte(pos)
-          when ChunkyPNG::FILTER_NONE;    # noop
-          when ChunkyPNG::FILTER_SUB;     decode_png_str_scanline_sub(     stream, pos, prev_pos, line_length, pixel_size)
-          when ChunkyPNG::FILTER_UP;      decode_png_str_scanline_up(      stream, pos, prev_pos, line_length, pixel_size)
-          when ChunkyPNG::FILTER_AVERAGE; decode_png_str_scanline_average( stream, pos, prev_pos, line_length, pixel_size)
-          when ChunkyPNG::FILTER_PAETH;   decode_png_str_scanline_paeth(   stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_NONE    then # noop
+          when ChunkyPNG::FILTER_SUB     then decode_png_str_scanline_sub(     stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_UP      then decode_png_str_scanline_up(      stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_AVERAGE then decode_png_str_scanline_average( stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_PAETH   then decode_png_str_scanline_paeth(   stream, pos, prev_pos, line_length, pixel_size)
           else raise ChunkyPNG::NotSupported, "Unknown filter type: #{stream.getbyte(pos)}!"
         end
       end
@@ -462,7 +461,7 @@ module ChunkyPNG
       # @return [void]
       def decode_png_str_scanline_average(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
-          a = (i > pixel_size) ? stream.getbyte(pos + i - pixel_size) : 0
+          a = i > pixel_size ? stream.getbyte(pos + i - pixel_size) : 0
           b = prev_pos ? stream.getbyte(prev_pos + i) : 0
           stream.setbyte(pos + i, (stream.getbyte(pos + i) + ((a + b) >> 1)) & 0xff)
         end
@@ -475,14 +474,14 @@ module ChunkyPNG
       def decode_png_str_scanline_paeth(stream, pos, prev_pos, line_length, pixel_size)
         for i in 1..line_length do
           cur_pos = pos + i
-          a = (i > pixel_size) ? stream.getbyte(cur_pos - pixel_size) : 0
+          a = i > pixel_size ? stream.getbyte(cur_pos - pixel_size) : 0
           b = prev_pos ? stream.getbyte(prev_pos + i) : 0
-          c = (prev_pos && i > pixel_size) ? stream.getbyte(prev_pos + i - pixel_size) : 0
+          c = prev_pos && i > pixel_size ? stream.getbyte(prev_pos + i - pixel_size) : 0
           p = a + b - c
           pa = (p - a).abs
           pb = (p - b).abs
           pc = (p - c).abs
-          pr = (pa <= pb) ? (pa <= pc ? a : c) : (pb <= pc ? b : c)
+          pr = pa <= pb ? (pa <= pc ? a : c) : (pb <= pc ? b : c)
           stream.setbyte(cur_pos, (stream.getbyte(cur_pos) + pr) & 0xff)
         end
       end

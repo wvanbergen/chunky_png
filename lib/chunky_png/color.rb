@@ -31,10 +31,10 @@ module ChunkyPNG
   # @see ChunkyPNG::Color.parse
   def self.Color(*args)
     case args.length
-      when 1; ChunkyPNG::Color.parse(args.first)
-      when 2; (ChunkyPNG::Color.parse(args.first) & 0xffffff00) | args[1].to_i
-      when 3; ChunkyPNG::Color.rgb(*args)
-      when 4; ChunkyPNG::Color.rgba(*args)
+      when 1 then ChunkyPNG::Color.parse(args.first)
+      when 2 then (ChunkyPNG::Color.parse(args.first) & 0xffffff00) | args[1].to_i
+      when 3 then ChunkyPNG::Color.rgb(*args)
+      when 4 then ChunkyPNG::Color.rgba(*args)
       else raise ArgumentError, "Don't know how to create a color from #{args.inspect}!"
     end
   end
@@ -84,9 +84,9 @@ module ChunkyPNG
     def parse(source)
       return source if source.kind_of?(Integer)
       case source.to_s
-        when /^\d+$/; source.to_s.to_i
-        when HEX3_COLOR_REGEXP, HEX6_COLOR_REGEXP; from_hex(source.to_s)
-        when HTML_COLOR_REGEXP; html_color(source.to_s)
+        when /^\d+$/ then source.to_s.to_i
+        when HEX3_COLOR_REGEXP, HEX6_COLOR_REGEXP then from_hex(source.to_s)
+        when HTML_COLOR_REGEXP then html_color(source.to_s)
         else raise ArgumentError, "Don't know how to create a color from #{source.inspect}!"
       end
     end
@@ -190,16 +190,17 @@ module ChunkyPNG
     # @raise [ArgumentError] if the hsv triple is invalid.
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
     def from_hsv(hue, saturation, value, alpha = 255)
-      raise ArgumentError, "Hue must be between 0 and 360" unless (0..360).include?(hue)
-      raise ArgumentError, "Saturation must be between 0 and 1" unless (0..1).include?(saturation)
-      raise ArgumentError, "Value/brightness must be between 0 and 1" unless (0..1).include?(value)
+      raise ArgumentError, "Hue must be between 0 and 360" unless (0..360).cover?(hue)
+      raise ArgumentError, "Saturation must be between 0 and 1" unless (0..1).cover?(saturation)
+      raise ArgumentError, "Value/brightness must be between 0 and 1" unless (0..1).cover?(value)
       chroma = value * saturation
       rgb    = cylindrical_to_cubic(hue, saturation, value, chroma)
       rgb.map! { |component| ((component + value - chroma) * 255).to_i }
       rgb << alpha
-      self.rgba(*rgb)
+      rgba(*rgb)
     end
-    alias_method :from_hsb, :from_hsv
+
+    alias from_hsb from_hsv
 
     # Creates a new color from an HSL triple.
     #
@@ -214,14 +215,14 @@ module ChunkyPNG
     # @raise [ArgumentError] if the hsl triple is invalid.
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
     def from_hsl(hue, saturation, lightness, alpha = 255)
-      raise ArgumentError, "Hue #{hue} was not between 0 and 360" unless (0..360).include?(hue)
-      raise ArgumentError, "Saturation #{saturation} was not between 0 and 1" unless (0..1).include?(saturation)
-      raise ArgumentError, "Lightness #{lightness} was not between 0 and 1" unless (0..1).include?(lightness)
+      raise ArgumentError, "Hue #{hue} was not between 0 and 360" unless (0..360).cover?(hue)
+      raise ArgumentError, "Saturation #{saturation} was not between 0 and 1" unless (0..1).cover?(saturation)
+      raise ArgumentError, "Lightness #{lightness} was not between 0 and 1" unless (0..1).cover?(lightness)
       chroma = (1 - (2 * lightness - 1).abs) * saturation
       rgb    = cylindrical_to_cubic(hue, saturation, lightness, chroma)
       rgb.map! { |component| ((component + lightness - 0.5 * chroma) * 255).to_i }
       rgb << alpha
-      self.rgba(*rgb)
+      rgba(*rgb)
     end
 
     # Convert one HSL or HSV triple and associated chroma to a scaled rgb triple
@@ -250,12 +251,12 @@ module ChunkyPNG
       x = chroma * (1 - (hue_prime % 2 - 1).abs)
 
       case hue_prime
-      when (0...1); [chroma, x, 0]
-      when (1...2); [x, chroma, 0]
-      when (2...3); [0, chroma, x]
-      when (3...4); [0, x, chroma]
-      when (4...5); [x, 0, chroma]
-      when (5..6);  [chroma, 0, x]
+      when (0...1) then [chroma, x, 0]
+      when (1...2) then [x, chroma, 0]
+      when (2...3) then [0, chroma, x]
+      when (3...4) then [0, x, chroma]
+      when (4...5) then [x, 0, chroma]
+      when (5..6)  then [chroma, 0, x]
       end
     end
     private :cylindrical_to_cubic
@@ -391,7 +392,7 @@ module ChunkyPNG
       rgba(new_r, new_g, new_b, new_a)
     end
 
-    alias :compose :compose_quick
+    alias compose compose_quick
 
     # Blends the foreground and background color by taking the average of
     # the components.
@@ -596,7 +597,8 @@ module ChunkyPNG
       include_alpha ? [hue, saturation, value, a(color)] :
                       [hue, saturation, value]
     end
-    alias_method :to_hsb, :to_hsv
+
+    alias to_hsb to_hsv
 
     # Returns an array with the separate HSL components of a color.
     #
@@ -643,15 +645,16 @@ module ChunkyPNG
 
       r, g, b   = scaled_rgb
       hue_prime = chroma.zero? ? 0 : case max
-                                     when r; (g - b).fdiv(chroma)
-                                     when g; (b - r).fdiv(chroma) + 2
-                                     when b; (r - g).fdiv(chroma) + 4
+                                     when r then (g - b).fdiv(chroma)
+                                     when g then (b - r).fdiv(chroma) + 2
+                                     when b then (r - g).fdiv(chroma) + 4
                                      else 0
                                      end
       hue = 60 * hue_prime
 
-      return hue.round, chroma, max, min
+      [hue.round, chroma, max, min]
     end
+
     private :hue_and_chroma
 
     # Returns an array with the separate RGBA values for this color.
@@ -735,153 +738,153 @@ module ChunkyPNG
 
     # @return [Hash<Symbol, Integer>] All the predefined color names in HTML.
     PREDEFINED_COLORS = {
-      :aliceblue            => 0xf0f8ff00,
-      :antiquewhite         => 0xfaebd700,
-      :aqua                 => 0x00ffff00,
-      :aquamarine           => 0x7fffd400,
-      :azure                => 0xf0ffff00,
-      :beige                => 0xf5f5dc00,
-      :bisque               => 0xffe4c400,
-      :black                => 0x00000000,
-      :blanchedalmond       => 0xffebcd00,
-      :blue                 => 0x0000ff00,
-      :blueviolet           => 0x8a2be200,
-      :brown                => 0xa52a2a00,
-      :burlywood            => 0xdeb88700,
-      :cadetblue            => 0x5f9ea000,
-      :chartreuse           => 0x7fff0000,
-      :chocolate            => 0xd2691e00,
-      :coral                => 0xff7f5000,
-      :cornflowerblue       => 0x6495ed00,
-      :cornsilk             => 0xfff8dc00,
-      :crimson              => 0xdc143c00,
-      :cyan                 => 0x00ffff00,
-      :darkblue             => 0x00008b00,
-      :darkcyan             => 0x008b8b00,
-      :darkgoldenrod        => 0xb8860b00,
-      :darkgray             => 0xa9a9a900,
-      :darkgrey             => 0xa9a9a900,
-      :darkgreen            => 0x00640000,
-      :darkkhaki            => 0xbdb76b00,
-      :darkmagenta          => 0x8b008b00,
-      :darkolivegreen       => 0x556b2f00,
-      :darkorange           => 0xff8c0000,
-      :darkorchid           => 0x9932cc00,
-      :darkred              => 0x8b000000,
-      :darksalmon           => 0xe9967a00,
-      :darkseagreen         => 0x8fbc8f00,
-      :darkslateblue        => 0x483d8b00,
-      :darkslategray        => 0x2f4f4f00,
-      :darkslategrey        => 0x2f4f4f00,
-      :darkturquoise        => 0x00ced100,
-      :darkviolet           => 0x9400d300,
-      :deeppink             => 0xff149300,
-      :deepskyblue          => 0x00bfff00,
-      :dimgray              => 0x69696900,
-      :dimgrey              => 0x69696900,
-      :dodgerblue           => 0x1e90ff00,
-      :firebrick            => 0xb2222200,
-      :floralwhite          => 0xfffaf000,
-      :forestgreen          => 0x228b2200,
-      :fuchsia              => 0xff00ff00,
-      :gainsboro            => 0xdcdcdc00,
-      :ghostwhite           => 0xf8f8ff00,
-      :gold                 => 0xffd70000,
-      :goldenrod            => 0xdaa52000,
-      :gray                 => 0x80808000,
-      :grey                 => 0x80808000,
-      :green                => 0x00800000,
-      :greenyellow          => 0xadff2f00,
-      :honeydew             => 0xf0fff000,
-      :hotpink              => 0xff69b400,
-      :indianred            => 0xcd5c5c00,
-      :indigo               => 0x4b008200,
-      :ivory                => 0xfffff000,
-      :khaki                => 0xf0e68c00,
-      :lavender             => 0xe6e6fa00,
-      :lavenderblush        => 0xfff0f500,
-      :lawngreen            => 0x7cfc0000,
-      :lemonchiffon         => 0xfffacd00,
-      :lightblue            => 0xadd8e600,
-      :lightcoral           => 0xf0808000,
-      :lightcyan            => 0xe0ffff00,
-      :lightgoldenrodyellow => 0xfafad200,
-      :lightgray            => 0xd3d3d300,
-      :lightgrey            => 0xd3d3d300,
-      :lightgreen           => 0x90ee9000,
-      :lightpink            => 0xffb6c100,
-      :lightsalmon          => 0xffa07a00,
-      :lightseagreen        => 0x20b2aa00,
-      :lightskyblue         => 0x87cefa00,
-      :lightslategray       => 0x77889900,
-      :lightslategrey       => 0x77889900,
-      :lightsteelblue       => 0xb0c4de00,
-      :lightyellow          => 0xffffe000,
-      :lime                 => 0x00ff0000,
-      :limegreen            => 0x32cd3200,
-      :linen                => 0xfaf0e600,
-      :magenta              => 0xff00ff00,
-      :maroon               => 0x80000000,
-      :mediumaquamarine     => 0x66cdaa00,
-      :mediumblue           => 0x0000cd00,
-      :mediumorchid         => 0xba55d300,
-      :mediumpurple         => 0x9370d800,
-      :mediumseagreen       => 0x3cb37100,
-      :mediumslateblue      => 0x7b68ee00,
-      :mediumspringgreen    => 0x00fa9a00,
-      :mediumturquoise      => 0x48d1cc00,
-      :mediumvioletred      => 0xc7158500,
-      :midnightblue         => 0x19197000,
-      :mintcream            => 0xf5fffa00,
-      :mistyrose            => 0xffe4e100,
-      :moccasin             => 0xffe4b500,
-      :navajowhite          => 0xffdead00,
-      :navy                 => 0x00008000,
-      :oldlace              => 0xfdf5e600,
-      :olive                => 0x80800000,
-      :olivedrab            => 0x6b8e2300,
-      :orange               => 0xffa50000,
-      :orangered            => 0xff450000,
-      :orchid               => 0xda70d600,
-      :palegoldenrod        => 0xeee8aa00,
-      :palegreen            => 0x98fb9800,
-      :paleturquoise        => 0xafeeee00,
-      :palevioletred        => 0xd8709300,
-      :papayawhip           => 0xffefd500,
-      :peachpuff            => 0xffdab900,
-      :peru                 => 0xcd853f00,
-      :pink                 => 0xffc0cb00,
-      :plum                 => 0xdda0dd00,
-      :powderblue           => 0xb0e0e600,
-      :purple               => 0x80008000,
-      :red                  => 0xff000000,
-      :rosybrown            => 0xbc8f8f00,
-      :royalblue            => 0x4169e100,
-      :saddlebrown          => 0x8b451300,
-      :salmon               => 0xfa807200,
-      :sandybrown           => 0xf4a46000,
-      :seagreen             => 0x2e8b5700,
-      :seashell             => 0xfff5ee00,
-      :sienna               => 0xa0522d00,
-      :silver               => 0xc0c0c000,
-      :skyblue              => 0x87ceeb00,
-      :slateblue            => 0x6a5acd00,
-      :slategray            => 0x70809000,
-      :slategrey            => 0x70809000,
-      :snow                 => 0xfffafa00,
-      :springgreen          => 0x00ff7f00,
-      :steelblue            => 0x4682b400,
-      :tan                  => 0xd2b48c00,
-      :teal                 => 0x00808000,
-      :thistle              => 0xd8bfd800,
-      :tomato               => 0xff634700,
-      :turquoise            => 0x40e0d000,
-      :violet               => 0xee82ee00,
-      :wheat                => 0xf5deb300,
-      :white                => 0xffffff00,
-      :whitesmoke           => 0xf5f5f500,
-      :yellow               => 0xffff0000,
-      :yellowgreen          => 0x9acd3200
+      aliceblue: 0xf0f8ff00,
+      antiquewhite: 0xfaebd700,
+      aqua: 0x00ffff00,
+      aquamarine: 0x7fffd400,
+      azure: 0xf0ffff00,
+      beige: 0xf5f5dc00,
+      bisque: 0xffe4c400,
+      black: 0x00000000,
+      blanchedalmond: 0xffebcd00,
+      blue: 0x0000ff00,
+      blueviolet: 0x8a2be200,
+      brown: 0xa52a2a00,
+      burlywood: 0xdeb88700,
+      cadetblue: 0x5f9ea000,
+      chartreuse: 0x7fff0000,
+      chocolate: 0xd2691e00,
+      coral: 0xff7f5000,
+      cornflowerblue: 0x6495ed00,
+      cornsilk: 0xfff8dc00,
+      crimson: 0xdc143c00,
+      cyan: 0x00ffff00,
+      darkblue: 0x00008b00,
+      darkcyan: 0x008b8b00,
+      darkgoldenrod: 0xb8860b00,
+      darkgray: 0xa9a9a900,
+      darkgrey: 0xa9a9a900,
+      darkgreen: 0x00640000,
+      darkkhaki: 0xbdb76b00,
+      darkmagenta: 0x8b008b00,
+      darkolivegreen: 0x556b2f00,
+      darkorange: 0xff8c0000,
+      darkorchid: 0x9932cc00,
+      darkred: 0x8b000000,
+      darksalmon: 0xe9967a00,
+      darkseagreen: 0x8fbc8f00,
+      darkslateblue: 0x483d8b00,
+      darkslategray: 0x2f4f4f00,
+      darkslategrey: 0x2f4f4f00,
+      darkturquoise: 0x00ced100,
+      darkviolet: 0x9400d300,
+      deeppink: 0xff149300,
+      deepskyblue: 0x00bfff00,
+      dimgray: 0x69696900,
+      dimgrey: 0x69696900,
+      dodgerblue: 0x1e90ff00,
+      firebrick: 0xb2222200,
+      floralwhite: 0xfffaf000,
+      forestgreen: 0x228b2200,
+      fuchsia: 0xff00ff00,
+      gainsboro: 0xdcdcdc00,
+      ghostwhite: 0xf8f8ff00,
+      gold: 0xffd70000,
+      goldenrod: 0xdaa52000,
+      gray: 0x80808000,
+      grey: 0x80808000,
+      green: 0x00800000,
+      greenyellow: 0xadff2f00,
+      honeydew: 0xf0fff000,
+      hotpink: 0xff69b400,
+      indianred: 0xcd5c5c00,
+      indigo: 0x4b008200,
+      ivory: 0xfffff000,
+      khaki: 0xf0e68c00,
+      lavender: 0xe6e6fa00,
+      lavenderblush: 0xfff0f500,
+      lawngreen: 0x7cfc0000,
+      lemonchiffon: 0xfffacd00,
+      lightblue: 0xadd8e600,
+      lightcoral: 0xf0808000,
+      lightcyan: 0xe0ffff00,
+      lightgoldenrodyellow: 0xfafad200,
+      lightgray: 0xd3d3d300,
+      lightgrey: 0xd3d3d300,
+      lightgreen: 0x90ee9000,
+      lightpink: 0xffb6c100,
+      lightsalmon: 0xffa07a00,
+      lightseagreen: 0x20b2aa00,
+      lightskyblue: 0x87cefa00,
+      lightslategray: 0x77889900,
+      lightslategrey: 0x77889900,
+      lightsteelblue: 0xb0c4de00,
+      lightyellow: 0xffffe000,
+      lime: 0x00ff0000,
+      limegreen: 0x32cd3200,
+      linen: 0xfaf0e600,
+      magenta: 0xff00ff00,
+      maroon: 0x80000000,
+      mediumaquamarine: 0x66cdaa00,
+      mediumblue: 0x0000cd00,
+      mediumorchid: 0xba55d300,
+      mediumpurple: 0x9370d800,
+      mediumseagreen: 0x3cb37100,
+      mediumslateblue: 0x7b68ee00,
+      mediumspringgreen: 0x00fa9a00,
+      mediumturquoise: 0x48d1cc00,
+      mediumvioletred: 0xc7158500,
+      midnightblue: 0x19197000,
+      mintcream: 0xf5fffa00,
+      mistyrose: 0xffe4e100,
+      moccasin: 0xffe4b500,
+      navajowhite: 0xffdead00,
+      navy: 0x00008000,
+      oldlace: 0xfdf5e600,
+      olive: 0x80800000,
+      olivedrab: 0x6b8e2300,
+      orange: 0xffa50000,
+      orangered: 0xff450000,
+      orchid: 0xda70d600,
+      palegoldenrod: 0xeee8aa00,
+      palegreen: 0x98fb9800,
+      paleturquoise: 0xafeeee00,
+      palevioletred: 0xd8709300,
+      papayawhip: 0xffefd500,
+      peachpuff: 0xffdab900,
+      peru: 0xcd853f00,
+      pink: 0xffc0cb00,
+      plum: 0xdda0dd00,
+      powderblue: 0xb0e0e600,
+      purple: 0x80008000,
+      red: 0xff000000,
+      rosybrown: 0xbc8f8f00,
+      royalblue: 0x4169e100,
+      saddlebrown: 0x8b451300,
+      salmon: 0xfa807200,
+      sandybrown: 0xf4a46000,
+      seagreen: 0x2e8b5700,
+      seashell: 0xfff5ee00,
+      sienna: 0xa0522d00,
+      silver: 0xc0c0c000,
+      skyblue: 0x87ceeb00,
+      slateblue: 0x6a5acd00,
+      slategray: 0x70809000,
+      slategrey: 0x70809000,
+      snow: 0xfffafa00,
+      springgreen: 0x00ff7f00,
+      steelblue: 0x4682b400,
+      tan: 0xd2b48c00,
+      teal: 0x00808000,
+      thistle: 0xd8bfd800,
+      tomato: 0xff634700,
+      turquoise: 0x40e0d000,
+      violet: 0xee82ee00,
+      wheat: 0xf5deb300,
+      white: 0xffffff00,
+      whitesmoke: 0xf5f5f500,
+      yellow: 0xffff0000,
+      yellowgreen: 0x9acd3200,
     }
 
     # Gets a color value based on a HTML color name.
@@ -904,7 +907,7 @@ module ChunkyPNG
       if color_name.to_s =~ HTML_COLOR_REGEXP
         opacity ||= $2 ? ($2.to_f * 255.0).round : 0xff
         base_color_name = $1.gsub(/[^a-z]+/i, '').downcase.to_sym
-        return PREDEFINED_COLORS[base_color_name] | opacity if PREDEFINED_COLORS.has_key?(base_color_name)
+        return PREDEFINED_COLORS[base_color_name] | opacity if PREDEFINED_COLORS.key?(base_color_name)
       end
       raise ArgumentError, "Unknown color name #{color_name}!"
     end
@@ -927,11 +930,11 @@ module ChunkyPNG
     # @return [Integer] The number of sample values per pixel.
     def samples_per_pixel(color_mode)
       case color_mode
-        when ChunkyPNG::COLOR_INDEXED;         1
-        when ChunkyPNG::COLOR_TRUECOLOR;       3
-        when ChunkyPNG::COLOR_TRUECOLOR_ALPHA; 4
-        when ChunkyPNG::COLOR_GRAYSCALE;       1
-        when ChunkyPNG::COLOR_GRAYSCALE_ALPHA; 2
+        when ChunkyPNG::COLOR_INDEXED         then 1
+        when ChunkyPNG::COLOR_TRUECOLOR       then 3
+        when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then 4
+        when ChunkyPNG::COLOR_GRAYSCALE       then 1
+        when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then 2
         else raise ChunkyPNG::NotSupported, "Don't know the number of samples for this colormode: #{color_mode}!"
       end
     end

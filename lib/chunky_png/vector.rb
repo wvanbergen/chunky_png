@@ -32,7 +32,6 @@ module ChunkyPNG
   # Vectors can be created quite flexibly. See the {ChunkyPNG.Vector} factory methods for
   # more information on how to construct vectors.
   class Vector
-
     include Enumerable
 
     # @return [Array<ChunkyPNG::Point>] The array that holds all the points in this vector.
@@ -100,7 +99,7 @@ module ChunkyPNG
       other.points == points
     end
 
-    alias_method :==, :eql?
+    alias == eql?
 
     # Returns the range in x-coordinates for all the points in this vector.
     # @return [Range] The (inclusive) range of x-coordinates.
