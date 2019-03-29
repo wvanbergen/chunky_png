@@ -76,7 +76,7 @@ module ChunkyPNG
         io.set_encoding(Encoding::BINARY)
         verify_signature!(io)
 
-        ds = self.new
+        ds = new
         while ds.end_chunk.nil?
           chunk = ChunkyPNG::Chunk.read(io)
           case chunk

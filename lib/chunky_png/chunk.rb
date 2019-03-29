@@ -172,7 +172,7 @@ module ChunkyPNG
       # @raise [ChunkyPNG::ExpectationFailed] Raises an exception if the content was not empty.
       def self.read(type, content)
         raise ExpectationFailed, 'The IEND chunk should be empty!' if content.bytesize > 0
-        self.new
+        new
       end
 
       # Returns an empty string, because this chunk should always be empty.

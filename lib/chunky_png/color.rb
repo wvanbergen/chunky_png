@@ -197,7 +197,7 @@ module ChunkyPNG
       rgb    = cylindrical_to_cubic(hue, saturation, value, chroma)
       rgb.map! { |component| ((component + value - chroma) * 255).to_i }
       rgb << alpha
-      self.rgba(*rgb)
+      rgba(*rgb)
     end
 
     alias from_hsb from_hsv
@@ -222,7 +222,7 @@ module ChunkyPNG
       rgb    = cylindrical_to_cubic(hue, saturation, lightness, chroma)
       rgb.map! { |component| ((component + lightness - 0.5 * chroma) * 255).to_i }
       rgb << alpha
-      self.rgba(*rgb)
+      rgba(*rgb)
     end
 
     # Convert one HSL or HSV triple and associated chroma to a scaled rgb triple

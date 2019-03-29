@@ -274,8 +274,10 @@ module ChunkyPNG
     # @return [true, false] True if the size and pixel values of the other
     #   canvas are exactly the same as this canvas's size and pixel values.
     def eql?(other)
-      other.kind_of?(self.class) && other.pixels == self.pixels &&
-            other.width == self.width && other.height == self.height
+      other.kind_of?(self.class) &&
+        other.pixels == pixels &&
+        other.width == width &&
+        other.height == height
     end
 
     alias == eql?
