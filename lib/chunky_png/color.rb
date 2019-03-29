@@ -190,9 +190,9 @@ module ChunkyPNG
     # @raise [ArgumentError] if the hsv triple is invalid.
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
     def from_hsv(hue, saturation, value, alpha = 255)
-      raise ArgumentError, "Hue must be between 0 and 360" unless (0..360).include?(hue)
-      raise ArgumentError, "Saturation must be between 0 and 1" unless (0..1).include?(saturation)
-      raise ArgumentError, "Value/brightness must be between 0 and 1" unless (0..1).include?(value)
+      raise ArgumentError, "Hue must be between 0 and 360" unless (0..360).cover?(hue)
+      raise ArgumentError, "Saturation must be between 0 and 1" unless (0..1).cover?(saturation)
+      raise ArgumentError, "Value/brightness must be between 0 and 1" unless (0..1).cover?(value)
       chroma = value * saturation
       rgb    = cylindrical_to_cubic(hue, saturation, value, chroma)
       rgb.map! { |component| ((component + value - chroma) * 255).to_i }
@@ -215,9 +215,9 @@ module ChunkyPNG
     # @raise [ArgumentError] if the hsl triple is invalid.
     # @see http://en.wikipedia.org/wiki/HSL_and_HSV
     def from_hsl(hue, saturation, lightness, alpha = 255)
-      raise ArgumentError, "Hue #{hue} was not between 0 and 360" unless (0..360).include?(hue)
-      raise ArgumentError, "Saturation #{saturation} was not between 0 and 1" unless (0..1).include?(saturation)
-      raise ArgumentError, "Lightness #{lightness} was not between 0 and 1" unless (0..1).include?(lightness)
+      raise ArgumentError, "Hue #{hue} was not between 0 and 360" unless (0..360).cover?(hue)
+      raise ArgumentError, "Saturation #{saturation} was not between 0 and 1" unless (0..1).cover?(saturation)
+      raise ArgumentError, "Lightness #{lightness} was not between 0 and 1" unless (0..1).cover?(lightness)
       chroma = (1 - (2 * lightness - 1).abs) * saturation
       rgb    = cylindrical_to_cubic(hue, saturation, lightness, chroma)
       rgb.map! { |component| ((component + lightness - 0.5 * chroma) * 255).to_i }
