@@ -1,6 +1,5 @@
 language: ruby
 script: bundle exec rake
-sudo: false
 
 rvm:
 - "2.2"
