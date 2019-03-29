@@ -652,8 +652,9 @@ module ChunkyPNG
                                      end
       hue = 60 * hue_prime
 
-      return hue.round, chroma, max, min
+      [hue.round, chroma, max, min]
     end
+
     private :hue_and_chroma
 
     # Returns an array with the separate RGBA values for this color.

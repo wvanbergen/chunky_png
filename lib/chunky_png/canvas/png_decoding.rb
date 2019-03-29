@@ -101,7 +101,7 @@ module ChunkyPNG
         end
 
         image.pixels.map! { |c| c == transparent_color ? ChunkyPNG::Color::TRANSPARENT : c } if transparent_color
-        return image
+        image
       end
 
       protected
@@ -261,7 +261,7 @@ module ChunkyPNG
           pixels << ChunkyPNG::Color.rgba(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g),
                                           decode_png_resample_16bit_value(b), decode_png_resample_16bit_value(a))
         end
-        return pixels
+        pixels
       end
 
       # Decodes a scanline of an 8-bit, true color image into a row of pixels.
@@ -279,7 +279,7 @@ module ChunkyPNG
         stream.unpack("@#{pos + 1}n#{width * 3}").each_slice(3) do |r, g, b|
           pixels << ChunkyPNG::Color.rgb(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(b))
         end
-        return pixels
+        pixels
       end
 
       # Decodes a scanline of an 8-bit, grayscale image with transparency into a row of pixels.
@@ -297,7 +297,7 @@ module ChunkyPNG
         stream.unpack("@#{pos + 1}n#{width * 2}").each_slice(2) do |g, a|
           pixels << ChunkyPNG::Color.grayscale_alpha(decode_png_resample_16bit_value(g), decode_png_resample_16bit_value(a))
         end
-        return pixels
+        pixels
       end
 
       # Decodes a scanline of a 1-bit, grayscale image into a row of pixels.

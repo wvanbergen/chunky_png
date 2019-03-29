@@ -23,7 +23,7 @@ module ChunkyPNG
         for i in 1..new_width
           indicies[i-1] = (indicies[i-1] + (residues[i-1] + 127)/255)
         end
-        return indicies
+        indicies
       end
 
       # Fractional Interpolation between two values
@@ -63,7 +63,7 @@ module ChunkyPNG
           end
         end
 
-        return indicies, residues
+        [indicies, residues]
       end
 
 

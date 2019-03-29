@@ -83,7 +83,7 @@ module ChunkyPNG
         data           = encode_png_pixelstream(encoding[:color_mode], encoding[:bit_depth], encoding[:interlace], encoding[:filtering])
         ds.data_chunks = Chunk::ImageData.split_in_chunks(data, encoding[:compression])
         ds.end_chunk   = Chunk::End.new
-        return ds
+        ds
       end
 
       protected
@@ -139,7 +139,7 @@ module ChunkyPNG
           when Zlib::NO_COMPRESSION..Zlib::BEST_SPEED then ChunkyPNG::FILTER_NONE
           else ChunkyPNG::FILTER_UP
         end
-        return encoding
+        encoding
       end
 
       # Encodes the canvas according to the PNG format specification with a given color

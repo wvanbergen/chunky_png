@@ -89,7 +89,7 @@ module ChunkyPNG
             else ds.other_chunks << chunk
           end
         end
-        return ds
+        ds
       end
 
       # Verifies that the current stream is a PNG datastream by checking its signature.
@@ -182,7 +182,7 @@ module ChunkyPNG
       str = StringIO.new
       str.set_encoding('ASCII-8BIT')
       write(str)
-      return str.string
+      str.string
     end
 
     alias to_string to_blob
