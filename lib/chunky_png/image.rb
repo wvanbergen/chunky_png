@@ -5,7 +5,6 @@ module ChunkyPNG
   #
   # @see ChunkyPNG::Canvas
   class Image < Canvas
-
     # The minimum size of bytes the value of a metadata field should be before compression
     # is enabled for the chunk.
     METADATA_COMPRESSION_TRESHOLD = 300

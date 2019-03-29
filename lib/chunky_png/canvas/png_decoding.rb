@@ -1,6 +1,5 @@
 module ChunkyPNG
   class Canvas
-
     # The PNGDecoding contains methods for decoding PNG datastreams to create a
     # Canvas object. The datastream can be provided as filename, string or IO
     # stream.

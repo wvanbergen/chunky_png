@@ -159,7 +159,6 @@ module ChunkyPNG
     # The End (IEND) chunk indicates the last chunk of a PNG stream. It does
     # not contain any data.
     class End < Base
-
       def initialize
         super('IEND')
       end

@@ -32,7 +32,6 @@ module ChunkyPNG
   # Vectors can be created quite flexibly. See the {ChunkyPNG.Vector} factory methods for
   # more information on how to construct vectors.
   class Vector
-
     include Enumerable
 
     # @return [Array<ChunkyPNG::Point>] The array that holds all the points in this vector.

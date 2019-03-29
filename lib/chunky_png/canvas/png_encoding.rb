@@ -1,6 +1,5 @@
 module ChunkyPNG
   class Canvas
-
     # Methods for encoding a Canvas instance into a PNG datastream.
     #
     # Overview of the encoding process:
@@ -21,7 +20,6 @@ module ChunkyPNG
     # @see ChunkyPNG::Canvas::PNGDecoding
     # @see http://www.w3.org/TR/PNG/ The W3C PNG format specification
     module PNGEncoding
-
       # The palette used for encoding the image.This is only in used for images
       # that get encoded using indexed colors.
       # @return [ChunkyPNG::Palette]

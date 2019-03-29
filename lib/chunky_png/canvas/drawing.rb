@@ -1,6 +1,5 @@
 module ChunkyPNG
   class Canvas
-
     # Module that adds some primitive drawing methods to {ChunkyPNG::Canvas}.
     #
     # All of these methods change the current canvas instance and do not create

@@ -60,6 +60,7 @@ module ChunkyPNG
       end
     end
   end
+
   private_class_method :build_point_from_object
 
   # Simple class that represents a point on a canvas using an x and y coordinate.
@@ -69,7 +70,6 @@ module ChunkyPNG
   #
   # @see ChunkyPNG.Point
   class Point
-
     # @return [Regexp] The regexp to parse points from a string.
     # @private
     POINT_REGEXP = /^[\(\[\{]?(\d+)\s*[,]?\s*(\d+)[\)\]\}]?$/

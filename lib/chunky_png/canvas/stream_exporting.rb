@@ -1,9 +1,7 @@
 module ChunkyPNG
   class Canvas
-
     # Methods to save load a canvas from to stream, encoded in RGB, RGBA, BGR or ABGR format.
     module StreamExporting
-
       # Creates an RGB-formatted pixelstream with the pixel data from this canvas.
       #
       # Note that this format is fast but bloated, because no compression is used
@@ -25,7 +23,7 @@ module ChunkyPNG
       def to_rgb_stream
         pixels.pack('NX' * pixels.length)
       end
-      
+
       # Creates a stream of the alpha channel of this canvas.
       #
       # @return [String] The 0-255 alpha values of all pixels packed as string

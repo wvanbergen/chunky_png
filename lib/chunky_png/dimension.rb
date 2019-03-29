@@ -58,13 +58,13 @@ module ChunkyPNG
       end
     end
   end
+
   private_class_method :build_dimension_from_object
 
   # Class that represents the dimension of something, e.g. a {ChunkyPNG::Canvas}.
   #
   # This class contains some methods to simplify performing dimension related checks.
   class Dimension
-
     # @return [Regexp] The regexp to parse dimensions from a string.
     # @private
     DIMENSION_REGEXP = /^[\(\[\{]?(\d+)\s*[x,]?\s*(\d+)[\)\]\}]?$/

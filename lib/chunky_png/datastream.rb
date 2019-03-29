@@ -9,7 +9,6 @@ module ChunkyPNG
   #
   # @see ChunkyPNG::Chunk
   class Datastream
-
     # The signature that each PNG file or stream should begin with.
     SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10].pack('C8').force_encoding(Encoding::BINARY).freeze
 
@@ -52,7 +51,6 @@ module ChunkyPNG
     ##############################################################################
 
     class << self
-
       # Reads a PNG datastream from a string.
       # @param [String] str The PNG encoded string to load from.
       # @return [ChunkyPNG::Datastream] The loaded datastream instance.
