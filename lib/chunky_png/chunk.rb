@@ -151,8 +151,15 @@ module ChunkyPNG
       # packing the image information variables into the correct format.
       # @return [String] The 13-byte content for the header chunk.
       def content
-        [width, height, depth, color, compression, filtering, interlace].
-          pack('NNC5')
+        [
+          width,
+          height,
+          depth,
+          color,
+          compression,
+          filtering,
+          interlace
+        ].pack('NNC5')
       end
     end
 
@@ -313,8 +320,11 @@ module ChunkyPNG
       #
       # @return The content that should be written to the datastream.
       def content
-        [keyword, ChunkyPNG::COMPRESSION_DEFAULT, Zlib::Deflate.deflate(value)].
-          pack('Z*Ca*')
+        [
+          keyword,
+          ChunkyPNG::COMPRESSION_DEFAULT,
+          Zlib::Deflate.deflate(value)
+        ].pack('Z*Ca*')
       end
     end
 
