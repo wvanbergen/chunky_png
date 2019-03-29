@@ -907,7 +907,7 @@ module ChunkyPNG
       if color_name.to_s =~ HTML_COLOR_REGEXP
         opacity ||= $2 ? ($2.to_f * 255.0).round : 0xff
         base_color_name = $1.gsub(/[^a-z]+/i, '').downcase.to_sym
-        return PREDEFINED_COLORS[base_color_name] | opacity if PREDEFINED_COLORS.has_key?(base_color_name)
+        return PREDEFINED_COLORS[base_color_name] | opacity if PREDEFINED_COLORS.key?(base_color_name)
       end
       raise ArgumentError, "Unknown color name #{color_name}!"
     end
