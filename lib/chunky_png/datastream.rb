@@ -11,7 +11,7 @@ module ChunkyPNG
   class Datastream
 
     # The signature that each PNG file or stream should begin with.
-    SIGNATURE = ChunkyPNG.force_binary([137, 80, 78, 71, 13, 10, 26, 10].pack('C8'))
+    SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10].pack('C8').force_encoding(Encoding::BINARY).freeze
 
     # The header chunk of this datastream.
     # @return [ChunkyPNG::Chunk::Header]
@@ -57,7 +57,7 @@ module ChunkyPNG
       # @param [String] str The PNG encoded string to load from.
       # @return [ChunkyPNG::Datastream] The loaded datastream instance.
       def from_blob(str)
-        from_io(StringIO.new(str))
+        from_io(StringIO.new(str, 'rb'))
       end
 
       alias :from_string :from_blob
@@ -75,6 +75,7 @@ module ChunkyPNG
       # @param [IO] io The stream to read from.
       # @return [ChunkyPNG::Datastream] The loaded datastream instance.
       def from_io(io)
+        io.set_encoding(Encoding::BINARY)
         verify_signature!(io)
 
         ds = self.new
@@ -103,7 +104,7 @@ module ChunkyPNG
       #    the beginning of the stream.
       def verify_signature!(io)
         signature = io.read(ChunkyPNG::Datastream::SIGNATURE.length)
-        unless ChunkyPNG.force_binary(signature) == ChunkyPNG::Datastream::SIGNATURE
+        unless signature == ChunkyPNG::Datastream::SIGNATURE
           raise ChunkyPNG::SignatureMismatch, "PNG signature not found, found #{signature.inspect} instead of #{ChunkyPNG::Datastream::SIGNATURE.inspect}!"
         end
       end
