@@ -39,8 +39,8 @@ module ChunkyPNG
       def bezier_curve(points, stroke_color = ChunkyPNG::Color::BLACK)
         points = ChunkyPNG::Vector(*points)
         case points.length
-          when 0, 1; return self
-          when 2; return line(points[0].x, points[0].y, points[1].x, points[1].y, stroke_color)
+          when 0, 1 then return self
+          when 2 then return line(points[0].x, points[0].y, points[1].x, points[1].y, stroke_color)
         end
 
         curve_points = Array.new

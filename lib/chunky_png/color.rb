@@ -31,10 +31,10 @@ module ChunkyPNG
   # @see ChunkyPNG::Color.parse
   def self.Color(*args)
     case args.length
-      when 1; ChunkyPNG::Color.parse(args.first)
-      when 2; (ChunkyPNG::Color.parse(args.first) & 0xffffff00) | args[1].to_i
-      when 3; ChunkyPNG::Color.rgb(*args)
-      when 4; ChunkyPNG::Color.rgba(*args)
+      when 1 then ChunkyPNG::Color.parse(args.first)
+      when 2 then (ChunkyPNG::Color.parse(args.first) & 0xffffff00) | args[1].to_i
+      when 3 then ChunkyPNG::Color.rgb(*args)
+      when 4 then ChunkyPNG::Color.rgba(*args)
       else raise ArgumentError, "Don't know how to create a color from #{args.inspect}!"
     end
   end
@@ -84,9 +84,9 @@ module ChunkyPNG
     def parse(source)
       return source if source.kind_of?(Integer)
       case source.to_s
-        when /^\d+$/; source.to_s.to_i
-        when HEX3_COLOR_REGEXP, HEX6_COLOR_REGEXP; from_hex(source.to_s)
-        when HTML_COLOR_REGEXP; html_color(source.to_s)
+        when /^\d+$/ then source.to_s.to_i
+        when HEX3_COLOR_REGEXP, HEX6_COLOR_REGEXP then from_hex(source.to_s)
+        when HTML_COLOR_REGEXP then html_color(source.to_s)
         else raise ArgumentError, "Don't know how to create a color from #{source.inspect}!"
       end
     end
@@ -250,12 +250,12 @@ module ChunkyPNG
       x = chroma * (1 - (hue_prime % 2 - 1).abs)
 
       case hue_prime
-      when (0...1); [chroma, x, 0]
-      when (1...2); [x, chroma, 0]
-      when (2...3); [0, chroma, x]
-      when (3...4); [0, x, chroma]
-      when (4...5); [x, 0, chroma]
-      when (5..6);  [chroma, 0, x]
+      when (0...1) then [chroma, x, 0]
+      when (1...2) then [x, chroma, 0]
+      when (2...3) then [0, chroma, x]
+      when (3...4) then [0, x, chroma]
+      when (4...5) then [x, 0, chroma]
+      when (5..6)  then [chroma, 0, x]
       end
     end
     private :cylindrical_to_cubic
@@ -643,9 +643,9 @@ module ChunkyPNG
 
       r, g, b   = scaled_rgb
       hue_prime = chroma.zero? ? 0 : case max
-                                     when r; (g - b).fdiv(chroma)
-                                     when g; (b - r).fdiv(chroma) + 2
-                                     when b; (r - g).fdiv(chroma) + 4
+                                     when r then (g - b).fdiv(chroma)
+                                     when g then (b - r).fdiv(chroma) + 2
+                                     when b then (r - g).fdiv(chroma) + 4
                                      else 0
                                      end
       hue = 60 * hue_prime
@@ -927,11 +927,11 @@ module ChunkyPNG
     # @return [Integer] The number of sample values per pixel.
     def samples_per_pixel(color_mode)
       case color_mode
-        when ChunkyPNG::COLOR_INDEXED;         1
-        when ChunkyPNG::COLOR_TRUECOLOR;       3
-        when ChunkyPNG::COLOR_TRUECOLOR_ALPHA; 4
-        when ChunkyPNG::COLOR_GRAYSCALE;       1
-        when ChunkyPNG::COLOR_GRAYSCALE_ALPHA; 2
+        when ChunkyPNG::COLOR_INDEXED         then 1
+        when ChunkyPNG::COLOR_TRUECOLOR       then 3
+        when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then 4
+        when ChunkyPNG::COLOR_GRAYSCALE       then 1
+        when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then 2
         else raise ChunkyPNG::NotSupported, "Don't know the number of samples for this colormode: #{color_mode}!"
       end
     end

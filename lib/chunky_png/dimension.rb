@@ -29,8 +29,8 @@ module ChunkyPNG
   # @see ChunkyPNG::Dimension
   def self.Dimension(*args)
     case args.length
-    when 2; ChunkyPNG::Dimension.new(*args)
-    when 1; build_dimension_from_object(args.first)
+    when 2 then ChunkyPNG::Dimension.new(*args)
+    when 1 then build_dimension_from_object(args.first)
     else raise ArgumentError,
       "Don't know how to construct a dimension from #{args.inspect}"
     end

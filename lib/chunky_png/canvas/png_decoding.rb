@@ -96,8 +96,8 @@ module ChunkyPNG
         raise ChunkyPNG::ExpectationFailed, "This palette is not suitable for decoding!" if decoding_palette && !decoding_palette.can_decode?
 
         image = case interlace
-          when ChunkyPNG::INTERLACING_NONE;  decode_png_without_interlacing(stream, width, height, color_mode, depth, decoding_palette)
-          when ChunkyPNG::INTERLACING_ADAM7; decode_png_with_adam7_interlacing(stream, width, height, color_mode, depth, decoding_palette)
+          when ChunkyPNG::INTERLACING_NONE  then decode_png_without_interlacing(stream, width, height, color_mode, depth, decoding_palette)
+          when ChunkyPNG::INTERLACING_ADAM7 then decode_png_with_adam7_interlacing(stream, width, height, color_mode, depth, decoding_palette)
           else raise ChunkyPNG::NotSupported, "Don't know how the handle interlacing method #{interlace}!"
         end
 
@@ -353,11 +353,11 @@ module ChunkyPNG
       # @raise [ChunkyPNG::NotSupported] when the color_mode and/or bit depth is not supported.
       def decode_png_pixels_from_scanline_method(color_mode, depth)
         decoder_method = case color_mode
-          when ChunkyPNG::COLOR_TRUECOLOR;       :"decode_png_pixels_from_scanline_truecolor_#{depth}bit"
-          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA; :"decode_png_pixels_from_scanline_truecolor_alpha_#{depth}bit"
-          when ChunkyPNG::COLOR_INDEXED;         :"decode_png_pixels_from_scanline_indexed_#{depth}bit"
-          when ChunkyPNG::COLOR_GRAYSCALE;       :"decode_png_pixels_from_scanline_grayscale_#{depth}bit"
-          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA; :"decode_png_pixels_from_scanline_grayscale_alpha_#{depth}bit"
+          when ChunkyPNG::COLOR_TRUECOLOR       then :"decode_png_pixels_from_scanline_truecolor_#{depth}bit"
+          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then :"decode_png_pixels_from_scanline_truecolor_alpha_#{depth}bit"
+          when ChunkyPNG::COLOR_INDEXED         then :"decode_png_pixels_from_scanline_indexed_#{depth}bit"
+          when ChunkyPNG::COLOR_GRAYSCALE       then :"decode_png_pixels_from_scanline_grayscale_#{depth}bit"
+          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then :"decode_png_pixels_from_scanline_grayscale_alpha_#{depth}bit"
           else nil
         end
 
@@ -419,11 +419,11 @@ module ChunkyPNG
       # @return [void]
       def decode_png_str_scanline(stream, pos, prev_pos, line_length, pixel_size)
         case stream.getbyte(pos)
-          when ChunkyPNG::FILTER_NONE;    # noop
-          when ChunkyPNG::FILTER_SUB;     decode_png_str_scanline_sub(     stream, pos, prev_pos, line_length, pixel_size)
-          when ChunkyPNG::FILTER_UP;      decode_png_str_scanline_up(      stream, pos, prev_pos, line_length, pixel_size)
-          when ChunkyPNG::FILTER_AVERAGE; decode_png_str_scanline_average( stream, pos, prev_pos, line_length, pixel_size)
-          when ChunkyPNG::FILTER_PAETH;   decode_png_str_scanline_paeth(   stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_NONE    then # noop
+          when ChunkyPNG::FILTER_SUB     then decode_png_str_scanline_sub(     stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_UP      then decode_png_str_scanline_up(      stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_AVERAGE then decode_png_str_scanline_average( stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_PAETH   then decode_png_str_scanline_paeth(   stream, pos, prev_pos, line_length, pixel_size)
           else raise ChunkyPNG::NotSupported, "Unknown filter type: #{stream.getbyte(pos)}!"
         end
       end
