@@ -158,9 +158,6 @@ end
 
 require 'chunky_png/version'
 
-# Ruby 1.8 / 1.9 compatibility
-require 'chunky_png/compatibility'
-
 # PNG file structure
 require 'chunky_png/datastream'
 require 'chunky_png/chunk'
