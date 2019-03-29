@@ -884,7 +884,7 @@ module ChunkyPNG
       :white                => 0xffffff00,
       :whitesmoke           => 0xf5f5f500,
       :yellow               => 0xffff0000,
-      :yellowgreen          => 0x9acd3200
+      :yellowgreen          => 0x9acd3200,
     }
 
     # Gets a color value based on a HTML color name.

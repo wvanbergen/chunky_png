@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
   s.license  = 'MIT'
   s.metadata = {
     "source_code_uri"   => "https://github.com/wvanbergen/chunky_png",
-    "wiki_uri"          => "https://github.com/wvanbergen/chunky_png/wiki"
+    "wiki_uri"          => "https://github.com/wvanbergen/chunky_png/wiki",
   }
 
   s.add_development_dependency('rake')

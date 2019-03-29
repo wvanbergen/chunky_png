@@ -408,7 +408,7 @@ module ChunkyPNG
       # @return [String] The binary content that should be written to the datastream.
       def content
         text_field = text.encode('utf-8')
-        text_field = (compressed == ChunkyPNG::COMPRESSED_CONTENT) ? Zlib::Deflate.deflate(text_field) : text_field
+        text_field = compressed == ChunkyPNG::COMPRESSED_CONTENT ? Zlib::Deflate.deflate(text_field) : text_field
 
         [keyword, compressed, compression, language_tag, translated_keyword.encode('utf-8'), text_field].pack('Z*CCZ*Z*a*')
       end
