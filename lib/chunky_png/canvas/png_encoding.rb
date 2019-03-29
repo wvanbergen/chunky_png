@@ -73,8 +73,8 @@ module ChunkyPNG
         encoding = determine_png_encoding(constraints)
 
         ds = Datastream.new
-        ds.header_chunk = Chunk::Header.new(:width => width, :height => height,
-            :color => encoding[:color_mode], :depth => encoding[:bit_depth], :interlace => encoding[:interlace])
+        ds.header_chunk = Chunk::Header.new(width: width, height: height,
+            color: encoding[:color_mode], depth: encoding[:bit_depth], interlace: encoding[:interlace])
 
         if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
           ds.palette_chunk      = encoding_palette.to_plte_chunk
@@ -100,12 +100,12 @@ module ChunkyPNG
       def determine_png_encoding(constraints = {})
 
         encoding = case constraints
-          when :fast_rgb         then { :color_mode => ChunkyPNG::COLOR_TRUECOLOR, :compression => Zlib::BEST_SPEED }
-          when :fast_rgba        then { :color_mode => ChunkyPNG::COLOR_TRUECOLOR_ALPHA, :compression => Zlib::BEST_SPEED }
-          when :best_compression then { :compression => Zlib::BEST_COMPRESSION, :filtering => ChunkyPNG::FILTER_PAETH }
-          when :good_compression then { :compression => Zlib::BEST_COMPRESSION, :filtering => ChunkyPNG::FILTER_NONE }
-          when :no_compression   then { :compression => Zlib::NO_COMPRESSION }
-          when :black_and_white  then { :color_mode => ChunkyPNG::COLOR_GRAYSCALE, :bit_depth => 1 }
+          when :fast_rgb         then { color_mode: ChunkyPNG::COLOR_TRUECOLOR, compression: Zlib::BEST_SPEED }
+          when :fast_rgba        then { color_mode: ChunkyPNG::COLOR_TRUECOLOR_ALPHA, compression: Zlib::BEST_SPEED }
+          when :best_compression then { compression: Zlib::BEST_COMPRESSION, filtering: ChunkyPNG::FILTER_PAETH }
+          when :good_compression then { compression: Zlib::BEST_COMPRESSION, filtering: ChunkyPNG::FILTER_NONE }
+          when :no_compression   then { compression: Zlib::NO_COMPRESSION }
+          when :black_and_white  then { color_mode: ChunkyPNG::COLOR_GRAYSCALE, bit_depth: 1 }
           when Hash; constraints
           else raise ChunkyPNG::Exception, "Unknown encoding preset: #{constraints.inspect}"
         end

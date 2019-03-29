@@ -21,8 +21,8 @@ describe 'ChunkyPNG.Dimension' do
     expect(ChunkyPNG::Dimension(['1', '2'])).to eql subject
   end
 
-  it "should create a dimension from a hash with x and y keys" do
-    expect(ChunkyPNG::Dimension(:width => 1, :height => 2)).to       eql subject
+  it "should create a dimension from a hash with width and height keys" do
+    expect(ChunkyPNG::Dimension(width: 1, height: 2)).to eql subject
     expect(ChunkyPNG::Dimension('width' => '1', 'height' => '2')).to eql subject
   end
 

@@ -64,14 +64,14 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should accept strings, arrays, hashes and points as well" do
-      expect(subject).to     include('0, 0')
-      subject.should_not include('0, 1')
-      expect(subject).to     include([0, 0])
-      subject.should_not include([0, 1])
-      expect(subject).to     include(:y => 0, :x => 0)
-      subject.should_not include(:y => 1, :x => 0)
-      expect(subject).to     include(ChunkyPNG::Point.new(0, 0))
-      subject.should_not include(ChunkyPNG::Point.new(0, 1))
+      expect(subject).to include('0, 0')
+      expect(subject).to_not include('0, 1')
+      expect(subject).to include([0, 0])
+      expect(subject).to_not include([0, 1])
+      expect(subject).to include(y: 0, x: 0)
+      expect(subject).to_not include(y: 1, x: 0)
+      expect(subject).to include(ChunkyPNG::Point.new(0, 0))
+      expect(subject).to_not include(ChunkyPNG::Point.new(0, 1))
     end
   end
 

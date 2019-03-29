@@ -96,7 +96,7 @@ module ChunkyPNG
       attr_accessor :content
 
       def initialize(type, content = '')
-        super(type, :content => content)
+        super(type, content: content)
       end
 
       # Creates an instance, given the chunk's type and content.
@@ -138,13 +138,15 @@ module ChunkyPNG
       #   variables set to the values according to the content.
       def self.read(type, content)
         fields = content.unpack('NNC5')
-        new(:width => fields[0],
-            :height => fields[1],
-            :depth => fields[2],
-            :color => fields[3],
-            :compression => fields[4],
-            :filtering => fields[5],
-            :interlace => fields[6])
+        new(
+          width: fields[0],
+          height: fields[1],
+          depth: fields[2],
+          color: fields[3],
+          compression: fields[4],
+          filtering: fields[5],
+          interlace: fields[6]
+        )
       end
 
       # Returns the content for this chunk when it gets written to a file, by

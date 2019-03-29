@@ -8,7 +8,7 @@ describe ChunkyPNG::Canvas::PNGEncoding do
       it "should encode an image with color mode #{color_mode_name} correctly" do
         canvas = ChunkyPNG::Canvas.new(10, 10, ChunkyPNG::Color.rgb(100, 100, 100))
         color_mode = ChunkyPNG.const_get("COLOR_#{color_mode_name.to_s.upcase}")
-        blob = canvas.to_blob(:color_mode => color_mode)
+        blob = canvas.to_blob(color_mode: color_mode)
 
         ds = ChunkyPNG::Datastream.from_blob(blob)
         expect(ds.header_chunk.color).to eql color_mode
@@ -50,7 +50,7 @@ describe ChunkyPNG::Canvas::PNGEncoding do
 
     it "should use a higher bit depth than necessary if requested" do
       @canvas = ChunkyPNG::Canvas.from_file(png_suite_file('basic', 'basn3p01.png'))
-      ds = ChunkyPNG::Datastream.from_blob(@canvas.to_blob(:bit_depth => 4))
+      ds = ChunkyPNG::Datastream.from_blob(@canvas.to_blob(bit_depth: 4))
       expect(ds.header_chunk.color).to eql ChunkyPNG::COLOR_INDEXED
       expect(ds.header_chunk.depth).to eql 4
       expect(@canvas).to eql ChunkyPNG::Canvas.from_datastream(ds)
@@ -58,7 +58,7 @@ describe ChunkyPNG::Canvas::PNGEncoding do
 
     it "should encode an image with interlacing correctly" do
       input_canvas = ChunkyPNG::Canvas.from_file(resource_file('operations.png'))
-      blob = input_canvas.to_blob(:interlace => true)
+      blob = input_canvas.to_blob(interlace: true)
 
       ds = ChunkyPNG::Datastream.from_blob(blob)
       expect(ds.header_chunk.interlace).to eql ChunkyPNG::INTERLACING_ADAM7
