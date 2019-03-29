@@ -15,8 +15,8 @@ module ChunkyPNG
       # the current instance intact, use {#grayscale} instead.
       #
       # @return [ChunkyPNG::Canvas] Returns itself, converted to grayscale.
-      # @see {#grayscale}
-      # @see {ChunkyPNG::Color#to_grayscale}
+      # @see #grayscale
+      # @see ChunkyPNG::Color#to_grayscale
       def grayscale!
         pixels.map! { |pixel| ChunkyPNG::Color.to_grayscale(pixel) }
         self
@@ -29,8 +29,8 @@ module ChunkyPNG
       #
       # @return [ChunkyPNG::Canvas] A copy of the canvas, converted to
       #   grayscale.
-      # @see {#grayscale!}
-      # @see {ChunkyPNG::Color#to_grayscale}
+      # @see #grayscale!
+      # @see ChunkyPNG::Color#to_grayscale
       def grayscale
         dup.grayscale!
       end

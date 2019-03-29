@@ -78,7 +78,7 @@ module ChunkyPNG
     #
     # It supports color numbers, colors in hex notation and named HTML colors.
     #
-    # @param [Integer, String] The color value.
+    # @param [Integer, String] source The color value.
     # @return [Integer] The color value, with the opacity applied if one was
     #   given.
     def parse(source)
@@ -157,8 +157,7 @@ module ChunkyPNG
     # as well as the 3-digit short format (#rgb) for those without.
     # Color strings may include the prefix "0x" or "#".
     #
-    # @param [String] str The color in hex notation. @return [Integer] The
-    #   converted color value.
+    # @param [String] hex_value The color in hex notation.
     # @param [Integer] opacity The opacity value for the color. Overrides any
     #    opacity value given in the hex value if given.
     # @return [Integer] The color value.
@@ -413,7 +412,7 @@ module ChunkyPNG
     # @param [Integer] fg The foreground color.
     # @param [Integer] bg The background color.
     # @param [Integer] alpha The blending factor (fixed 8bit)
-    # @param [Integer] The interpolated color.
+    # @return [Integer] The interpolated color.
     def interpolate_quick(fg, bg, alpha)
       return fg if alpha >= 255
       return bg if alpha <= 0
@@ -563,7 +562,8 @@ module ChunkyPNG
     # Returns a string representing this color using hex notation (i.e.
     # #rrggbbaa).
     #
-    # @param [Integer] value The color to convert.
+    # @param [Integer] color The color to convert.
+    # @param [Boolean] include_alpha
     # @return [String] The color in hex notation, starting with a pound sign.
     def to_hex(color, include_alpha = true)
       include_alpha ? ('#%08x' % color) : ('#%06x' % [color >> 8])
@@ -629,7 +629,7 @@ module ChunkyPNG
     # a ChunkPNG color. This logic is shared by the cylindrical HSV/HSB and HSL
     # color space models.
     #
-    # @param [Integer] A ChunkyPNG color.
+    # @param [Integer] color A ChunkyPNG color.
     # @return [Fixnum] hue The hue of the color (0-360)
     # @return [Fixnum] chroma The chroma of the color (0-1)
     # @return [Fixnum] max The magnitude of the largest scaled rgb component (0-1)
@@ -973,7 +973,7 @@ module ChunkyPNG
     #   stored.
     # @param [Integer] depth The color depth of the pixels.
     # @param [Integer] width The width of the image pass.
-    # @param [Integer] width The height of the image pass.
+    # @param [Integer] height The height of the image pass.
     # @return [Integer] The number of bytes used per scanline in a datastream.
     def pass_bytesize(color_mode, depth, width, height)
       return 0 if width == 0 || height == 0

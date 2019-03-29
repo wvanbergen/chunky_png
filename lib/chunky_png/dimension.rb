@@ -89,7 +89,7 @@ module ChunkyPNG
     end
 
     # Checks whether a point is within bounds of this dimension.
-    # @param [ChunkyPNG::Point, ...] A point-like to bounds-check.
+    # @param [ChunkyPNG::Point, ...] point_like A point-like to bounds-check.
     # @return [true, false] True iff the x and y coordinate fall in this dimension.
     # @see ChunkyPNG.Point
     def include?(*point_like)
@@ -98,7 +98,7 @@ module ChunkyPNG
     end
 
     # Checks whether 2 dimensions are identical.
-    # @param [ChunkyPNG::Dimension] The dimension to compare with.
+    # @param [ChunkyPNG::Dimension] other The dimension to compare with.
     # @return [true, false] <tt>true</tt> iff width and height match.
     def eql?(other)
       return false unless other.respond_to?(:width) && other.respond_to?(:height)
@@ -114,7 +114,7 @@ module ChunkyPNG
     end
 
     # Compares the size of 2 dimensions.
-    # @param [ChunkyPNG::Dimension] The dimension to compare with.
+    # @param [ChunkyPNG::Dimension] other The dimension to compare with.
     # @return [-1, 0, 1] -1 if the other dimension has a larger area, 1 of this
     #   dimension is larger, 0 if both are identical in size.
     def <=>(other)

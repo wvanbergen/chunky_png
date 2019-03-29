@@ -85,7 +85,7 @@ module ChunkyPNG
       # color mode and interlacing mode.
       # @param [String] stream The pixelstream to read from.
       # @param [Integer] width The width of the image.
-      # @param [Integer] width The height of the image.
+      # @param [Integer] height The height of the image.
       # @param [Integer] color_mode The color mode of the encoded pixelstream.
       # @param [Integer] depth The bit depth of the pixel samples.
       # @param [Integer] interlace The interlace method of the encoded pixelstream.
