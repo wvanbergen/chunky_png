@@ -126,9 +126,7 @@ module ChunkyPNG
             w = 0xff - (e_acc >> 8)
             compose_pixel(x0, y0, ChunkyPNG::Color.fade(stroke_color, w))
             if inclusive || i > 0
-              compose_pixel(x0 + sx,
-                            y0 + sy,
-                            ChunkyPNG::Color.fade(stroke_color, 0xff - w))
+              compose_pixel(x0 + sx, y0 + sy, ChunkyPNG::Color.fade(stroke_color, 0xff - w))
             end
             y0 += sy
           end
@@ -144,9 +142,7 @@ module ChunkyPNG
             w = 0xff - (e_acc >> 8)
             compose_pixel(x0, y0, ChunkyPNG::Color.fade(stroke_color, w))
             if inclusive || i > 0
-              compose_pixel(x0 + sx,
-                            y0 + sy,
-                            ChunkyPNG::Color.fade(stroke_color, 0xff - w))
+              compose_pixel(x0 + sx, y0 + sy, ChunkyPNG::Color.fade(stroke_color, 0xff - w))
             end
             x0 += sx
           end
@@ -255,8 +251,8 @@ module ChunkyPNG
         fill_color   = ChunkyPNG::Color.parse(fill_color)
 
         f = 1 - radius
-        ddF_x = 1
-        ddF_y = -2 * radius
+        dd_f_x = 1
+        dd_f_y = -2 * radius
         x = 0
         y = radius
 
@@ -271,13 +267,13 @@ module ChunkyPNG
 
           if f >= 0
             y -= 1
-            ddF_y += 2
-            f += ddF_y
+            dd_f_y += 2
+            f += dd_f_y
           end
 
           x += 1
-          ddF_x += 2
-          f += ddF_x
+          dd_f_x += 2
+          f += dd_f_x
 
           unless fill_color == ChunkyPNG::Color::TRANSPARENT
             lines[y] = lines[y] ? [lines[y], x - 1].min : x - 1

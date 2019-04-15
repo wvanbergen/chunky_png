@@ -34,8 +34,8 @@ module ChunkyPNG
       # @param [Integer] new_width The width of the destination
       # @return [Array<Integer>, Array<Integer>] Two arrays of indicies and residues
       def steps_residues(width, new_width)
-        indicies = Array.new(new_width, obj = nil)
-        residues = Array.new(new_width, obj = nil)
+        indicies = Array.new(new_width, nil)
+        residues = Array.new(new_width, nil)
 
         # This works by accumulating the fractional error and
         # overflowing when necessary.

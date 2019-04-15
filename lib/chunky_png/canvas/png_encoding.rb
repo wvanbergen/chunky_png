@@ -99,13 +99,13 @@ module ChunkyPNG
       # @return [Hash] A hash with encoding options for {ChunkyPNG::Canvas::PNGEncoding#to_datastream}
       def determine_png_encoding(constraints = {})
         encoding = case constraints
-          when :fast_rgb         then { color_mode: ChunkyPNG::COLOR_TRUECOLOR, compression: Zlib::BEST_SPEED }
-          when :fast_rgba        then { color_mode: ChunkyPNG::COLOR_TRUECOLOR_ALPHA, compression: Zlib::BEST_SPEED }
-          when :best_compression then { compression: Zlib::BEST_COMPRESSION, filtering: ChunkyPNG::FILTER_PAETH }
-          when :good_compression then { compression: Zlib::BEST_COMPRESSION, filtering: ChunkyPNG::FILTER_NONE }
-          when :no_compression   then { compression: Zlib::NO_COMPRESSION }
-          when :black_and_white  then { color_mode: ChunkyPNG::COLOR_GRAYSCALE, bit_depth: 1 }
-          when Hash; constraints
+          when :fast_rgb         then {color_mode: ChunkyPNG::COLOR_TRUECOLOR, compression: Zlib::BEST_SPEED}
+          when :fast_rgba        then {color_mode: ChunkyPNG::COLOR_TRUECOLOR_ALPHA, compression: Zlib::BEST_SPEED}
+          when :best_compression then {compression: Zlib::BEST_COMPRESSION, filtering: ChunkyPNG::FILTER_PAETH}
+          when :good_compression then {compression: Zlib::BEST_COMPRESSION, filtering: ChunkyPNG::FILTER_NONE}
+          when :no_compression   then {compression: Zlib::NO_COMPRESSION}
+          when :black_and_white  then {color_mode: ChunkyPNG::COLOR_GRAYSCALE, bit_depth: 1}
+          when Hash              then constraints
           else raise ChunkyPNG::Exception, "Unknown encoding preset: #{constraints.inspect}"
         end
 
@@ -128,8 +128,8 @@ module ChunkyPNG
         encoding[:compression] ||= Zlib::DEFAULT_COMPRESSION
 
         encoding[:interlace] = case encoding[:interlace]
-          when nil, false then ChunkyPNG::INTERLACING_NONE; ChunkyPNG::INTERLACING_NONE
-          when true then ChunkyPNG::INTERLACING_ADAM7;      ChunkyPNG::INTERLACING_ADAM7
+          when nil, false then ChunkyPNG::INTERLACING_NONE
+          when true then ChunkyPNG::INTERLACING_ADAM7
           else encoding[:interlace]
         end
 
@@ -204,10 +204,10 @@ module ChunkyPNG
         # Determine the filter method
         encode_method = encode_png_pixels_to_scanline_method(color_mode, bit_depth)
         filter_method = case filtering
-          when ChunkyPNG::FILTER_SUB;     :encode_png_str_scanline_sub
-          when ChunkyPNG::FILTER_UP;      :encode_png_str_scanline_up
-          when ChunkyPNG::FILTER_AVERAGE; :encode_png_str_scanline_average
-          when ChunkyPNG::FILTER_PAETH;   :encode_png_str_scanline_paeth
+          when ChunkyPNG::FILTER_SUB     then :encode_png_str_scanline_sub
+          when ChunkyPNG::FILTER_UP      then :encode_png_str_scanline_up
+          when ChunkyPNG::FILTER_AVERAGE then :encode_png_str_scanline_average
+          when ChunkyPNG::FILTER_PAETH   then :encode_png_str_scanline_paeth
           else nil
         end
 
@@ -353,12 +353,11 @@ module ChunkyPNG
       # @raise [ChunkyPNG::NotSupported] when the color_mode and/or bit depth is not supported.
       def encode_png_pixels_to_scanline_method(color_mode, depth)
         encoder_method = case color_mode
-          when ChunkyPNG::COLOR_TRUECOLOR;       :"encode_png_pixels_to_scanline_truecolor_#{depth}bit"
-          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA; :"encode_png_pixels_to_scanline_truecolor_alpha_#{depth}bit"
-          when ChunkyPNG::COLOR_INDEXED;         :"encode_png_pixels_to_scanline_indexed_#{depth}bit"
-          when ChunkyPNG::COLOR_GRAYSCALE;       :"encode_png_pixels_to_scanline_grayscale_#{depth}bit"
-          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA; :"encode_png_pixels_to_scanline_grayscale_alpha_#{depth}bit"
-          else nil
+          when ChunkyPNG::COLOR_TRUECOLOR       then :"encode_png_pixels_to_scanline_truecolor_#{depth}bit"
+          when ChunkyPNG::COLOR_TRUECOLOR_ALPHA then :"encode_png_pixels_to_scanline_truecolor_alpha_#{depth}bit"
+          when ChunkyPNG::COLOR_INDEXED         then :"encode_png_pixels_to_scanline_indexed_#{depth}bit"
+          when ChunkyPNG::COLOR_GRAYSCALE       then :"encode_png_pixels_to_scanline_grayscale_#{depth}bit"
+          when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then :"encode_png_pixels_to_scanline_grayscale_alpha_#{depth}bit"
         end
 
         raise ChunkyPNG::NotSupported, "No encoder found for color mode #{color_mode} and #{depth}-bit depth!" unless respond_to?(encoder_method, true)
