@@ -56,11 +56,14 @@ module ChunkyPNG
 
         for y in 0...other.height do
           for x in 0...other.width do
-            set_pixel(x + offset_x,
-                      y + offset_y,
-                      ChunkyPNG::Color.compose(other.get_pixel(x, y),
-                                               get_pixel(x + offset_x,
-                                                         y + offset_y)))
+            set_pixel(
+              x + offset_x,
+              y + offset_y,
+              ChunkyPNG::Color.compose(
+                other.get_pixel(x, y),
+                get_pixel(x + offset_x, y + offset_y)
+              )
+            )
           end
         end
         self
@@ -178,8 +181,7 @@ module ChunkyPNG
         if crop_width == width && x == 0
           # We only need to crop off the top and/or bottom, so we can take a
           # shortcut.
-          replace_canvas!(crop_width, crop_height,
-                          pixels.slice(y * width, width * crop_height))
+          replace_canvas!(crop_width, crop_height, pixels.slice(y * width, width * crop_height))
         else
           new_pixels = []
           for cy in 0...crop_height do

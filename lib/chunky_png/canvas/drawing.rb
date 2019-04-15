@@ -162,10 +162,7 @@ module ChunkyPNG
       # @param [Integer] stroke_color The stroke color to use for this polygon.
       # @param [Integer] fill_color The fill color to use for this polygon.
       # @return [ChunkyPNG::Canvas] Itself, with the polygon drawn.
-      def polygon(path,
-                  stroke_color = ChunkyPNG::Color::BLACK,
-                  fill_color   = ChunkyPNG::Color::TRANSPARENT)
-
+      def polygon(path, stroke_color = ChunkyPNG::Color::BLACK, fill_color = ChunkyPNG::Color::TRANSPARENT)
         vector = ChunkyPNG::Vector(*path)
         if path.length < 3
           raise ArgumentError, 'A polygon requires at least 3 points'
@@ -210,10 +207,7 @@ module ChunkyPNG
       # @param [Integer] stroke_color The line color to use for this rectangle.
       # @param [Integer] fill_color The fill color to use for this rectangle.
       # @return [ChunkyPNG::Canvas] Itself, with the rectangle drawn.
-      def rect(x0, y0, x1, y1,
-               stroke_color = ChunkyPNG::Color::BLACK,
-               fill_color   = ChunkyPNG::Color::TRANSPARENT)
-
+      def rect(x0, y0, x1, y1, stroke_color = ChunkyPNG::Color::BLACK, fill_color = ChunkyPNG::Color::TRANSPARENT)
         stroke_color = ChunkyPNG::Color.parse(stroke_color)
         fill_color   = ChunkyPNG::Color.parse(fill_color)
 
@@ -243,10 +237,7 @@ module ChunkyPNG
       # @param [Integer] stroke_color The color to use for the line.
       # @param [Integer] fill_color The color to use that fills the circle.
       # @return [ChunkyPNG::Canvas] Itself, with the circle drawn.
-      def circle(x0, y0, radius,
-                 stroke_color = ChunkyPNG::Color::BLACK,
-                 fill_color   = ChunkyPNG::Color::TRANSPARENT)
-
+      def circle(x0, y0, radius, stroke_color = ChunkyPNG::Color::BLACK, fill_color = ChunkyPNG::Color::TRANSPARENT)
         stroke_color = ChunkyPNG::Color.parse(stroke_color)
         fill_color   = ChunkyPNG::Color.parse(fill_color)
 

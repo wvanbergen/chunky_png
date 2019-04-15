@@ -256,8 +256,12 @@ module ChunkyPNG
       def decode_png_pixels_from_scanline_truecolor_alpha_16bit(stream, pos, width, _decoding_palette)
         pixels = []
         stream.unpack("@#{pos + 1}n#{width * 4}").each_slice(4) do |r, g, b, a|
-          pixels << ChunkyPNG::Color.rgba(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g),
-                                          decode_png_resample_16bit_value(b), decode_png_resample_16bit_value(a))
+          pixels << ChunkyPNG::Color.rgba(
+            decode_png_resample_16bit_value(r),
+            decode_png_resample_16bit_value(g),
+            decode_png_resample_16bit_value(b),
+            decode_png_resample_16bit_value(a),
+          )
         end
         pixels
       end

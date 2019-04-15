@@ -118,8 +118,7 @@ module ChunkyPNG
     # Note that it is still possible to access the chunk for such an image, but
     # ChunkyPNG will raise an exception if you try to access the pixel data.
     class Header < Base
-      attr_accessor :width, :height, :depth, :color, :compression, :filtering,
-                    :interlace
+      attr_accessor :width, :height, :depth, :color, :compression, :filtering, :interlace
 
       def initialize(attrs = {})
         super('IHDR', attrs)
