@@ -359,7 +359,6 @@ module ChunkyPNG
           when ChunkyPNG::COLOR_INDEXED         then :"decode_png_pixels_from_scanline_indexed_#{depth}bit"
           when ChunkyPNG::COLOR_GRAYSCALE       then :"decode_png_pixels_from_scanline_grayscale_#{depth}bit"
           when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then :"decode_png_pixels_from_scanline_grayscale_alpha_#{depth}bit"
-          else nil
         end
 
         raise ChunkyPNG::NotSupported, "No decoder found for color mode #{color_mode} and #{depth}-bit depth!" unless respond_to?(decoder_method, true)

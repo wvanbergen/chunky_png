@@ -204,11 +204,12 @@ module ChunkyPNG
         # Determine the filter method
         encode_method = encode_png_pixels_to_scanline_method(color_mode, bit_depth)
         filter_method = case filtering
+          when ChunkyPNG::FILTER_NONE    then nil
           when ChunkyPNG::FILTER_SUB     then :encode_png_str_scanline_sub
           when ChunkyPNG::FILTER_UP      then :encode_png_str_scanline_up
           when ChunkyPNG::FILTER_AVERAGE then :encode_png_str_scanline_average
           when ChunkyPNG::FILTER_PAETH   then :encode_png_str_scanline_paeth
-          else nil
+          else raise ArgumentError, "Filtering method #{filtering} is not supported"
         end
 
         0.upto(height - 1) do |y|
