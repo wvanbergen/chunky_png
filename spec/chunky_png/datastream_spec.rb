@@ -2,7 +2,6 @@
 require 'spec_helper'
 
 describe ChunkyPNG::Datastream do
-
   describe '.from_io'do
     it "should raise an error when loading a file with a bad signature" do
       filename = resource_file('damaged_signature.png')

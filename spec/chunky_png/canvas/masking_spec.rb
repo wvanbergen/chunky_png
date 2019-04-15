@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ChunkyPNG::Canvas::Masking do
-
   subject { reference_canvas('clock') }
 
   before(:all) do

@@ -4,7 +4,6 @@ describe ChunkyPNG::Canvas::PNGDecoding do
   include ChunkyPNG::Canvas::PNGDecoding
 
   describe '#decode_png_scanline' do
-
     it "should decode a line without filtering as is" do
       stream = [ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255].pack('C*')
       decode_png_str_scanline(stream, 0, nil, 9, 3)

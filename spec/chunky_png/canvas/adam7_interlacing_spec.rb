@@ -102,5 +102,4 @@ describe ChunkyPNG::Canvas::Adam7Interlacing do
       end
     end
   end
-
 end

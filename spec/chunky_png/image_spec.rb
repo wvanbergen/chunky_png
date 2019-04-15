@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe ChunkyPNG::Image do
   describe '#metadata' do
-
     it "should load metadata from an existing file" do
       image = ChunkyPNG::Image.from_file(resource_file('text_chunk.png'))
       expect(image.metadata['Title']).to  eql 'My amazing icon!'

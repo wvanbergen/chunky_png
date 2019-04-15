@@ -173,7 +173,6 @@ describe ChunkyPNG::Canvas::PNGEncoding do
   end
 
   describe 'different filter methods' do
-
     it "should encode a scanline without filtering correctly" do
       stream = [ChunkyPNG::FILTER_NONE, 0, 0, 0, 1, 1, 1, 2, 2, 2].pack('C*')
       encode_png_str_scanline_none(stream, 0, nil, 9, 3)

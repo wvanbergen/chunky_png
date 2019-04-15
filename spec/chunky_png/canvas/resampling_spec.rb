@@ -1,11 +1,9 @@
 require 'spec_helper'
 
 describe ChunkyPNG::Canvas::Resampling do
-
   subject { reference_canvas('clock') }
 
   describe '#resample_nearest_neighbor' do
-
     it "should downscale from 2x2 to 1x1 correctly" do
       canvas = ChunkyPNG::Canvas.new(2, 2, [1, 2, 3, 4])
       expect(canvas.resample_nearest_neighbor(1, 1)).to eql ChunkyPNG::Canvas.new(1, 1, [4])

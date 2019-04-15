@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ChunkyPNG::Canvas do
-
   describe '.from_data_url' do
     it "should import an image from a data URL" do
       data_url = reference_canvas('operations').to_data_url

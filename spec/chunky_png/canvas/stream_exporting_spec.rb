@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ChunkyPNG::Canvas do
-
   describe '#to_rgba_stream' do
     it "should export a sample canvas to an RGBA stream correctly" do
       canvas = ChunkyPNG::Canvas.new(2, 2, [
@@ -37,7 +36,6 @@ describe ChunkyPNG::Canvas do
   end
 
   describe '#to_grayscale_stream' do
-
     it "should export a grayscale image to a grayscale datastream correctly" do
       canvas = ChunkyPNG::Canvas.new(2, 2, [
         ChunkyPNG::Color.grayscale(1),
@@ -48,7 +46,6 @@ describe ChunkyPNG::Canvas do
 
       expect(canvas.to_grayscale_stream).to eql [1, 2, 3, 4].pack('C4')
     end
-
 
     it "should export a color image to a grayscale datastream, using B values" do
       canvas = ChunkyPNG::Canvas.new(2, 2, [

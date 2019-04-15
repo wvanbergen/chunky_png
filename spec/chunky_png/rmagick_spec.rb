@@ -4,7 +4,6 @@ begin
   require 'chunky_png/rmagick'
 
   describe ChunkyPNG::RMagick do
-
     it "should import an image from RMagick correctly" do
       image = Magick::Image.read(resource_file('composited.png')).first
       canvas = ChunkyPNG::RMagick.import(image)

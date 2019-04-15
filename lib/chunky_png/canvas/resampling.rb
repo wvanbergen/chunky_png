@@ -65,7 +65,6 @@ module ChunkyPNG
         [indicies, residues]
       end
 
-
       # Resamples the canvas using nearest neighbor interpolation.
       # @param [Integer] new_width The width of the resampled canvas.
       # @param [Integer] new_height The height of the resampled canvas.

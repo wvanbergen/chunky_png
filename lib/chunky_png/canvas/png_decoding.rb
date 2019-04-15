@@ -203,7 +203,6 @@ module ChunkyPNG
         value == 0x01 ? 0xff : 0x00
       end
 
-
       # Decodes a scanline of a 1-bit, indexed image into a row of pixels.
       # @param [String] stream The stream to decode from.
       # @param [Integer] pos The position in the stream on which the scanline starts (including the filter byte).
@@ -377,7 +376,6 @@ module ChunkyPNG
       # @param [ChunkyPNG::Palette] decoding_palette The palette to use to decode colors.
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       def decode_png_image_pass(stream, width, height, color_mode, depth, start_pos, decoding_palette)
-
         pixels = []
         if width > 0 && height > 0
 

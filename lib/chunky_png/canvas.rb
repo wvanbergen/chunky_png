@@ -56,7 +56,6 @@ module ChunkyPNG
     #   This array always should have +width * height+ elements.
     attr_reader :pixels
 
-
     #################################################################
     # CONSTRUCTORS
     #################################################################
@@ -104,7 +103,6 @@ module ChunkyPNG
     def self.from_canvas(canvas)
       new(canvas.width, canvas.height, canvas.pixels.dup)
     end
-
 
     #################################################################
     # PROPERTIES

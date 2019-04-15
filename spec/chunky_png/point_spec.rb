@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ChunkyPNG::Point do
-
   subject { ChunkyPNG::Point.new(1, 2) }
 
   it { should respond_to(:x) }
@@ -43,7 +42,6 @@ end
 
 describe 'ChunkyPNG.Point' do
   subject { ChunkyPNG::Point.new(1, 2) }
-
 
   it "should create a point from a 2-item array" do
     expect(ChunkyPNG::Point([1, 2])).to     eql subject

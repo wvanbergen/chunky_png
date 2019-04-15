@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ChunkyPNG::Canvas do
-
   describe '#to_data_url' do
     it "should export a sample canvas to an RGBA stream correctly" do
       canvas = ChunkyPNG::Canvas.new(2, 2, [

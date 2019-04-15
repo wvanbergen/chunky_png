@@ -219,7 +219,6 @@ module ChunkyPNG
       when 3..4 then 2
       when 5..16 then 4
       when 17..256 then 8
-      else nil
       end
     end
   end

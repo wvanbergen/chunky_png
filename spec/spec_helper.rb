@@ -16,7 +16,6 @@ module PNGSuite
   end
 end
 
-
 module ResourceFileHelper
   def resource_file(name)
     File.expand_path("./resources/#{name}", File.dirname(__FILE__))

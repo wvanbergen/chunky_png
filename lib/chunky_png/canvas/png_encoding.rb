@@ -98,7 +98,6 @@ module ChunkyPNG
       #    Hash or a preset symbol.
       # @return [Hash] A hash with encoding options for {ChunkyPNG::Canvas::PNGEncoding#to_datastream}
       def determine_png_encoding(constraints = {})
-
         encoding = case constraints
           when :fast_rgb         then { color_mode: ChunkyPNG::COLOR_TRUECOLOR, compression: Zlib::BEST_SPEED }
           when :fast_rgba        then { color_mode: ChunkyPNG::COLOR_TRUECOLOR_ALPHA, compression: Zlib::BEST_SPEED }
@@ -149,7 +148,6 @@ module ChunkyPNG
       # @param [Integer] interlace The interlacing method to use.
       # @return [String] The PNG encoded canvas as string.
       def encode_png_pixelstream(color_mode = ChunkyPNG::COLOR_TRUECOLOR, bit_depth = 8, interlace = ChunkyPNG::INTERLACING_NONE, filtering = ChunkyPNG::FILTER_NONE)
-
         if color_mode == ChunkyPNG::COLOR_INDEXED
           raise ChunkyPNG::ExpectationFailed, "This palette is not suitable for encoding!" if encoding_palette.nil? || !encoding_palette.can_encode?
           raise ChunkyPNG::ExpectationFailed, "This palette has too many colors!" if encoding_palette.size > (1 << bit_depth)
@@ -199,7 +197,6 @@ module ChunkyPNG
       # @param [Integer] bit_depth The bit depth of the image.
       # @param [Integer] filtering The filtering method to use.
       def encode_png_image_pass_to_stream(stream, color_mode, bit_depth, filtering)
-
         start_pos  = stream.bytesize
         pixel_size = Color.pixel_bytesize(color_mode)
         line_width = Color.scanline_bytesize(color_mode, bit_depth, width)
@@ -349,7 +346,6 @@ module ChunkyPNG
         pixels.pack("xn#{width}")
       end
 
-
       # Returns the method name to use to decode scanlines into pixels.
       # @param [Integer] color_mode The color mode of the image.
       # @param [Integer] depth The bit depth of the image.
@@ -368,8 +364,6 @@ module ChunkyPNG
         raise ChunkyPNG::NotSupported, "No encoder found for color mode #{color_mode} and #{depth}-bit depth!" unless respond_to?(encoder_method, true)
         encoder_method
       end
-
-
 
       # Encodes a scanline of a pixelstream without filtering. This is a no-op.
       # @param [String] stream The pixelstream to work on. This string will be modified.

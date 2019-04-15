@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe 'PNG testuite' do
-
   context 'Decoding broken images' do
     png_suite_files(:broken).each do |file|
       it "should report #{File.basename(file)} as broken" do
@@ -12,7 +11,6 @@ describe 'PNG testuite' do
 
   context 'Decoding supported images' do
     png_suite_files(:basic, '*.png').each do |file|
-
       reference  = file.sub(/\.png$/, '.rgba')
       color_mode = file.match(/[in](\d)[apgc](\d\d)\.png$/)[1].to_i
       bit_depth  = file.match(/[in](\d)[apgc](\d\d)\.png$/)[2].to_i
@@ -25,7 +23,6 @@ describe 'PNG testuite' do
   end
 
   context 'Decoding text chunks' do
-
     it "should not find metadata in a file without text chunks" do
       image = ChunkyPNG::Image.from_file(png_suite_file(:metadata, 'cm0n0g04.png'))
       expect(image.metadata).to be_empty
@@ -44,7 +41,6 @@ describe 'PNG testuite' do
 
   context 'Decoding filter methods' do
     png_suite_files(:filtering, '*_reference.png').each do |reference_file|
-
       file = reference_file.sub(/_reference\.png$/, '.png')
       filter_method = file.match(/f(\d\d)[a-z0-9]+\.png/)[1].to_i
 
@@ -102,7 +98,6 @@ describe 'PNG testuite' do
   end
 
   context 'Decoding different sizes' do
-
     png_suite_files(:sizes, '*n*.png').each do |file|
       dimension = file.match(/s(\d\d)n\dp\d\d/)[1].to_i
 

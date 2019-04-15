@@ -317,7 +317,6 @@ describe ChunkyPNG::Color do
   end
 
   describe '#compose' do
-
     it 'should use the foregorund color as is when the background color is fully transparent' do
       expect(compose(@non_opaque, @fully_transparent)).to eql @non_opaque
     end

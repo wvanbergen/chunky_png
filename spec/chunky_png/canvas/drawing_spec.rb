@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ChunkyPNG::Canvas::Drawing do
-
   describe '#compose_pixel' do
     subject { ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color.rgb(200, 150, 100)) }
 
@@ -22,7 +21,6 @@ describe ChunkyPNG::Canvas::Drawing do
 
   describe '#line' do
     it "should draw lines correctly with anti-aliasing" do
-
       canvas = ChunkyPNG::Canvas.new(31, 31, ChunkyPNG::Color::WHITE)
 
       canvas.line( 0,  0, 30, 30, ChunkyPNG::Color::BLACK)

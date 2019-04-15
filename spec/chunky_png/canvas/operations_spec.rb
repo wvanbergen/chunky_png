@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ChunkyPNG::Canvas::Operations do
-
   subject { reference_canvas('operations') }
 
   describe '#grayscale' do
@@ -174,7 +173,6 @@ describe ChunkyPNG::Canvas::Operations do
 end
 
 describe ChunkyPNG::Canvas::Operations do
-
   subject { ChunkyPNG::Canvas.new(2, 3, [1, 2, 3, 4, 5, 6]) }
 
   describe '#flip_horizontally!' do
@@ -339,7 +337,6 @@ describe ChunkyPNG::Canvas::Operations do
 end
 
 describe ChunkyPNG::Canvas::Operations do
-
   subject { ChunkyPNG::Canvas.new(4, 4).rect(1, 1, 2, 2, 255, 255) }
 
   describe "#trim" do
@@ -379,7 +376,6 @@ describe ChunkyPNG::Canvas::Operations do
 end
 
 describe ChunkyPNG::Canvas::Operations do
-
   subject { ChunkyPNG::Canvas.new(4, 4) }
 
   describe "#border" do

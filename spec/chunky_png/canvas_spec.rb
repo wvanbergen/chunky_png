@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe ChunkyPNG::Canvas do
-
   subject { ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color::WHITE) }
 
   it { should respond_to(:width) }
