@@ -84,7 +84,7 @@ describe ChunkyPNG::Canvas::Adam7Interlacing do
         ChunkyPNG::Canvas.new(8, 4, 1175063295), # r = 70
       ]
 
-      canvas = ChunkyPNG::Image.new(8,8)
+      canvas = ChunkyPNG::Image.new(8, 8)
       submatrices.each_with_index { |m, pass| adam7_merge_pass(pass, canvas, m) }
       expect(canvas).to eql reference_image('adam7')
     end
@@ -98,7 +98,7 @@ describe ChunkyPNG::Canvas::Adam7Interlacing do
         sm = adam7_extract_pass(pass - 1, @canvas)
         expect(sm.pixels.length).to eql sm.width * sm.height
         expect(sm.pixels.uniq.length).to eql 1
-        expect(ChunkyPNG::Color.r(sm[0,0])).to eql pass * 10
+        expect(ChunkyPNG::Color.r(sm[0, 0])).to eql pass * 10
       end
     end
   end

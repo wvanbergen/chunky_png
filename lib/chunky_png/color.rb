@@ -169,8 +169,8 @@ module ChunkyPNG
           $1.hex << 8
         else
           raise ArgumentError, "Not a valid hex color notation: #{hex_value.inspect}!"
-     end
-      opacity  ||= $2 ? $2.hex : 0xff
+      end
+      opacity ||= $2 ? $2.hex : 0xff
       base_color | opacity
     end
 
@@ -500,7 +500,7 @@ module ChunkyPNG
     # @see #decompose_alpha
     def alpha_decomposable?(color, mask, bg, tolerance = 1)
       components = decompose_alpha_components(color, mask, bg)
-      sum = components.inject(0) { |a,b| a + b }
+      sum = components.inject(0) { |a, b| a + b }
       max = components.max * 3
       components.max <= 255 && components.min >= 0 && (sum + tolerance * 3) >= max
     end
@@ -521,7 +521,7 @@ module ChunkyPNG
     # @see #alpha_decomposable?
     def decompose_alpha(color, mask, bg)
       components = decompose_alpha_components(color, mask, bg)
-      (components.inject(0) { |a,b| a + b } / 3.0).round
+      (components.inject(0) { |a, b| a + b } / 3.0).round
     end
 
     # Decomposes an alpha channel for either the r, g or b color channel.

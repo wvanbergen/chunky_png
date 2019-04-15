@@ -48,7 +48,7 @@ module ChunkyPNG
         bicof = 0
 
         while t <= 100
-          cur_p = ChunkyPNG::Point.new(0,0)
+          cur_p = ChunkyPNG::Point.new(0, 0)
 
           # Generate a float of t.
           t_f = t / 100.00

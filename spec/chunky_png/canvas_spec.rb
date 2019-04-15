@@ -19,7 +19,7 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should accept an array as initial pixel values" do
-      canvas = ChunkyPNG::Canvas.new(2, 2, [1,2,3,4])
+      canvas = ChunkyPNG::Canvas.new(2, 2, [1, 2, 3, 4])
       expect(canvas[0, 0]).to eql 1
       expect(canvas[1, 0]).to eql 2
       expect(canvas[0, 1]).to eql 3
@@ -27,13 +27,13 @@ describe ChunkyPNG::Canvas do
     end
 
     it "should raise an ArgumentError if the initial array does not have the correct number of elements" do
-      expect { ChunkyPNG::Canvas.new(2, 2, [1,2,3]) }.to raise_error(ArgumentError)
-      expect { ChunkyPNG::Canvas.new(2, 2, [1,2,3,4,5]) }.to raise_error(ArgumentError)
+      expect { ChunkyPNG::Canvas.new(2, 2, [1, 2, 3]) }.to raise_error(ArgumentError)
+      expect { ChunkyPNG::Canvas.new(2, 2, [1, 2, 3, 4, 5]) }.to raise_error(ArgumentError)
     end
 
     it "should use a transparent background by default" do
       canvas = ChunkyPNG::Canvas.new(1, 1)
-      expect(canvas[0,0]).to eql ChunkyPNG::Color::TRANSPARENT
+      expect(canvas[0, 0]).to eql ChunkyPNG::Color::TRANSPARENT
     end
   end
 
@@ -216,19 +216,19 @@ describe ChunkyPNG::Canvas do
 
   describe '#replace_canvas' do
     it "should change the dimension of the canvas" do
-      expect { subject.send(:replace_canvas!, 2, 2, [1,2,3,4]) }.to change { subject.dimension }
+      expect { subject.send(:replace_canvas!, 2, 2, [1, 2, 3, 4]) }.to change { subject.dimension }
         .from(ChunkyPNG::Dimension('1x1'))
         .to(ChunkyPNG::Dimension('2x2'))
     end
 
     it "should change the pixel array" do
-      expect { subject.send(:replace_canvas!, 2, 2, [1,2,3,4]) }.to change { subject.pixels }
+      expect { subject.send(:replace_canvas!, 2, 2, [1, 2, 3, 4]) }.to change { subject.pixels }
         .from([ChunkyPNG::Color('white')])
-        .to([1,2,3,4])
+        .to([1, 2, 3, 4])
     end
 
     it "should return itself" do
-      expect(subject.send(:replace_canvas!, 2, 2, [1,2,3,4])).to equal(subject)
+      expect(subject.send(:replace_canvas!, 2, 2, [1, 2, 3, 4])).to equal(subject)
     end
   end
 end

@@ -100,16 +100,16 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should leave the original intact" do
-      subject.compose(ChunkyPNG::Canvas.new(1,1))
+      subject.compose(ChunkyPNG::Canvas.new(1, 1))
       expect(subject).to eql reference_canvas('operations')
     end
 
     it "should not return itself" do
-      subject.compose(ChunkyPNG::Canvas.new(1,1)).should_not equal(subject)
+      subject.compose(ChunkyPNG::Canvas.new(1, 1)).should_not equal(subject)
     end
 
     it "should raise an exception when the pixels to compose fall outside the image" do
-      expect { subject.compose(ChunkyPNG::Canvas.new(1,1), 16, 16) }.to raise_error(ChunkyPNG::OutOfBounds)
+      expect { subject.compose(ChunkyPNG::Canvas.new(1, 1), 16, 16) }.to raise_error(ChunkyPNG::OutOfBounds)
     end
   end
 
@@ -121,7 +121,7 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should return itself" do
-      expect(subject.compose!(ChunkyPNG::Canvas.new(1,1))).to equal(subject)
+      expect(subject.compose!(ChunkyPNG::Canvas.new(1, 1))).to equal(subject)
     end
 
     it "should compose a base image and mask correctly" do
@@ -132,7 +132,7 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should raise an exception when the pixels to compose fall outside the image" do
-      expect { subject.compose!(ChunkyPNG::Canvas.new(1,1), 16, 16) }.to raise_error(ChunkyPNG::OutOfBounds)
+      expect { subject.compose!(ChunkyPNG::Canvas.new(1, 1), 16, 16) }.to raise_error(ChunkyPNG::OutOfBounds)
     end
   end
 
@@ -143,16 +143,16 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should not return itself" do
-      subject.replace(ChunkyPNG::Canvas.new(1,1)).should_not equal(subject)
+      subject.replace(ChunkyPNG::Canvas.new(1, 1)).should_not equal(subject)
     end
 
     it "should leave the original intact" do
-      subject.replace(ChunkyPNG::Canvas.new(1,1))
+      subject.replace(ChunkyPNG::Canvas.new(1, 1))
       expect(subject).to eql reference_canvas('operations')
     end
 
     it "should raise an exception when the pixels to replace fall outside the image" do
-      expect { subject.replace(ChunkyPNG::Canvas.new(1,1), 16, 16) }.to raise_error(ChunkyPNG::OutOfBounds)
+      expect { subject.replace(ChunkyPNG::Canvas.new(1, 1), 16, 16) }.to raise_error(ChunkyPNG::OutOfBounds)
     end
   end
 
@@ -164,11 +164,11 @@ describe ChunkyPNG::Canvas::Operations do
     end
 
     it "should return itself" do
-      expect(subject.replace!(ChunkyPNG::Canvas.new(1,1))).to equal(subject)
+      expect(subject.replace!(ChunkyPNG::Canvas.new(1, 1))).to equal(subject)
     end
 
     it "should raise an exception when the pixels to replace fall outside the image" do
-      expect { subject.replace!(ChunkyPNG::Canvas.new(1,1), 16, 16) }.to raise_error(ChunkyPNG::OutOfBounds)
+      expect { subject.replace!(ChunkyPNG::Canvas.new(1, 1), 16, 16) }.to raise_error(ChunkyPNG::OutOfBounds)
     end
   end
 end

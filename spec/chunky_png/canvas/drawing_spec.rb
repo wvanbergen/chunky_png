@@ -6,7 +6,7 @@ describe ChunkyPNG::Canvas::Drawing do
     subject { ChunkyPNG::Canvas.new(1, 1, ChunkyPNG::Color.rgb(200, 150, 100)) }
 
     it "should compose colors correctly" do
-      subject.compose_pixel(0,0, ChunkyPNG::Color(100, 150, 200, 128))
+      subject.compose_pixel(0, 0, ChunkyPNG::Color(100, 150, 200, 128))
       expect(subject[0, 0]).to eql ChunkyPNG::Color(150, 150, 150)
     end
 

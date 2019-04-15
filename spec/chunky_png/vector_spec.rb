@@ -100,7 +100,7 @@ describe 'ChunkyPNG.Vector' do
   end
 
   it "should create a vector from a flat array" do
-    expect(ChunkyPNG::Vector(2,4,1,2,3,6)).to eql example
+    expect(ChunkyPNG::Vector(2, 4, 1, 2, 3, 6)).to eql example
   end
 
   it "should create a vector from a nested array" do

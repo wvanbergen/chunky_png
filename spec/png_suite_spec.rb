@@ -84,19 +84,19 @@ describe 'PNG testuite' do
   context 'Decoding transparency' do
     png_suite_files(:transparency, 'tp0*.png').each do |file|
       it "should not have transparency in #{File.basename(file)}" do
-        expect(ChunkyPNG::Color.a(ChunkyPNG::Image.from_file(file)[0,0])).to eql 255
+        expect(ChunkyPNG::Color.a(ChunkyPNG::Image.from_file(file)[0, 0])).to eql 255
       end
     end
 
     png_suite_files(:transparency, 'tp1*.png').each do |file|
       it "should have transparency in #{File.basename(file)}" do
-        expect(ChunkyPNG::Color.a(ChunkyPNG::Image.from_file(file)[0,0])).to eql 0
+        expect(ChunkyPNG::Color.a(ChunkyPNG::Image.from_file(file)[0, 0])).to eql 0
       end
     end
 
     png_suite_files(:transparency, 'tb*.png').each do |file|
       it "should have transparency in #{File.basename(file)}" do
-        expect(ChunkyPNG::Color.a(ChunkyPNG::Image.from_file(file)[0,0])).to eql 0
+        expect(ChunkyPNG::Color.a(ChunkyPNG::Image.from_file(file)[0, 0])).to eql 0
       end
     end
   end
