@@ -23,6 +23,7 @@ describe ChunkyPNG::Canvas::Drawing do
     it "should draw lines correctly with anti-aliasing" do
       canvas = ChunkyPNG::Canvas.new(31, 31, ChunkyPNG::Color::WHITE)
 
+      # rubocop:disable Layout/SpaceInsideParens # for improved readability
       canvas.line( 0,  0, 30, 30, ChunkyPNG::Color::BLACK)
       canvas.line( 0, 30, 30,  0, ChunkyPNG::Color::BLACK)
       canvas.line(15, 30, 15,  0, ChunkyPNG::Color.rgba(200,   0,   0, 128))
@@ -31,6 +32,7 @@ describe ChunkyPNG::Canvas::Drawing do
       canvas.line( 0, 15, 30,  0, ChunkyPNG::Color.rgba(  0, 200,   0, 128))
       canvas.line( 0, 30, 15,  0, ChunkyPNG::Color.rgba(  0,   0, 200, 128), false)
       canvas.line(15,  0, 30, 30, ChunkyPNG::Color.rgba(  0,   0, 200, 128))
+      # rubocop:enable Layout/SpaceInsideParens
 
       expect(canvas).to eql reference_canvas('lines')
     end
@@ -59,7 +61,7 @@ describe ChunkyPNG::Canvas::Drawing do
     subject { ChunkyPNG::Canvas.new(16, 16, '#ffffff') }
 
     it "should draw a rectangle with the correct colors" do
-      subject.rect(1, 1, 10, 10, ChunkyPNG::Color.rgba(0, 255, 0,  80), ChunkyPNG::Color.rgba(255, 0, 0, 100))
+      subject.rect(1, 1, 10, 10, ChunkyPNG::Color.rgba(0, 255, 0, 80), ChunkyPNG::Color.rgba(255, 0, 0, 100))
       subject.rect(5, 5, 14, 14, ChunkyPNG::Color.rgba(0, 0, 255, 160), ChunkyPNG::Color.rgba(255, 255, 0, 100))
       expect(subject).to eql reference_canvas('rect')
     end

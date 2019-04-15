@@ -7,9 +7,12 @@ require 'chunky_png'
 image = ChunkyPNG::Image.new(240, 180, ChunkyPNG::Color::TRANSPARENT)
 
 # set some random pixels
+
+# rubocop:disable Layout/ExtraSpacing, Layout/SpaceInsideParens
 image[10, 20] = ChunkyPNG::Color.rgba(255,   0,   0, 255)
 image[50, 87] = ChunkyPNG::Color.rgba(  0, 255,   0, 255)
 image[33, 99] = ChunkyPNG::Color.rgba(  0,   0, 255, 255)
+# rubocop:enable Layout/ExtraSpacing, Layout/SpaceInsideParens
 
 n = (ENV['N'] || '5').to_i
 

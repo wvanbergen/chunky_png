@@ -37,16 +37,16 @@ describe ChunkyPNG::Canvas::PNGDecoding do
     end
 
     it "should decode a line with average filtering correctly" do
-      previous = [ChunkyPNG::FILTER_AVERAGE, 10, 20, 30, 40, 50, 60, 70, 80, 80, 100, 110, 120]
-      current  = [ChunkyPNG::FILTER_AVERAGE,  0,  0, 10, 23, 15, 13, 23, 63, 38,  60, 253,  53]
+      previous = [ChunkyPNG::FILTER_AVERAGE, 10, 20, 30, 40, 50, 60, 70, 80, 80, 100, 110, 120] # rubocop:disable Layout/ExtraSpacing
+      current  = [ChunkyPNG::FILTER_AVERAGE,  0,  0, 10, 23, 15, 13, 23, 63, 38,  60, 253,  53] # rubocop:disable Layout/ExtraSpacing
       stream   = (previous + current).pack('C*')
       decode_png_str_scanline(stream, 13, 0, 12, 3)
       expect(stream.unpack('@14C12')).to eql [5, 10, 25, 45, 45, 55, 80, 125, 105, 150, 114, 165]
     end
 
     it "should decode a line with paeth filtering correctly" do
-      previous = [ChunkyPNG::FILTER_PAETH, 10, 20, 30, 40, 50, 60, 70, 80, 80, 100, 110, 120]
-      current  = [ChunkyPNG::FILTER_PAETH,  0,  0, 10, 20, 10,  0,  0, 40, 10,  20, 190,   0]
+      previous = [ChunkyPNG::FILTER_PAETH, 10, 20, 30, 40, 50, 60, 70, 80, 80, 100, 110, 120] # rubocop:disable Layout/ExtraSpacing
+      current  = [ChunkyPNG::FILTER_PAETH,  0,  0, 10, 20, 10,  0,  0, 40, 10,  20, 190,   0] # rubocop:disable Layout/ExtraSpacing
       stream   = (previous + current).pack('C*')
       decode_png_str_scanline(stream, 13, 0, 12, 3)
       expect(stream.unpack('@14C12')).to eql [10, 20, 40, 60, 60, 60, 70, 120, 90, 120, 54, 120]

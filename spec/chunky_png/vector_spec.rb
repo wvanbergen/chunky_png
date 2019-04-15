@@ -92,7 +92,7 @@ describe 'ChunkyPNG.Vector' do
 
   it "should return an empty vector when given an empty array" do
     expect(ChunkyPNG::Vector()).to eql ChunkyPNG::Vector.new([])
-    expect(ChunkyPNG::Vector(*[])).to eql ChunkyPNG::Vector.new([])
+    expect(ChunkyPNG::Vector(*[])).to eql ChunkyPNG::Vector.new([]) # rubocop:disable Lint/UnneededSplatExpansion
   end
 
   it "should raise an error when an odd number of numerics is given" do

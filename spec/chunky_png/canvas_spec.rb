@@ -50,8 +50,8 @@ describe ChunkyPNG::Canvas do
 
   describe '#include?' do
     it "should return true if the coordinates are within bounds, false otherwise" do
+      # rubocop:disable Layout/SpaceInsideParens
       expect(subject.include_xy?( 0,  0)).to eql true
-
       expect(subject.include_xy?(-1,  0)).to eql false
       expect(subject.include_xy?( 1,  0)).to eql false
       expect(subject.include_xy?( 0, -1)).to eql false
@@ -60,6 +60,7 @@ describe ChunkyPNG::Canvas do
       expect(subject.include_xy?(-1,  1)).to eql false
       expect(subject.include_xy?( 1, -1)).to eql false
       expect(subject.include_xy?( 1,  1)).to eql false
+      # rubocop:enable Layout/SpaceInsideParens
     end
 
     it "should accept strings, arrays, hashes and points as well" do
@@ -76,17 +77,17 @@ describe ChunkyPNG::Canvas do
 
   describe '#include_x?' do
     it "should return true if the x-coordinate is within bounds, false otherwise" do
-      expect(subject.include_x?( 0)).to eql true
+      expect(subject.include_x?(0)).to eql true
       expect(subject.include_x?(-1)).to eql false
-      expect(subject.include_x?( 1)).to eql false
+      expect(subject.include_x?(1)).to eql false
     end
   end
 
   describe '#include_y?' do
     it "should return true if the y-coordinate is within bounds, false otherwise" do
-      expect(subject.include_y?( 0)).to eql true
+      expect(subject.include_y?(0)).to eql true
       expect(subject.include_y?(-1)).to eql false
-      expect(subject.include_y?( 1)).to eql false
+      expect(subject.include_y?(1)).to eql false
     end
   end
 

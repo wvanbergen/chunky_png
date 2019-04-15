@@ -111,10 +111,12 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     before do
       @canvas = ChunkyPNG::Canvas.new(2, 2)
 
+      # rubocop:disable Layout/ExtraSpacing, Layout/SpaceInsideParens
       @canvas[0, 0] = ChunkyPNG::Color.rgba(  1,   2,   3,   4)
       @canvas[1, 0] = ChunkyPNG::Color.rgba(252, 253, 254, 255)
       @canvas[0, 1] = ChunkyPNG::Color.rgba(255, 254, 253, 252)
       @canvas[1, 1] = ChunkyPNG::Color.rgba(  4,   3,   2,   1)
+      # rubocop:enable Layout/ExtraSpacing, Layout/SpaceInsideParens
 
       @canvas.encoding_palette = @canvas.palette
       @canvas.encoding_palette.to_plte_chunk
@@ -211,8 +213,8 @@ describe ChunkyPNG::Canvas::PNGEncoding do
 
     it "should encode a scanline with average filtering correctly" do
       stream = [
-        ChunkyPNG::FILTER_NONE, 10, 20, 30, 40, 50, 60, 70, 80,   80, 100, 110, 120,
-        ChunkyPNG::FILTER_NONE,  5, 10, 25, 45, 45, 55, 80, 125, 105, 150, 114, 165,
+        ChunkyPNG::FILTER_NONE, 10, 20, 30, 40, 50, 60, 70, 80,   80, 100, 110, 120, # rubocop:disable Layout/ExtraSpacing
+        ChunkyPNG::FILTER_NONE,  5, 10, 25, 45, 45, 55, 80, 125, 105, 150, 114, 165, # rubocop:disable Layout/ExtraSpacing
       ].pack('C*')
 
       # Check line with previous line
@@ -226,8 +228,8 @@ describe ChunkyPNG::Canvas::PNGEncoding do
 
     it "should encode a scanline with paeth filtering correctly" do
       stream = [
-        ChunkyPNG::FILTER_NONE, 10, 20, 30, 40, 50, 60, 70,  80, 80, 100, 110, 120,
-        ChunkyPNG::FILTER_NONE, 10, 20, 40, 60, 60, 60, 70, 120, 90, 120,  54, 120,
+        ChunkyPNG::FILTER_NONE, 10, 20, 30, 40, 50, 60, 70,  80, 80, 100, 110, 120, # rubocop:disable Layout/ExtraSpacing
+        ChunkyPNG::FILTER_NONE, 10, 20, 40, 60, 60, 60, 70, 120, 90, 120,  54, 120, # rubocop:disable Layout/ExtraSpacing
       ].pack('C*')
 
       # Check line with previous line

@@ -82,11 +82,13 @@ describe ChunkyPNG::Color do
 
   describe '#rgba' do
     it 'should represent pixels as the correct number' do
+      # rubocop:disable Layout/ExtraSpacing, Layout/SpaceInsideParens
       expect(rgba(255, 255, 255, 255)).to eql @white
       expect(rgba(  0,   0,   0, 255)).to eql @black
       expect(rgba( 10, 100, 150, 255)).to eql @opaque
       expect(rgba( 10, 100, 150, 100)).to eql @non_opaque
       expect(rgba( 10, 100, 150,   0)).to eql @fully_transparent
+      # rubocop:enable Layout/ExtraSpacing, Layout/SpaceInsideParens
     end
   end
 
