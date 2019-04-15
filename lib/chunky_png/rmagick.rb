@@ -1,4 +1,4 @@
-require 'rmagick'
+require "rmagick"
 
 module ChunkyPNG
   # Methods for importing and exporting RMagick image objects.
@@ -25,7 +25,7 @@ module ChunkyPNG
     # @param [Magick::Image] image The image to import
     # @return [ChunkyPNG::Canvas] The canvas, constructed from the RMagick image.
     def import(image)
-      pixels = image.export_pixels_to_str(0, 0, image.columns, image.rows, 'RGBA')
+      pixels = image.export_pixels_to_str(0, 0, image.columns, image.rows, "RGBA")
       ChunkyPNG::Canvas.from_rgba_stream(image.columns, image.rows, pixels)
     end
 
@@ -34,7 +34,7 @@ module ChunkyPNG
     # @return [Magick::Image] The RMagick image constructed from the Canvas instance.
     def export(canvas)
       image = Magick::Image.new(canvas.width, canvas.height)
-      image.import_pixels(0, 0, canvas.width, canvas.height, 'RGBA', canvas.pixels.pack('N*'))
+      image.import_pixels(0, 0, canvas.width, canvas.height, "RGBA", canvas.pixels.pack("N*"))
       image
     end
   end

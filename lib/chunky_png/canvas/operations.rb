@@ -172,10 +172,10 @@ module ChunkyPNG
       #   coordinates are bigger then the original image.
       def crop!(x, y, crop_width, crop_height)
         if crop_width + x > width
-          raise ChunkyPNG::OutOfBounds, 'Original image width is too small!'
+          raise ChunkyPNG::OutOfBounds, "Original image width is too small!"
         end
         if crop_height + y > height
-          raise ChunkyPNG::OutOfBounds, 'Original image height is too small!'
+          raise ChunkyPNG::OutOfBounds, "Original image height is too small!"
         end
 
         if crop_width == width && x == 0
@@ -392,10 +392,10 @@ module ChunkyPNG
       # @raise [ChunkyPNG::OutOfBounds] when the other image doesn't fit.
       def check_size_constraints!(other, offset_x, offset_y)
         if width < other.width + offset_x
-          raise ChunkyPNG::OutOfBounds, 'Background image width is too small!'
+          raise ChunkyPNG::OutOfBounds, "Background image width is too small!"
         end
         if height < other.height + offset_y
-          raise ChunkyPNG::OutOfBounds, 'Background image height is too small!'
+          raise ChunkyPNG::OutOfBounds, "Background image height is too small!"
         end
       end
     end

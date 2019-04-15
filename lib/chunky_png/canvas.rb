@@ -1,14 +1,14 @@
-require 'chunky_png/canvas/png_encoding'
-require 'chunky_png/canvas/png_decoding'
-require 'chunky_png/canvas/adam7_interlacing'
-require 'chunky_png/canvas/stream_exporting'
-require 'chunky_png/canvas/stream_importing'
-require 'chunky_png/canvas/data_url_exporting'
-require 'chunky_png/canvas/data_url_importing'
-require 'chunky_png/canvas/operations'
-require 'chunky_png/canvas/drawing'
-require 'chunky_png/canvas/resampling'
-require 'chunky_png/canvas/masking'
+require "chunky_png/canvas/png_encoding"
+require "chunky_png/canvas/png_decoding"
+require "chunky_png/canvas/adam7_interlacing"
+require "chunky_png/canvas/stream_exporting"
+require "chunky_png/canvas/stream_importing"
+require "chunky_png/canvas/data_url_exporting"
+require "chunky_png/canvas/data_url_importing"
+require "chunky_png/canvas/operations"
+require "chunky_png/canvas/drawing"
+require "chunky_png/canvas/resampling"
+require "chunky_png/canvas/masking"
 
 module ChunkyPNG
   # The ChunkyPNG::Canvas class represents a raster image as a matrix of
@@ -297,7 +297,7 @@ module ChunkyPNG
     def inspect
       inspected = "<#{self.class.name} #{width}x#{height} ["
       for y in 0...height
-        inspected << "\n\t[" << row(y).map { |p| ChunkyPNG::Color.to_hex(p) }.join(' ') << ']'
+        inspected << "\n\t[" << row(y).map { |p| ChunkyPNG::Color.to_hex(p) }.join(" ") << "]"
       end
       inspected << "\n]>"
     end
@@ -361,11 +361,11 @@ module ChunkyPNG
     def assert_size!(matrix_width, matrix_height)
       if width != matrix_width
         raise ChunkyPNG::ExpectationFailed,
-          'The width of the matrix does not match the canvas width!'
+          "The width of the matrix does not match the canvas width!"
       end
       if height != matrix_height
         raise ChunkyPNG::ExpectationFailed,
-          'The height of the matrix does not match the canvas height!'
+          "The height of the matrix does not match the canvas height!"
       end
       true
     end

@@ -1,9 +1,9 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe ChunkyPNG::Canvas::PNGEncoding do
   include ChunkyPNG::Canvas::PNGEncoding
 
-  context 'determining encoding options' do
+  context "determining encoding options" do
     [:indexed, :grayscale, :grayscale_alpha, :truecolor, :truecolor_alpha].each do |color_mode_name|
       it "should encode an image with color mode #{color_mode_name} correctly" do
         canvas = ChunkyPNG::Canvas.new(10, 10, ChunkyPNG::Color.rgb(100, 100, 100))
@@ -17,7 +17,7 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
 
     it "should encode an image with 2 colors using 1-bit indexed color mode" do
-      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file('basic', 'basn3p01.png'))
+      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file("basic", "basn3p01.png"))
       ds = ChunkyPNG::Datastream.from_blob(@canvas.to_blob)
       expect(ds.header_chunk.color).to eql ChunkyPNG::COLOR_INDEXED
       expect(ds.header_chunk.depth).to eql 1
@@ -25,7 +25,7 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
 
     it "should encode an image with 4 colors using 2-bit indexed color mode" do
-      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file('basic', 'basn3p02.png'))
+      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file("basic", "basn3p02.png"))
       ds = ChunkyPNG::Datastream.from_blob(@canvas.to_blob)
       expect(ds.header_chunk.color).to eql ChunkyPNG::COLOR_INDEXED
       expect(ds.header_chunk.depth).to eql 2
@@ -33,7 +33,7 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
 
     it "should encode an image with 16 colors using 4-bit indexed color mode" do
-      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file('basic', 'basn3p04.png'))
+      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file("basic", "basn3p04.png"))
       ds = ChunkyPNG::Datastream.from_blob(@canvas.to_blob)
       expect(ds.header_chunk.color).to eql ChunkyPNG::COLOR_INDEXED
       expect(ds.header_chunk.depth).to eql 4
@@ -41,7 +41,7 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
 
     it "should encode an image with 256 colors using 8-bit indexed color mode" do
-      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file('basic', 'basn3p08.png'))
+      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file("basic", "basn3p08.png"))
       ds = ChunkyPNG::Datastream.from_blob(@canvas.to_blob)
       expect(ds.header_chunk.color).to eql ChunkyPNG::COLOR_INDEXED
       expect(ds.header_chunk.depth).to eql 8
@@ -49,7 +49,7 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
 
     it "should use a higher bit depth than necessary if requested" do
-      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file('basic', 'basn3p01.png'))
+      @canvas = ChunkyPNG::Canvas.from_file(png_suite_file("basic", "basn3p01.png"))
       ds = ChunkyPNG::Datastream.from_blob(@canvas.to_blob(bit_depth: 4))
       expect(ds.header_chunk.color).to eql ChunkyPNG::COLOR_INDEXED
       expect(ds.header_chunk.depth).to eql 4
@@ -57,7 +57,7 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
 
     it "should encode an image with interlacing correctly" do
-      input_canvas = ChunkyPNG::Canvas.from_file(resource_file('operations.png'))
+      input_canvas = ChunkyPNG::Canvas.from_file(resource_file("operations.png"))
       blob = input_canvas.to_blob(interlace: true)
 
       ds = ChunkyPNG::Datastream.from_blob(blob)
@@ -66,48 +66,48 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
 
     it "should save an image using the normal routine correctly" do
-      canvas = reference_canvas('operations')
-      expect(Zlib::Deflate).to receive(:deflate).with(anything, Zlib::DEFAULT_COMPRESSION).and_return('')
+      canvas = reference_canvas("operations")
+      expect(Zlib::Deflate).to receive(:deflate).with(anything, Zlib::DEFAULT_COMPRESSION).and_return("")
       canvas.to_blob
     end
 
     it "should save an image using the :fast_rgba routine correctly" do
-      canvas = reference_canvas('operations')
+      canvas = reference_canvas("operations")
       expect(canvas).to_not receive(:encode_png_str_scanline_none)
       expect(canvas).to_not receive(:encode_png_str_scanline_sub)
       expect(canvas).to_not receive(:encode_png_str_scanline_up)
       expect(canvas).to_not receive(:encode_png_str_scanline_average)
       expect(canvas).to_not receive(:encode_png_str_scanline_paeth)
-      expect(Zlib::Deflate).to receive(:deflate).with(anything, Zlib::BEST_SPEED).and_return('')
+      expect(Zlib::Deflate).to receive(:deflate).with(anything, Zlib::BEST_SPEED).and_return("")
       canvas.to_blob(:fast_rgba)
     end
 
     it "should save an image using the :good_compression routine correctly" do
-      canvas = reference_canvas('operations')
+      canvas = reference_canvas("operations")
       expect(canvas).to_not receive(:encode_png_str_scanline_none)
       expect(canvas).to_not receive(:encode_png_str_scanline_sub)
       expect(canvas).to_not receive(:encode_png_str_scanline_up)
       expect(canvas).to_not receive(:encode_png_str_scanline_average)
       expect(canvas).to_not receive(:encode_png_str_scanline_paeth)
-      expect(Zlib::Deflate).to receive(:deflate).with(anything, Zlib::BEST_COMPRESSION).and_return('')
+      expect(Zlib::Deflate).to receive(:deflate).with(anything, Zlib::BEST_COMPRESSION).and_return("")
       canvas.to_blob(:good_compression)
     end
 
     it "should save an image using the :best_compression routine correctly" do
-      canvas = reference_canvas('operations')
+      canvas = reference_canvas("operations")
       expect(canvas).to receive(:encode_png_str_scanline_paeth).exactly(canvas.height).times
-      expect(Zlib::Deflate).to receive(:deflate).with(anything, Zlib::BEST_COMPRESSION).and_return('')
+      expect(Zlib::Deflate).to receive(:deflate).with(anything, Zlib::BEST_COMPRESSION).and_return("")
       canvas.to_blob(:best_compression)
     end
 
     it "should save an image with black and white only if requested" do
-      ds = ChunkyPNG::Datastream.from_blob(reference_canvas('lines').to_blob(:black_and_white))
+      ds = ChunkyPNG::Datastream.from_blob(reference_canvas("lines").to_blob(:black_and_white))
       expect(ds.header_chunk.color).to eql ChunkyPNG::COLOR_GRAYSCALE
       expect(ds.header_chunk.depth).to eql 1
     end
   end
 
-  describe 'different color modes and bit depths' do
+  describe "different color modes and bit depths" do
     before do
       @canvas = ChunkyPNG::Canvas.new(2, 2)
 
@@ -174,71 +174,71 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
   end
 
-  describe 'different filter methods' do
+  describe "different filter methods" do
     it "should encode a scanline without filtering correctly" do
-      stream = [ChunkyPNG::FILTER_NONE, 0, 0, 0, 1, 1, 1, 2, 2, 2].pack('C*')
+      stream = [ChunkyPNG::FILTER_NONE, 0, 0, 0, 1, 1, 1, 2, 2, 2].pack("C*")
       encode_png_str_scanline_none(stream, 0, nil, 9, 3)
-      expect(stream.unpack('C*')).to eql [ChunkyPNG::FILTER_NONE, 0, 0, 0, 1, 1, 1, 2, 2, 2]
+      expect(stream.unpack("C*")).to eql [ChunkyPNG::FILTER_NONE, 0, 0, 0, 1, 1, 1, 2, 2, 2]
     end
 
     it "should encode a scanline with sub filtering correctly" do
       stream = [
         ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255,
         ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-      ].pack('C*')
+      ].pack("C*")
 
       # Check line with previous line
       encode_png_str_scanline_sub(stream, 10, 0, 9, 3)
-      expect(stream.unpack('@10C10')).to eql [ChunkyPNG::FILTER_SUB, 255, 255, 255, 0, 0, 0, 0, 0, 0]
+      expect(stream.unpack("@10C10")).to eql [ChunkyPNG::FILTER_SUB, 255, 255, 255, 0, 0, 0, 0, 0, 0]
 
       # Check line without previous line
       encode_png_str_scanline_sub(stream, 0, nil, 9, 3)
-      expect(stream.unpack('@0C10')).to eql [ChunkyPNG::FILTER_SUB, 255, 255, 255, 0, 0, 0, 0, 0, 0]
+      expect(stream.unpack("@0C10")).to eql [ChunkyPNG::FILTER_SUB, 255, 255, 255, 0, 0, 0, 0, 0, 0]
     end
 
     it "should encode a scanline with up filtering correctly" do
       stream = [
         ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255,
         ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-      ].pack('C*')
+      ].pack("C*")
 
       # Check line with previous line
       encode_png_str_scanline_up(stream, 10, 0, 9, 3)
-      expect(stream.unpack('@10C10')).to eql [ChunkyPNG::FILTER_UP, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      expect(stream.unpack("@10C10")).to eql [ChunkyPNG::FILTER_UP, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
       # Check line without previous line
       encode_png_str_scanline_up(stream, 0, nil, 9, 3)
-      expect(stream.unpack('@0C10')).to eql [ChunkyPNG::FILTER_UP, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+      expect(stream.unpack("@0C10")).to eql [ChunkyPNG::FILTER_UP, 255, 255, 255, 255, 255, 255, 255, 255, 255]
     end
 
     it "should encode a scanline with average filtering correctly" do
       stream = [
         ChunkyPNG::FILTER_NONE, 10, 20, 30, 40, 50, 60, 70, 80,   80, 100, 110, 120, # rubocop:disable Layout/ExtraSpacing
         ChunkyPNG::FILTER_NONE,  5, 10, 25, 45, 45, 55, 80, 125, 105, 150, 114, 165, # rubocop:disable Layout/ExtraSpacing
-      ].pack('C*')
+      ].pack("C*")
 
       # Check line with previous line
       encode_png_str_scanline_average(stream, 13, 0, 12, 3)
-      expect(stream.unpack('@13C13')).to eql [ChunkyPNG::FILTER_AVERAGE, 0, 0, 10, 23, 15, 13, 23, 63, 38, 60, 253, 53]
+      expect(stream.unpack("@13C13")).to eql [ChunkyPNG::FILTER_AVERAGE, 0, 0, 10, 23, 15, 13, 23, 63, 38, 60, 253, 53]
 
       # Check line without previous line
       encode_png_str_scanline_average(stream, 0, nil, 12, 3)
-      expect(stream.unpack('@0C13')).to eql [ChunkyPNG::FILTER_AVERAGE, 10, 20, 30, 35, 40, 45, 50, 55, 50, 65, 70, 80]
+      expect(stream.unpack("@0C13")).to eql [ChunkyPNG::FILTER_AVERAGE, 10, 20, 30, 35, 40, 45, 50, 55, 50, 65, 70, 80]
     end
 
     it "should encode a scanline with paeth filtering correctly" do
       stream = [
         ChunkyPNG::FILTER_NONE, 10, 20, 30, 40, 50, 60, 70,  80, 80, 100, 110, 120, # rubocop:disable Layout/ExtraSpacing
         ChunkyPNG::FILTER_NONE, 10, 20, 40, 60, 60, 60, 70, 120, 90, 120,  54, 120, # rubocop:disable Layout/ExtraSpacing
-      ].pack('C*')
+      ].pack("C*")
 
       # Check line with previous line
       encode_png_str_scanline_paeth(stream, 13, 0, 12, 3)
-      expect(stream.unpack('@13C13')).to eql [ChunkyPNG::FILTER_PAETH, 0, 0, 10, 20, 10, 0, 0, 40, 10, 20, 190, 0]
+      expect(stream.unpack("@13C13")).to eql [ChunkyPNG::FILTER_PAETH, 0, 0, 10, 20, 10, 0, 0, 40, 10, 20, 190, 0]
 
       # Check line without previous line
       encode_png_str_scanline_paeth(stream, 0, nil, 12, 3)
-      expect(stream.unpack('@0C13')).to eql [ChunkyPNG::FILTER_PAETH, 10, 20, 30, 30, 30, 30, 30, 30, 20, 30, 30, 40]
+      expect(stream.unpack("@0C13")).to eql [ChunkyPNG::FILTER_PAETH, 10, 20, 30, 30, 30, 30, 30, 30, 20, 30, 30, 40]
     end
   end
 end

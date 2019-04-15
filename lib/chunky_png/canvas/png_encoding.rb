@@ -38,7 +38,7 @@ module ChunkyPNG
       # @param constraints (see ChunkyPNG::Canvas::PNGEncoding#to_datastream)
       # @return [void]
       def save(filename, constraints = {})
-        File.open(filename, 'wb') { |io| write(io, constraints) }
+        File.open(filename, "wb") { |io| write(io, constraints) }
       end
 
       # Encoded the canvas to a PNG formatted string.
@@ -235,7 +235,7 @@ module ChunkyPNG
       # @param [Array<Integer>] pixels A row of pixels of the original image.
       # @return [String] The encoded scanline as binary string
       def encode_png_pixels_to_scanline_truecolor_8bit(pixels)
-        pixels.pack('x' + ('NX' * width))
+        pixels.pack("x" + ("NX" * width))
       end
 
       # Encodes a line of pixels using 8-bit truecolor alpha mode.
@@ -262,7 +262,7 @@ module ChunkyPNG
             encoding_palette.index(p8)
           )
         end
-        chars.pack('xC*')
+        chars.pack("xC*")
       end
 
       # Encodes a line of pixels using 2-bit indexed mode.
@@ -278,7 +278,7 @@ module ChunkyPNG
             encoding_palette.index(p4)
           )
         end
-        chars.pack('xC*')
+        chars.pack("xC*")
       end
 
       # Encodes a line of pixels using 4-bit indexed mode.
@@ -289,7 +289,7 @@ module ChunkyPNG
         pixels.each_slice(2) do |p1, p2|
           chars << ((encoding_palette.index(p1) << 4) | encoding_palette.index(p2))
         end
-        chars.pack('xC*')
+        chars.pack("xC*")
       end
 
       # Encodes a line of pixels using 8-bit indexed mode.
@@ -314,7 +314,7 @@ module ChunkyPNG
                     (p7.nil? ? 0 : (p7 & 0x0000ffff) >> 15 << 1) |
                     (p8.nil? ? 0 : (p8 & 0x0000ffff) >> 15))
         end
-        chars.pack('xC*')
+        chars.pack("xC*")
       end
 
       # Encodes a line of pixels using 2-bit grayscale mode.
@@ -328,7 +328,7 @@ module ChunkyPNG
                     (p3.nil? ? 0 : (p3 & 0x0000ffff) >> 14 << 2) |
                     (p4.nil? ? 0 : (p4 & 0x0000ffff) >> 14))
         end
-        chars.pack('xC*')
+        chars.pack("xC*")
       end
 
       # Encodes a line of pixels using 2-bit grayscale mode.
@@ -339,7 +339,7 @@ module ChunkyPNG
         pixels.each_slice(2) do |p1, p2|
           chars << ((p1.nil? ? 0 : ((p1 & 0x0000ffff) >> 12) << 4) | (p2.nil? ? 0 : ((p2 & 0x0000ffff) >> 12)))
         end
-        chars.pack('xC*')
+        chars.pack("xC*")
       end
 
       # Encodes a line of pixels using 8-bit grayscale mode.

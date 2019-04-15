@@ -1,6 +1,6 @@
-require 'rubygems'
-require 'bundler/setup'
-require 'chunky_png'
+require "rubygems"
+require "bundler/setup"
+require "chunky_png"
 
 module PNGSuite
   def png_suite_file(kind, file)
@@ -11,7 +11,7 @@ module PNGSuite
     File.expand_path("./png_suite/#{kind}", File.dirname(__FILE__))
   end
 
-  def png_suite_files(kind, pattern = '*.png')
+  def png_suite_files(kind, pattern = "*.png")
     Dir[File.join(png_suite_dir(kind), pattern)]
   end
 end
@@ -23,7 +23,7 @@ module ResourceFileHelper
 
   def resource_data(name)
     data = nil
-    File.open(resource_file(name), 'rb') { |f| data = f.read }
+    File.open(resource_file(name), "rb") { |f| data = f.read }
     data
   end
 
@@ -36,7 +36,7 @@ module ResourceFileHelper
   end
 
   def display(png)
-    filename = resource_file('_tmp.png')
+    filename = resource_file("_tmp.png")
     png.save(filename)
     `open #{filename}`
   end

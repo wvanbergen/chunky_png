@@ -1,9 +1,9 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe ChunkyPNG::Canvas::Adam7Interlacing do
   include ChunkyPNG::Canvas::Adam7Interlacing
 
-  describe '#adam7_pass_sizes' do
+  describe "#adam7_pass_sizes" do
     it "should get the pass sizes for a 8x8 image correctly" do
       expect(adam7_pass_sizes(8, 8)).to eql [
         [1, 1], [1, 1], [2, 1], [2, 2], [4, 2], [4, 4], [8, 4],
@@ -42,7 +42,7 @@ describe ChunkyPNG::Canvas::Adam7Interlacing do
     end
   end
 
-  describe '#adam7_multiplier_offset' do
+  describe "#adam7_multiplier_offset" do
     it "should get the multiplier and offset values for pass 1 correctly" do
       expect(adam7_multiplier_offset(0)).to eql [3, 0, 3, 0]
     end
@@ -72,7 +72,7 @@ describe ChunkyPNG::Canvas::Adam7Interlacing do
     end
   end
 
-  describe '#adam7_merge_pass' do
+  describe "#adam7_merge_pass" do
     it "should merge the submatrices correctly" do
       submatrices = [
         ChunkyPNG::Canvas.new(1, 1,  168430335), # r = 10
@@ -86,12 +86,12 @@ describe ChunkyPNG::Canvas::Adam7Interlacing do
 
       canvas = ChunkyPNG::Image.new(8, 8)
       submatrices.each_with_index { |m, pass| adam7_merge_pass(pass, canvas, m) }
-      expect(canvas).to eql reference_image('adam7')
+      expect(canvas).to eql reference_image("adam7")
     end
   end
 
-  describe '#adam7_extract_pass' do
-    before(:each) { @canvas = reference_canvas('adam7') }
+  describe "#adam7_extract_pass" do
+    before(:each) { @canvas = reference_canvas("adam7") }
 
     1.upto(7) do |pass|
       it "should extract pass #{pass} correctly" do

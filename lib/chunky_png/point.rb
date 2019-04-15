@@ -45,8 +45,8 @@ module ChunkyPNG
     when Array
       ChunkyPNG::Point.new(source[0], source[1])
     when Hash
-      x = source[:x] || source['x']
-      y = source[:y] || source['y']
+      x = source[:x] || source["x"]
+      y = source[:y] || source["y"]
       ChunkyPNG::Point.new(x, y)
     when ChunkyPNG::Point::POINT_REGEXP
       ChunkyPNG::Point.new($1.to_i, $2.to_i)

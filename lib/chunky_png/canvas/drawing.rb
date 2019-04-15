@@ -164,7 +164,7 @@ module ChunkyPNG
       def polygon(path, stroke_color = ChunkyPNG::Color::BLACK, fill_color = ChunkyPNG::Color::TRANSPARENT)
         vector = ChunkyPNG::Vector(*path)
         if path.length < 3
-          raise ArgumentError, 'A polygon requires at least 3 points'
+          raise ArgumentError, "A polygon requires at least 3 points"
         end
 
         stroke_color = ChunkyPNG::Color.parse(stroke_color)

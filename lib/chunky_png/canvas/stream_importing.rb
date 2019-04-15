@@ -16,7 +16,7 @@ module ChunkyPNG
       def from_rgb_stream(width, height, stream)
         string = stream.respond_to?(:read) ? stream.read(3 * width * height) : stream.to_s[0, 3 * width * height]
         string << ChunkyPNG::EXTRA_BYTE # Add a fourth byte to the last RGB triple.
-        unpacker = 'NX' * (width * height)
+        unpacker = "NX" * (width * height)
         pixels = string.unpack(unpacker).map { |color| color | 0x000000ff }
         new(width, height, pixels)
       end
@@ -51,7 +51,7 @@ module ChunkyPNG
       def from_bgr_stream(width, height, stream)
         string = ChunkyPNG::EXTRA_BYTE.dup # Add a first byte to the first BGR triple.
         string << (stream.respond_to?(:read) ? stream.read(3 * width * height) : stream.to_s[0, 3 * width * height])
-        pixels = string.unpack("@1" << ('XV' * (width * height))).map { |color| color | 0x000000ff }
+        pixels = string.unpack("@1" << ("XV" * (width * height))).map { |color| color | 0x000000ff }
         new(width, height, pixels)
       end
 

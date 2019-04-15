@@ -569,7 +569,7 @@ module ChunkyPNG
     # @param [Boolean] include_alpha
     # @return [String] The color in hex notation, starting with a pound sign.
     def to_hex(color, include_alpha = true)
-      include_alpha ? ('#%08x' % color) : ('#%06x' % [color >> 8])
+      include_alpha ? ("#%08x" % color) : ("#%06x" % [color >> 8])
     end
 
     # Returns an array with the separate HSV components of a color.
@@ -908,7 +908,7 @@ module ChunkyPNG
     def html_color(color_name, opacity = nil)
       if color_name.to_s =~ HTML_COLOR_REGEXP
         opacity ||= $2 ? ($2.to_f * 255.0).round : 0xff
-        base_color_name = $1.gsub(/[^a-z]+/i, '').downcase.to_sym
+        base_color_name = $1.gsub(/[^a-z]+/i, "").downcase.to_sym
         return PREDEFINED_COLORS[base_color_name] | opacity if PREDEFINED_COLORS.key?(base_color_name)
       end
       raise ArgumentError, "Unknown color name #{color_name}!"

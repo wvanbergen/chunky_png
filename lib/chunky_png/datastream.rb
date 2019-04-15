@@ -9,7 +9,7 @@ module ChunkyPNG
   # @see ChunkyPNG::Chunk
   class Datastream
     # The signature that each PNG file or stream should begin with.
-    SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10].pack('C8').force_encoding(Encoding::BINARY).freeze
+    SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10].pack("C8").force_encoding(Encoding::BINARY).freeze
 
     # The header chunk of this datastream.
     # @return [ChunkyPNG::Chunk::Header]
@@ -54,7 +54,7 @@ module ChunkyPNG
       # @param [String] str The PNG encoded string to load from.
       # @return [ChunkyPNG::Datastream] The loaded datastream instance.
       def from_blob(str)
-        from_io(StringIO.new(str, 'rb'))
+        from_io(StringIO.new(str, "rb"))
       end
 
       alias from_string from_blob
@@ -64,7 +64,7 @@ module ChunkyPNG
       # @return [ChunkyPNG::Datastream] The loaded datastream instance.
       def from_file(filename)
         ds = nil
-        File.open(filename, 'rb') { |f| ds = from_io(f) }
+        File.open(filename, "rb") { |f| ds = from_io(f) }
         ds
       end
 
@@ -172,14 +172,14 @@ module ChunkyPNG
     # Saves this datastream as a PNG file.
     # @param [String] filename The filename to use.
     def save(filename)
-      File.open(filename, 'wb') { |f| write(f) }
+      File.open(filename, "wb") { |f| write(f) }
     end
 
     # Encodes this datastream into a string.
     # @return [String] The encoded PNG datastream.
     def to_blob
       str = StringIO.new
-      str.set_encoding('ASCII-8BIT')
+      str.set_encoding("ASCII-8BIT")
       write(str)
       str.string
     end
