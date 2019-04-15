@@ -1,6 +1,8 @@
 language: ruby
 
-script: bin/rake && bin/standardrb
+script:
+- bin/rake
+- bin/standardrb
 
 rvm:
 - "2.2"
