@@ -15,27 +15,27 @@ describe ChunkyPNG::Point do
 
   describe '#<=>' do
     it "should return 0 if the coordinates are identical" do
-      expect((subject <=> ChunkyPNG::Point.new(1, 2))).to eql 0
+      expect((subject <=> ChunkyPNG::Point.new(1, 2))).to eql(0)
     end
 
     it "should return -1 if the y coordinate is smaller than the other one" do
-      expect((subject <=> ChunkyPNG::Point.new(1, 3))).to eql -1
-      expect((subject <=> ChunkyPNG::Point.new(0, 3))).to eql -1 # x doesn't matter
-      expect((subject <=> ChunkyPNG::Point.new(2, 3))).to eql -1 # x doesn't matter
+      expect((subject <=> ChunkyPNG::Point.new(1, 3))).to eql(-1)
+      expect((subject <=> ChunkyPNG::Point.new(0, 3))).to eql(-1) # x doesn't matter
+      expect((subject <=> ChunkyPNG::Point.new(2, 3))).to eql(-1) # x doesn't matter
     end
 
     it "should return 1 if the y coordinate is larger than the other one" do
-      expect((subject <=> ChunkyPNG::Point.new(1, 0))).to eql 1
-      expect((subject <=> ChunkyPNG::Point.new(0, 0))).to eql 1 # x doesn't matter
-      expect((subject <=> ChunkyPNG::Point.new(2, 0))).to eql 1 # x doesn't matter
+      expect((subject <=> ChunkyPNG::Point.new(1, 0))).to eql(1)
+      expect((subject <=> ChunkyPNG::Point.new(0, 0))).to eql(1) # x doesn't matter
+      expect((subject <=> ChunkyPNG::Point.new(2, 0))).to eql(1) # x doesn't matter
     end
 
     it "should return -1 if the x coordinate is smaller and y is the same" do
-      expect((subject <=> ChunkyPNG::Point.new(2, 2))).to eql -1
+      expect((subject <=> ChunkyPNG::Point.new(2, 2))).to eql(-1)
     end
 
     it "should return 1 if the x coordinate is larger and y is the same" do
-      expect((subject <=> ChunkyPNG::Point.new(0, 2))).to eql 1
+      expect((subject <=> ChunkyPNG::Point.new(0, 2))).to eql(1)
     end
   end
 end
