@@ -64,6 +64,15 @@ describe ChunkyPNG::Datastream do
       expect{physical_chunk.dpix}.to raise_error(ChunkyPNG::UnitsUnknown)
       expect{physical_chunk.dpiy}.to raise_error(ChunkyPNG::UnitsUnknown)
     end
+
+    it 'should set units and ppu correctly when setting dpi' do
+      physical_chunk = ChunkyPNG::Chunk::Physical.new(9001, 9001, :unknown)
+      physical_chunk.dpix = 72
+      physical_chunk.dpiy = 72
+      expect(physical_chunk.unit).to eql :meters
+      expect(physical_chunk.ppux).to eql 2835
+      expect(physical_chunk.ppuy).to eql 2835
+    end
   end
 
   describe '#iTXt_chunk' do
