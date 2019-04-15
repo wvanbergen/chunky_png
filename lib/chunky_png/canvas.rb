@@ -79,8 +79,9 @@ module ChunkyPNG
       @width, @height = width, height
 
       if initial.kind_of?(Array)
-        unless initial.length == width * height
-          raise ArgumentError, "The initial array should have #{width}x#{height} = #{width*height} elements!"
+        pixel_count = width * height
+        unless initial.length == pixel_count
+          raise ArgumentError, "The initial array should have #{width}x#{height} = #{pixel_count} elements!"
         end
         @pixels = initial
       else
@@ -360,7 +361,7 @@ module ChunkyPNG
 
     # Throws an exception if the matrix width and height does not match this canvas' dimensions.
     def assert_size!(matrix_width, matrix_height)
-      if width  != matrix_width
+      if width != matrix_width
         raise ChunkyPNG::ExpectationFailed,
           'The width of the matrix does not match the canvas width!'
       end

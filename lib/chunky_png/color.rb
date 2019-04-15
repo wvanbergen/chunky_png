@@ -640,7 +640,7 @@ module ChunkyPNG
     # @return [Fixnum] min The magnitude of the smallest scaled rgb component (0-1)
     # @private
     def hue_and_chroma(color)
-      scaled_rgb      = to_truecolor_bytes(color)
+      scaled_rgb = to_truecolor_bytes(color)
       scaled_rgb.map! { |component| component.fdiv(255) }
       min, max = scaled_rgb.minmax
       chroma   = max - min

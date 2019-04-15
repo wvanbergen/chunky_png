@@ -21,7 +21,7 @@ module ChunkyPNG
         indicies, residues = steps_residues(width, new_width)
 
         for i in 1..new_width
-          indicies[i-1] = (indicies[i-1] + (residues[i-1] + 127)/255)
+          indicies[i - 1] = (indicies[i - 1] + (residues[i - 1] + 127) / 255)
         end
         indicies
       end
@@ -35,8 +35,8 @@ module ChunkyPNG
       # @param [Integer] new_width The width of the destination
       # @return [Array<Integer>, Array<Integer>] Two arrays of indicies and residues
       def steps_residues(width, new_width)
-        indicies = Array.new(new_width, obj=nil)
-        residues = Array.new(new_width, obj=nil)
+        indicies = Array.new(new_width, obj = nil)
+        residues = Array.new(new_width, obj = nil)
 
         # This works by accumulating the fractional error and
         # overflowing when necessary.
@@ -52,8 +52,8 @@ module ChunkyPNG
         err = (width - new_width) % denominator
 
         for i in 1..new_width
-          indicies[i-1] = index
-          residues[i-1] = (255.0 * err.to_f / denominator.to_f).round
+          indicies[i - 1] = index
+          residues[i - 1] = (255.0 * err.to_f / denominator.to_f).round
 
           index += base_step
           err += err_step
@@ -75,8 +75,7 @@ module ChunkyPNG
         steps_x = steps(width, new_width)
         steps_y = steps(height, new_height)
 
-
-        pixels = Array.new(new_width*new_height)
+        pixels = Array.new(new_width * new_height)
         i = 0
         for y in steps_y
           for x in steps_x
@@ -100,19 +99,19 @@ module ChunkyPNG
         index_x, interp_x = steps_residues(width, new_width)
         index_y, interp_y = steps_residues(height, new_height)
 
-        pixels = Array.new(new_width*new_height)
+        pixels = Array.new(new_width * new_height)
         i = 0
         for y in 1..new_height
           # Clamp the indicies to the edges of the image
-          y1 = [index_y[y-1], 0].max
-          y2 = [index_y[y-1] + 1, height - 1].min
-          y_residue = interp_y[y-1]
+          y1 = [index_y[y - 1], 0].max
+          y2 = [index_y[y - 1] + 1, height - 1].min
+          y_residue = interp_y[y - 1]
 
           for x in 1..new_width
             # Clamp the indicies to the edges of the image
-            x1 = [index_x[x-1], 0].max
-            x2 = [index_x[x-1] + 1, width - 1].min
-            x_residue = interp_x[x-1]
+            x1 = [index_x[x - 1], 0].max
+            x2 = [index_x[x - 1] + 1, width - 1].min
+            x_residue = interp_x[x - 1]
 
             pixel_11 = get_pixel(x1, y1)
             pixel_21 = get_pixel(x2, y1)

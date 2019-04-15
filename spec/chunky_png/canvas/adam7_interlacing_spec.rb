@@ -37,7 +37,7 @@ describe ChunkyPNG::Canvas::Adam7Interlacing do
     it "should always maintain the same amount of pixels in total" do
       [[8, 8], [12, 12], [33, 47], [1, 1], [0, 0]].each do |(width, height)|
         pass_sizes = adam7_pass_sizes(width, height)
-        expect(pass_sizes.inject(0) { |sum, (w, h)| sum + (w*h) }).to eql width * height
+        expect(pass_sizes.inject(0) { |sum, (w, h)| sum + (w * h) }).to eql width * height
       end
     end
   end

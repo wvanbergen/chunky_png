@@ -389,7 +389,7 @@ module ChunkyPNG
       #   applied.
       # @raise [ChunkyPNG::OutOfBounds] when the other image doesn't fit.
       def check_size_constraints!(other, offset_x, offset_y)
-        if width  < other.width  + offset_x
+        if width < other.width + offset_x
           raise ChunkyPNG::OutOfBounds, 'Background image width is too small!'
         end
         if height < other.height + offset_y

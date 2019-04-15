@@ -54,19 +54,19 @@ module ChunkyPNG
           # Generate a float of t.
           t_f = t / 100.00
 
-          cur_p.x += ((1 - t_f) ** n) * points[0].x
-          cur_p.y += ((1 - t_f) ** n) * points[0].y
+          cur_p.x += ((1 - t_f)**n) * points[0].x
+          cur_p.y += ((1 - t_f)**n) * points[0].y
 
           for i in 1...points.length - 1
             bicof = binomial_coefficient(n , i)
 
-            cur_p.x += (bicof * (1 - t_f) ** (n - i)) *  (t_f ** i) * points[i].x
-            cur_p.y += (bicof * (1 - t_f) ** (n - i)) *  (t_f ** i) * points[i].y
+            cur_p.x += (bicof * (1 - t_f)**(n - i)) * (t_f**i) * points[i].x
+            cur_p.y += (bicof * (1 - t_f)**(n - i)) * (t_f**i) * points[i].y
             i += 1
           end
 
-          cur_p.x += (t_f ** n) * points[n].x
-          cur_p.y += (t_f ** n) * points[n].y
+          cur_p.x += (t_f**n) * points[n].x
+          cur_p.y += (t_f**n) * points[n].y
 
           curve_points << cur_p
 
