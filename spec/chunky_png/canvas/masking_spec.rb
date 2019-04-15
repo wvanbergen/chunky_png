@@ -24,7 +24,7 @@ describe ChunkyPNG::Canvas::Masking do
     end
 
     it "should create a mask image with only one opaque color" do
-      base, mask = subject.extract_mask(@theme_color, @background_color)
+      _, mask = subject.extract_mask(@theme_color, @background_color)
       expect(mask.palette.opaque_palette.size).to eql 1
     end
   end

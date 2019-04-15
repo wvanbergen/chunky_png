@@ -41,11 +41,7 @@ module ChunkyPNG
       index = 0
 
       palatte_bytes = palette_chunk.content.unpack('C*')
-      if transparency_chunk
-        alpha_channel = transparency_chunk.content.unpack('C*')
-      else
-        alpha_channel = []
-      end
+      alpha_channel = transparency_chunk ? transparency_chunk.content.unpack('C*') : []
 
       index = 0
       palatte_bytes.each_slice(3) do |bytes|

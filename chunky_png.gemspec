@@ -1,5 +1,3 @@
-# -*- encoding: utf-8 -*-
-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'chunky_png/version'
@@ -36,8 +34,8 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/wvanbergen/chunky_png/wiki'
   s.license  = 'MIT'
   s.metadata = {
-    "source_code_uri"   => "https://github.com/wvanbergen/chunky_png",
-    "wiki_uri"          => "https://github.com/wvanbergen/chunky_png/wiki",
+    "source_code_uri" => "https://github.com/wvanbergen/chunky_png",
+    "wiki_uri" => "https://github.com/wvanbergen/chunky_png/wiki",
   }
 
   s.add_development_dependency('rake')

@@ -1,7 +1,6 @@
 all_benchamrk_tasks = []
 
 namespace(:benchmark) do
-
   Dir[File.join(File.dirname(__FILE__), '..', 'benchmarks', '*_benchmark.rb')]. each do |benchmark_file|
     task_name = File.basename(benchmark_file, '_benchmark.rb').to_sym
 

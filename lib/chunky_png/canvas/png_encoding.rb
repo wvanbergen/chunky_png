@@ -73,8 +73,13 @@ module ChunkyPNG
         encoding = determine_png_encoding(constraints)
 
         ds = Datastream.new
-        ds.header_chunk = Chunk::Header.new(width: width, height: height,
-            color: encoding[:color_mode], depth: encoding[:bit_depth], interlace: encoding[:interlace])
+        ds.header_chunk = Chunk::Header.new(
+          width: width,
+          height: height,
+          color: encoding[:color_mode],
+          depth: encoding[:bit_depth],
+          interlace: encoding[:interlace]
+        )
 
         if encoding[:color_mode] == ChunkyPNG::COLOR_INDEXED
           ds.palette_chunk      = encoding_palette.to_plte_chunk
@@ -282,7 +287,7 @@ module ChunkyPNG
       def encode_png_pixels_to_scanline_indexed_4bit(pixels)
         chars = []
         pixels.each_slice(2) do |p1, p2|
-          chars << ((encoding_palette.index(p1) << 4) | (encoding_palette.index(p2)))
+          chars << ((encoding_palette.index(p1) << 4) | encoding_palette.index(p2))
         end
         chars.pack('xC*')
       end

@@ -17,6 +17,6 @@ begin
       expect(canvas).to eql ChunkyPNG::Canvas.from_blob(image.to_blob)
     end
   end
-rescue LoadError => e
+rescue LoadError
   # skipping RMagick tests
 end

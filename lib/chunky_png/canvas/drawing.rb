@@ -57,7 +57,7 @@ module ChunkyPNG
           cur_p.y += ((1 - t_f)**n) * points[0].y
 
           for i in 1...points.length - 1
-            bicof = binomial_coefficient(n , i)
+            bicof = binomial_coefficient(n, i)
 
             cur_p.x += (bicof * (1 - t_f)**(n - i)) * (t_f**i) * points[i].x
             cur_p.y += (bicof * (1 - t_f)**(n - i)) * (t_f**i) * points[i].y

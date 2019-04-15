@@ -1,8 +1,7 @@
-# coding: utf-8
 require 'spec_helper'
 
 describe ChunkyPNG::Datastream do
-  describe '.from_io'do
+  describe '.from_io' do
     it "should raise an error when loading a file with a bad signature" do
       filename = resource_file('damaged_signature.png')
       expect { ChunkyPNG::Datastream.from_file(filename) }.to raise_error(ChunkyPNG::SignatureMismatch)
@@ -60,8 +59,8 @@ describe ChunkyPNG::Datastream do
 
     it 'should raise ChunkyPNG::UnitsUnknown if we request dpi but the units are unknown' do
       physical_chunk = ChunkyPNG::Chunk::Physical.new(2835, 2835, :unknown)
-      expect{physical_chunk.dpix}.to raise_error(ChunkyPNG::UnitsUnknown)
-      expect{physical_chunk.dpiy}.to raise_error(ChunkyPNG::UnitsUnknown)
+      expect { physical_chunk.dpix }.to raise_error(ChunkyPNG::UnitsUnknown)
+      expect { physical_chunk.dpiy }.to raise_error(ChunkyPNG::UnitsUnknown)
     end
   end
 
@@ -91,7 +90,7 @@ describe ChunkyPNG::Datastream do
     end
 
     it 'should write iTXt chunks correctly' do
-      expected_hex = %w(0000 001d 6954 5874 436f 6d6d 656e 7400 0000 0000 4372 6561 7465 6420 7769 7468 2047 494d 5064 2e65 07).join('')
+      expected_hex = %w[0000 001d 6954 5874 436f 6d6d 656e 7400 0000 0000 4372 6561 7465 6420 7769 7468 2047 494d 5064 2e65 07].join('')
       stream = StringIO.new
       itext = ChunkyPNG::Chunk::InternationalText.new('Comment', 'Created with GIMP')
       itext.write(stream)
