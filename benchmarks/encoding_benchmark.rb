@@ -19,7 +19,7 @@ puts "---------------------------------------------"
 puts
 
 Benchmark.bmbm do |x|
-  x.report('Autodetect (indexed)')  { n.times { image.to_blob } }
+  x.report('Autodetect (indexed)') { n.times { image.to_blob } }
 
   # Presets
   x.report(':no_compression')    { n.times { image.to_blob(:no_compression) } }
