@@ -129,7 +129,7 @@ module ChunkyPNG
   class ExpectationFailed < ChunkyPNG::Exception
   end
 
-  # Exception that is raised if an expectation fails.
+  # Exception that when provided coordinates are out of bounds for the canvas
   class OutOfBounds < ChunkyPNG::ExpectationFailed
   end
 
