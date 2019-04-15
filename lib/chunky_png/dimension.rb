@@ -1,5 +1,4 @@
 module ChunkyPNG
-
   # Creates a {ChunkyPNG::Dimension} instance using arguments that can be interpreted
   # as width and height.
   #
@@ -45,8 +44,8 @@ module ChunkyPNG
     when Array
       ChunkyPNG::Dimension.new(source[0], source[1])
     when Hash
-      width = source[:width] || source['width']
-      height = source[:height] || source['height']
+      width = source[:width] || source["width"]
+      height = source[:height] || source["height"]
       ChunkyPNG::Dimension.new(width, height)
     when ChunkyPNG::Dimension::DIMENSION_REGEXP
       ChunkyPNG::Dimension.new($1, $2)

@@ -6,7 +6,7 @@ module ChunkyPNG
       # easily be used inline in CSS or HTML.
       # @return [String] The canvas formatted as a data URL string.
       def to_data_url
-        ['data:image/png;base64,', to_blob].pack('A*m').gsub(/\n/, '')
+        ["data:image/png;base64,", to_blob].pack("A*m").delete("\n")
       end
     end
   end

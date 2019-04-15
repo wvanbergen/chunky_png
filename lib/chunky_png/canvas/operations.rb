@@ -56,11 +56,14 @@ module ChunkyPNG
 
         for y in 0...other.height do
           for x in 0...other.width do
-            set_pixel(x + offset_x,
-                      y + offset_y,
-                      ChunkyPNG::Color.compose(other.get_pixel(x, y),
-                                               get_pixel(x + offset_x,
-                                                         y + offset_y)))
+            set_pixel(
+              x + offset_x,
+              y + offset_y,
+              ChunkyPNG::Color.compose(
+                other.get_pixel(x, y),
+                get_pixel(x + offset_x, y + offset_y)
+              )
+            )
           end
         end
         self
@@ -169,17 +172,16 @@ module ChunkyPNG
       #   coordinates are bigger then the original image.
       def crop!(x, y, crop_width, crop_height)
         if crop_width + x > width
-          raise ChunkyPNG::OutOfBounds, 'Original image width is too small!'
+          raise ChunkyPNG::OutOfBounds, "Original image width is too small!"
         end
         if crop_height + y > height
-          raise ChunkyPNG::OutOfBounds, 'Original image height is too small!'
+          raise ChunkyPNG::OutOfBounds, "Original image height is too small!"
         end
 
         if crop_width == width && x == 0
           # We only need to crop off the top and/or bottom, so we can take a
           # shortcut.
-          replace_canvas!(crop_width, crop_height,
-                          pixels.slice(y * width, width * crop_height))
+          replace_canvas!(crop_width, crop_height, pixels.slice(y * width, width * crop_height))
         else
           new_pixels = []
           for cy in 0...crop_height do
@@ -389,11 +391,11 @@ module ChunkyPNG
       #   applied.
       # @raise [ChunkyPNG::OutOfBounds] when the other image doesn't fit.
       def check_size_constraints!(other, offset_x, offset_y)
-        if width  < other.width  + offset_x
-          raise ChunkyPNG::OutOfBounds, 'Background image width is too small!'
+        if width < other.width + offset_x
+          raise ChunkyPNG::OutOfBounds, "Background image width is too small!"
         end
         if height < other.height + offset_y
-          raise ChunkyPNG::OutOfBounds, 'Background image height is too small!'
+          raise ChunkyPNG::OutOfBounds, "Background image height is too small!"
         end
       end
     end

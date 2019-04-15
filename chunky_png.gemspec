@@ -1,11 +1,9 @@
-# -*- encoding: utf-8 -*-
-
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'chunky_png/version'
+require "chunky_png/version"
 
 Gem::Specification.new do |s|
-  s.name    = 'chunky_png'
+  s.name    = "chunky_png"
 
   # Do not change the version and date fields by hand. This will be done
   # automatically by the gem release script.
@@ -31,22 +29,22 @@ Gem::Specification.new do |s|
     provides a massive speed boost to encoding and decoding.
   EOT
 
-  s.authors  = ['Willem van Bergen']
-  s.email    = ['willem@railsdoctors.com']
-  s.homepage = 'https://github.com/wvanbergen/chunky_png/wiki'
-  s.license  = 'MIT'
+  s.authors  = ["Willem van Bergen"]
+  s.email    = ["willem@railsdoctors.com"]
+  s.homepage = "https://github.com/wvanbergen/chunky_png/wiki"
+  s.license  = "MIT"
   s.metadata = {
-    "source_code_uri"   => "https://github.com/wvanbergen/chunky_png",
-    "wiki_uri"          => "https://github.com/wvanbergen/chunky_png/wiki",
+    "source_code_uri" => "https://github.com/wvanbergen/chunky_png",
+    "wiki_uri" => "https://github.com/wvanbergen/chunky_png/wiki",
   }
 
-  s.add_development_dependency('rake')
-  s.add_development_dependency('standard')
-  s.add_development_dependency('yard', '~> 0.9')
-  s.add_development_dependency('rspec', '~> 3')
+  s.add_development_dependency("rake")
+  s.add_development_dependency("standard")
+  s.add_development_dependency("yard", "~> 0.9")
+  s.add_development_dependency("rspec", "~> 3")
 
-  s.rdoc_options << '--title' << s.name << '--main' << 'README.rdoc' << '--line-numbers' << '--inline-source'
-  s.extra_rdoc_files = ['README.md', 'BENCHMARKING.rdoc', 'CONTRIBUTING.rdoc', 'CHANGELOG.rdoc']
+  s.rdoc_options << "--title" << s.name << "--main" << "README.rdoc" << "--line-numbers" << "--inline-source"
+  s.extra_rdoc_files = ["README.md", "BENCHMARKING.rdoc", "CONTRIBUTING.rdoc", "CHANGELOG.rdoc"]
 
   s.files = `git ls-files`.split($/)
   s.test_files = s.files.grep(%r{^(test|spec|features)/})

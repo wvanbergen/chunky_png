@@ -1,5 +1,4 @@
 module ChunkyPNG
-
   # ChunkyPNG::Image is an extension of the {ChunkyPNG::Canvas} class, that
   # also includes support for metadata.
   #

@@ -40,12 +40,8 @@ module ChunkyPNG
       decoding_map = []
       index = 0
 
-      palatte_bytes = palette_chunk.content.unpack('C*')
-      if transparency_chunk
-        alpha_channel = transparency_chunk.content.unpack('C*')
-      else
-        alpha_channel = []
-      end
+      palatte_bytes = palette_chunk.content.unpack("C*")
+      alpha_channel = transparency_chunk ? transparency_chunk.content.unpack("C*") : []
 
       index = 0
       palatte_bytes.each_slice(3) do |bytes|
@@ -165,7 +161,7 @@ module ChunkyPNG
     #
     # @return [ChunkyPNG::Chunk::Transparency] The tRNS chunk.
     def to_trns_chunk
-      ChunkyPNG::Chunk::Transparency.new('tRNS', map { |c| ChunkyPNG::Color.a(c) }.pack('C*'))
+      ChunkyPNG::Chunk::Transparency.new("tRNS", map { |c| ChunkyPNG::Color.a(c) }.pack("C*"))
     end
 
     # Creates a PLTE chunk that corresponds with this palette to store the r,
@@ -186,7 +182,7 @@ module ChunkyPNG
         colors += ChunkyPNG::Color.to_truecolor_bytes(color)
       end
 
-      ChunkyPNG::Chunk::Palette.new('PLTE', colors.pack('C*'))
+      ChunkyPNG::Chunk::Palette.new("PLTE", colors.pack("C*"))
     end
 
     # Determines the most suitable colormode for this palette.
@@ -219,7 +215,6 @@ module ChunkyPNG
       when 3..4 then 2
       when 5..16 then 4
       when 17..256 then 8
-      else nil
       end
     end
   end

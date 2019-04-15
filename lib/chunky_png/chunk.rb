@@ -16,10 +16,10 @@ module ChunkyPNG
     # @param io [IO, #read] The IO stream to read from.
     # @return [ChunkyPNG::Chung::Base] The loaded chunk instance.
     def self.read(io)
-      length, type = read_bytes(io, 8).unpack('Na4')
+      length, type = read_bytes(io, 8).unpack("Na4")
 
       content = read_bytes(io, length)
-      crc     = read_bytes(io, 4).unpack('N').first
+      crc     = read_bytes(io, 4).unpack("N").first
       verify_crc!(type, content, crc)
 
       CHUNK_TYPES.fetch(type, Generic).read(type, content)
@@ -74,8 +74,8 @@ module ChunkyPNG
       # @param io [IO] The IO stream to write to.
       # @param content [String] The content for this chunk.
       def write_with_crc(io, content)
-        io << [content.length].pack('N') << type << content
-        io << [Zlib.crc32(content, Zlib.crc32(type))].pack('N')
+        io << [content.length].pack("N") << type << content
+        io << [Zlib.crc32(content, Zlib.crc32(type))].pack("N")
       end
 
       # Writes the chunk to the IO stream.
@@ -84,7 +84,7 @@ module ChunkyPNG
       # and will calculate and append the checksum automatically.
       # @param io [IO] The IO stream to write to.
       def write(io)
-        write_with_crc(io, content || '')
+        write_with_crc(io, content || "")
       end
     end
 
@@ -95,7 +95,7 @@ module ChunkyPNG
       # written by the +write+ method.
       attr_accessor :content
 
-      def initialize(type, content = '')
+      def initialize(type, content = "")
         super(type, content: content)
       end
 
@@ -118,11 +118,10 @@ module ChunkyPNG
     # Note that it is still possible to access the chunk for such an image, but
     # ChunkyPNG will raise an exception if you try to access the pixel data.
     class Header < Base
-      attr_accessor :width, :height, :depth, :color, :compression, :filtering,
-                    :interlace
+      attr_accessor :width, :height, :depth, :color, :compression, :filtering, :interlace
 
       def initialize(attrs = {})
-        super('IHDR', attrs)
+        super("IHDR", attrs)
         @depth       ||= 8
         @color       ||= ChunkyPNG::COLOR_TRUECOLOR
         @compression ||= ChunkyPNG::COMPRESSION_DEFAULT
@@ -137,7 +136,7 @@ module ChunkyPNG
       # @return [ChunkyPNG::Chunk::End] The new Header chunk instance with the
       #   variables set to the values according to the content.
       def self.read(type, content)
-        fields = content.unpack('NNC5')
+        fields = content.unpack("NNC5")
         new(
           width: fields[0],
           height: fields[1],
@@ -160,8 +159,8 @@ module ChunkyPNG
           color,
           compression,
           filtering,
-          interlace
-        ].pack('NNC5')
+          interlace,
+        ].pack("NNC5")
       end
     end
 
@@ -169,7 +168,7 @@ module ChunkyPNG
     # not contain any data.
     class End < Base
       def initialize
-        super('IEND')
+        super("IEND")
       end
 
       # Reads the END chunk. It will check if the content is empty.
@@ -180,7 +179,7 @@ module ChunkyPNG
       # @return [ChunkyPNG::Chunk::End] The new End chunk instance.
       # @raise [ChunkyPNG::ExpectationFailed] Raises an exception if the content was not empty.
       def self.read(type, content)
-        raise ExpectationFailed, 'The IEND chunk should be empty!' if content.bytesize > 0
+        raise ExpectationFailed, "The IEND chunk should be empty!" if content.bytesize > 0
         new
       end
 
@@ -222,7 +221,7 @@ module ChunkyPNG
       # @return [Array<Integer>] Returns an array of alpha channel values
       #   [0-255].
       def palette_alpha_channel
-        content.unpack('C*')
+        content.unpack("C*")
       end
 
       # Returns the truecolor entry to be replaced by transparent pixels,
@@ -232,9 +231,8 @@ module ChunkyPNG
       #
       # @return [Integer] The color to replace with fully transparent pixels.
       def truecolor_entry(bit_depth)
-        values = content.unpack('nnn').map do |c|
-          ChunkyPNG::Canvas.send(:"decode_png_resample_#{bit_depth}bit_value", c)
-        end
+        decode_method_name = :"decode_png_resample_#{bit_depth}bit_value"
+        values = content.unpack("nnn").map { |c| ChunkyPNG::Canvas.send(decode_method_name, c) }
         ChunkyPNG::Color.rgb(*values)
       end
 
@@ -246,7 +244,7 @@ module ChunkyPNG
       # @return [Integer] The (grayscale) color to replace with fully
       #   transparent pixels.
       def grayscale_entry(bit_depth)
-        value = ChunkyPNG::Canvas.send(:"decode_png_resample_#{bit_depth}bit_value", content.unpack('n')[0])
+        value = ChunkyPNG::Canvas.send(:"decode_png_resample_#{bit_depth}bit_value", content.unpack("n")[0])
         ChunkyPNG::Color.grayscale(value)
       end
     end
@@ -263,7 +261,7 @@ module ChunkyPNG
       def self.split_in_chunks(data, level = Zlib::DEFAULT_COMPRESSION, chunk_size = 2147483647)
         streamdata = Zlib::Deflate.deflate(data, level)
         # TODO: Split long streamdata over multiple chunks
-        [ ChunkyPNG::Chunk::ImageData.new('IDAT', streamdata) ]
+        [ChunkyPNG::Chunk::ImageData.new("IDAT", streamdata)]
       end
     end
 
@@ -279,12 +277,12 @@ module ChunkyPNG
       attr_accessor :keyword, :value
 
       def initialize(keyword, value)
-        super('tEXt')
+        super("tEXt")
         @keyword, @value = keyword, value
       end
 
       def self.read(type, content)
-        keyword, value = content.unpack('Z*a*')
+        keyword, value = content.unpack("Z*a*")
         new(keyword, value)
       end
 
@@ -293,7 +291,7 @@ module ChunkyPNG
       #
       # @return The content that should be written to the datastream.
       def content
-        [keyword, value].pack('Z*a*')
+        [keyword, value].pack("Z*a*")
       end
     end
 
@@ -307,12 +305,12 @@ module ChunkyPNG
       attr_accessor :keyword, :value
 
       def initialize(keyword, value)
-        super('zTXt')
+        super("zTXt")
         @keyword, @value = keyword, value
       end
 
       def self.read(type, content)
-        keyword, compression, value = content.unpack('Z*Ca*')
+        keyword, compression, value = content.unpack("Z*Ca*")
         raise ChunkyPNG::NotSupported, "Compression method #{compression.inspect} not supported!" unless compression == ChunkyPNG::COMPRESSION_DEFAULT
         new(keyword, Zlib::Inflate.inflate(value))
       end
@@ -325,8 +323,8 @@ module ChunkyPNG
         [
           keyword,
           ChunkyPNG::COMPRESSION_DEFAULT,
-          Zlib::Deflate.deflate(value)
-        ].pack('Z*Ca*')
+          Zlib::Deflate.deflate(value),
+        ].pack("Z*Ca*")
       end
     end
 
@@ -338,23 +336,23 @@ module ChunkyPNG
       attr_accessor :ppux, :ppuy, :unit
 
       def initialize(ppux, ppuy, unit = :unknown)
-        raise ArgumentError, 'unit must be either :meters or :unknown' unless [:meters, :unknown].member?(unit)
-        super('pHYs')
+        raise ArgumentError, "unit must be either :meters or :unknown" unless [:meters, :unknown].member?(unit)
+        super("pHYs")
         @ppux, @ppuy, @unit = ppux, ppuy, unit
       end
 
       def dpix
-        raise ChunkyPNG::UnitsUnknown, 'the PNG specifies its physical aspect ratio, but does not specify the units of its pixels\' physical dimensions' unless unit == :meters
+        raise ChunkyPNG::UnitsUnknown, "the PNG specifies its physical aspect ratio, but does not specify the units of its pixels' physical dimensions" unless unit == :meters
         ppux * INCHES_PER_METER
       end
 
       def dpiy
-        raise ChunkyPNG::UnitsUnknown, 'the PNG specifies its physical aspect ratio, but does not specify the units of its pixels\' physical dimensions' unless unit == :meters
+        raise ChunkyPNG::UnitsUnknown, "the PNG specifies its physical aspect ratio, but does not specify the units of its pixels' physical dimensions" unless unit == :meters
         ppuy * INCHES_PER_METER
       end
 
       def self.read(type, content)
-        ppux, ppuy, unit = content.unpack('NNC')
+        ppux, ppuy, unit = content.unpack("NNC")
         unit = unit == 1 ? :meters : :unknown
         new(ppux, ppuy, unit)
       end
@@ -362,7 +360,7 @@ module ChunkyPNG
       # Assembles the content to write to the stream for this chunk.
       # @return [String] The binary content that should be written to the datastream.
       def content
-        [ppux, ppuy, unit == :meters ? 1 : 0].pack('NNC')
+        [ppux, ppuy, unit == :meters ? 1 : 0].pack("NNC")
       end
 
       INCHES_PER_METER = 0.0254
@@ -383,8 +381,8 @@ module ChunkyPNG
     class InternationalText < Base
       attr_accessor :keyword, :text, :language_tag, :translated_keyword, :compressed, :compression
 
-      def initialize(keyword, text, language_tag = '', translated_keyword = '', compressed = ChunkyPNG::UNCOMPRESSED_CONTENT, compression = ChunkyPNG::COMPRESSION_DEFAULT)
-        super('iTXt')
+      def initialize(keyword, text, language_tag = "", translated_keyword = "", compressed = ChunkyPNG::UNCOMPRESSED_CONTENT, compression = ChunkyPNG::COMPRESSION_DEFAULT)
+        super("iTXt")
         @keyword = keyword
         @text = text
         @language_tag = language_tag
@@ -401,16 +399,16 @@ module ChunkyPNG
       # @raise [ChunkyPNG::NotSupported] If the chunk refers to an unsupported compression method.
       #  Currently uncompressed data and deflate are supported.
       def self.read(type, content)
-        keyword, compressed, compression, language_tag, translated_keyword, text = content.unpack('Z*CCZ*Z*a*')
+        keyword, compressed, compression, language_tag, translated_keyword, text = content.unpack("Z*CCZ*Z*a*")
         raise ChunkyPNG::NotSupported, "Compression flag #{compressed.inspect} not supported!" unless compressed == ChunkyPNG::UNCOMPRESSED_CONTENT || compressed == ChunkyPNG::COMPRESSED_CONTENT
         raise ChunkyPNG::NotSupported, "Compression method #{compression.inspect} not supported!" unless compression == ChunkyPNG::COMPRESSION_DEFAULT
 
         text = Zlib::Inflate.inflate(text) if compressed == ChunkyPNG::COMPRESSED_CONTENT
 
-        text.force_encoding('utf-8')
+        text.force_encoding("utf-8")
         raise ChunkyPNG::InvalidUTF8, "Invalid unicode encountered in iTXt chunk" unless text.valid_encoding?
 
-        translated_keyword.force_encoding('utf-8')
+        translated_keyword.force_encoding("utf-8")
         raise ChunkyPNG::InvalidUTF8, "Invalid unicode encountered in iTXt chunk" unless translated_keyword.valid_encoding?
 
         new(keyword, text, language_tag, translated_keyword, compressed, compression)
@@ -419,10 +417,10 @@ module ChunkyPNG
       # Assembles the content to write to the stream for this chunk.
       # @return [String] The binary content that should be written to the datastream.
       def content
-        text_field = text.encode('utf-8')
+        text_field = text.encode("utf-8")
         text_field = compressed == ChunkyPNG::COMPRESSED_CONTENT ? Zlib::Deflate.deflate(text_field) : text_field
 
-        [keyword, compressed, compression, language_tag, translated_keyword.encode('utf-8'), text_field].pack('Z*CCZ*Z*a*')
+        [keyword, compressed, compression, language_tag, translated_keyword.encode("utf-8"), text_field].pack("Z*CCZ*Z*a*")
       end
     end
 
@@ -434,15 +432,15 @@ module ChunkyPNG
     #
     # @see ChunkyPNG::Chunk.read
     CHUNK_TYPES = {
-      'IHDR' => Header,
-      'IEND' => End,
-      'IDAT' => ImageData,
-      'PLTE' => Palette,
-      'tRNS' => Transparency,
-      'tEXt' => Text,
-      'zTXt' => CompressedText,
-      'iTXt' => InternationalText,
-      'pHYs' => Physical,
+      "IHDR" => Header,
+      "IEND" => End,
+      "IDAT" => ImageData,
+      "PLTE" => Palette,
+      "tRNS" => Transparency,
+      "tEXt" => Text,
+      "zTXt" => CompressedText,
+      "iTXt" => InternationalText,
+      "pHYs" => Physical,
     }
   end
 end

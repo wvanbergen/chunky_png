@@ -1,5 +1,4 @@
 module ChunkyPNG
-
   # Factory method to return a color value, based on the arguments given.
   #
   # @overload Color(r, g, b, a)
@@ -29,7 +28,7 @@ module ChunkyPNG
   # @raise [ArgumentError] if the arguments weren't understood as a color.
   # @see ChunkyPNG::Color
   # @see ChunkyPNG::Color.parse
-  def self.Color(*args)
+  def self.Color(*args) # rubocop:disable Naming/MethodName # API backwards compatibility
     case args.length
       when 1 then ChunkyPNG::Color.parse(args.first)
       when 2 then (ChunkyPNG::Color.parse(args.first) & 0xffffff00) | args[1].to_i
@@ -38,6 +37,7 @@ module ChunkyPNG
       else raise ArgumentError, "Don't know how to create a color from #{args.inspect}!"
     end
   end
+  # rubocop:enable Naming/MethodName
 
   # The Color module defines methods for handling colors. Within the ChunkyPNG
   # library, the concepts of pixels and colors are both used, and they are
@@ -82,7 +82,7 @@ module ChunkyPNG
     # @return [Integer] The color value, with the opacity applied if one was
     #   given.
     def parse(source)
-      return source if source.kind_of?(Integer)
+      return source if source.is_a?(Integer)
       case source.to_s
         when /^\d+$/ then source.to_s.to_i
         when HEX3_COLOR_REGEXP, HEX6_COLOR_REGEXP then from_hex(source.to_s)
@@ -164,14 +164,14 @@ module ChunkyPNG
     # @raise [ArgumentError] if the value given is not a hex color notation.
     def from_hex(hex_value, opacity = nil)
       base_color = case hex_value
-                   when HEX3_COLOR_REGEXP
-                     $1.gsub(/([0-9a-f])/i, '\1\1').hex << 8
-                   when HEX6_COLOR_REGEXP
-                     $1.hex << 8
-                   else
-                     raise ArgumentError, "Not a valid hex color notation: #{hex_value.inspect}!"
-                   end
-      opacity  ||= $2 ? $2.hex : 0xff
+        when HEX3_COLOR_REGEXP
+          $1.gsub(/([0-9a-f])/i, '\1\1').hex << 8
+        when HEX6_COLOR_REGEXP
+          $1.hex << 8
+        else
+          raise ArgumentError, "Not a valid hex color notation: #{hex_value.inspect}!"
+      end
+      opacity ||= $2 ? $2.hex : 0xff
       base_color | opacity
     end
 
@@ -193,6 +193,7 @@ module ChunkyPNG
       raise ArgumentError, "Hue must be between 0 and 360" unless (0..360).cover?(hue)
       raise ArgumentError, "Saturation must be between 0 and 1" unless (0..1).cover?(saturation)
       raise ArgumentError, "Value/brightness must be between 0 and 1" unless (0..1).cover?(value)
+
       chroma = value * saturation
       rgb    = cylindrical_to_cubic(hue, saturation, value, chroma)
       rgb.map! { |component| ((component + value - chroma) * 255).to_i }
@@ -218,6 +219,7 @@ module ChunkyPNG
       raise ArgumentError, "Hue #{hue} was not between 0 and 360" unless (0..360).cover?(hue)
       raise ArgumentError, "Saturation #{saturation} was not between 0 and 1" unless (0..1).cover?(saturation)
       raise ArgumentError, "Lightness #{lightness} was not between 0 and 1" unless (0..1).cover?(lightness)
+
       chroma = (1 - (2 * lightness - 1).abs) * saturation
       rgb    = cylindrical_to_cubic(hue, saturation, lightness, chroma)
       rgb.map! { |component| ((component + lightness - 0.5 * chroma) * 255).to_i }
@@ -499,7 +501,7 @@ module ChunkyPNG
     # @see #decompose_alpha
     def alpha_decomposable?(color, mask, bg, tolerance = 1)
       components = decompose_alpha_components(color, mask, bg)
-      sum = components.inject(0) { |a,b| a + b }
+      sum = components.inject(0) { |a, b| a + b }
       max = components.max * 3
       components.max <= 255 && components.min >= 0 && (sum + tolerance * 3) >= max
     end
@@ -520,7 +522,7 @@ module ChunkyPNG
     # @see #alpha_decomposable?
     def decompose_alpha(color, mask, bg)
       components = decompose_alpha_components(color, mask, bg)
-      (components.inject(0) { |a,b| a + b } / 3.0).round
+      (components.inject(0) { |a, b| a + b } / 3.0).round
     end
 
     # Decomposes an alpha channel for either the r, g or b color channel.
@@ -552,7 +554,7 @@ module ChunkyPNG
       [
         decompose_alpha_component(:r, color, mask, bg),
         decompose_alpha_component(:g, color, mask, bg),
-        decompose_alpha_component(:b, color, mask, bg)
+        decompose_alpha_component(:b, color, mask, bg),
       ]
     end
 
@@ -567,7 +569,7 @@ module ChunkyPNG
     # @param [Boolean] include_alpha
     # @return [String] The color in hex notation, starting with a pound sign.
     def to_hex(color, include_alpha = true)
-      include_alpha ? ('#%08x' % color) : ('#%06x' % [color >> 8])
+      include_alpha ? ("#%08x" % color) : ("#%06x" % [color >> 8])
     end
 
     # Returns an array with the separate HSV components of a color.
@@ -638,7 +640,7 @@ module ChunkyPNG
     # @return [Fixnum] min The magnitude of the smallest scaled rgb component (0-1)
     # @private
     def hue_and_chroma(color)
-      scaled_rgb      = to_truecolor_bytes(color)
+      scaled_rgb = to_truecolor_bytes(color)
       scaled_rgb.map! { |component| component.fdiv(255) }
       min, max = scaled_rgb.minmax
       chroma   = max - min
@@ -906,14 +908,14 @@ module ChunkyPNG
     def html_color(color_name, opacity = nil)
       if color_name.to_s =~ HTML_COLOR_REGEXP
         opacity ||= $2 ? ($2.to_f * 255.0).round : 0xff
-        base_color_name = $1.gsub(/[^a-z]+/i, '').downcase.to_sym
+        base_color_name = $1.gsub(/[^a-z]+/i, "").downcase.to_sym
         return PREDEFINED_COLORS[base_color_name] | opacity if PREDEFINED_COLORS.key?(base_color_name)
       end
       raise ArgumentError, "Unknown color name #{color_name}!"
     end
 
     # @return [Integer] Black pixel/color
-    BLACK = rgb(  0,   0,   0)
+    BLACK = rgb(0, 0, 0)
 
     # @return [Integer] White pixel/color
     WHITE = rgb(255, 255, 255)

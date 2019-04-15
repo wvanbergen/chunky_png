@@ -1,8 +1,7 @@
 # Basic requirements from standard library
-require 'set'
-require 'zlib'
-require 'stringio'
-require 'enumerator'
+require "set"
+require "zlib"
+require "stringio"
 
 # ChunkyPNG - the pure ruby library to access PNG files.
 #
@@ -22,7 +21,6 @@ require 'enumerator'
 #
 # @author Willem van Bergen
 module ChunkyPNG
-
   ###################################################
   # PNG international standard defined constants
   ###################################################
@@ -131,7 +129,7 @@ module ChunkyPNG
   class ExpectationFailed < ChunkyPNG::Exception
   end
 
-  # Exception that is raised if an expectation fails.
+  # Exception that when provided coordinates are out of bounds for the canvas
   class OutOfBounds < ChunkyPNG::ExpectationFailed
   end
 
@@ -152,21 +150,21 @@ module ChunkyPNG
   EXTRA_BYTE = "\0".force_encoding(Encoding::BINARY).freeze
 end
 
-require 'chunky_png/version'
+require "chunky_png/version"
 
 # PNG file structure
-require 'chunky_png/datastream'
-require 'chunky_png/chunk'
+require "chunky_png/datastream"
+require "chunky_png/chunk"
 
 # Colors
-require 'chunky_png/palette'
-require 'chunky_png/color'
+require "chunky_png/palette"
+require "chunky_png/color"
 
 # Geometry
-require 'chunky_png/point'
-require 'chunky_png/vector'
-require 'chunky_png/dimension'
+require "chunky_png/point"
+require "chunky_png/vector"
+require "chunky_png/dimension"
 
 # Canvas / Image classes
-require 'chunky_png/canvas'
-require 'chunky_png/image'
+require "chunky_png/canvas"
+require "chunky_png/image"

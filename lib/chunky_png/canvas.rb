@@ -1,14 +1,14 @@
-require 'chunky_png/canvas/png_encoding'
-require 'chunky_png/canvas/png_decoding'
-require 'chunky_png/canvas/adam7_interlacing'
-require 'chunky_png/canvas/stream_exporting'
-require 'chunky_png/canvas/stream_importing'
-require 'chunky_png/canvas/data_url_exporting'
-require 'chunky_png/canvas/data_url_importing'
-require 'chunky_png/canvas/operations'
-require 'chunky_png/canvas/drawing'
-require 'chunky_png/canvas/resampling'
-require 'chunky_png/canvas/masking'
+require "chunky_png/canvas/png_encoding"
+require "chunky_png/canvas/png_decoding"
+require "chunky_png/canvas/adam7_interlacing"
+require "chunky_png/canvas/stream_exporting"
+require "chunky_png/canvas/stream_importing"
+require "chunky_png/canvas/data_url_exporting"
+require "chunky_png/canvas/data_url_importing"
+require "chunky_png/canvas/operations"
+require "chunky_png/canvas/drawing"
+require "chunky_png/canvas/resampling"
+require "chunky_png/canvas/masking"
 
 module ChunkyPNG
   # The ChunkyPNG::Canvas class represents a raster image as a matrix of
@@ -56,7 +56,6 @@ module ChunkyPNG
     #   This array always should have +width * height+ elements.
     attr_reader :pixels
 
-
     #################################################################
     # CONSTRUCTORS
     #################################################################
@@ -78,9 +77,10 @@ module ChunkyPNG
     def initialize(width, height, initial = ChunkyPNG::Color::TRANSPARENT)
       @width, @height = width, height
 
-      if initial.kind_of?(Array)
-        unless initial.length == width * height
-          raise ArgumentError, "The initial array should have #{width}x#{height} = #{width*height} elements!"
+      if initial.is_a?(Array)
+        pixel_count = width * height
+        unless initial.length == pixel_count
+          raise ArgumentError, "The initial array should have #{width}x#{height} = #{pixel_count} elements!"
         end
         @pixels = initial
       else
@@ -103,7 +103,6 @@ module ChunkyPNG
     def self.from_canvas(canvas)
       new(canvas.width, canvas.height, canvas.pixels.dup)
     end
-
 
     #################################################################
     # PROPERTIES
@@ -274,7 +273,7 @@ module ChunkyPNG
     # @return [true, false] True if the size and pixel values of the other
     #   canvas are exactly the same as this canvas's size and pixel values.
     def eql?(other)
-      other.kind_of?(self.class) &&
+      other.is_a?(self.class) &&
         other.pixels == pixels &&
         other.width == width &&
         other.height == height
@@ -298,7 +297,7 @@ module ChunkyPNG
     def inspect
       inspected = "<#{self.class.name} #{width}x#{height} ["
       for y in 0...height
-        inspected << "\n\t[" << row(y).map { |p| ChunkyPNG::Color.to_hex(p) }.join(' ') << ']'
+        inspected << "\n\t[" << row(y).map { |p| ChunkyPNG::Color.to_hex(p) }.join(" ") << "]"
       end
       inspected << "\n]>"
     end
@@ -360,13 +359,13 @@ module ChunkyPNG
 
     # Throws an exception if the matrix width and height does not match this canvas' dimensions.
     def assert_size!(matrix_width, matrix_height)
-      if width  != matrix_width
+      if width != matrix_width
         raise ChunkyPNG::ExpectationFailed,
-          'The width of the matrix does not match the canvas width!'
+          "The width of the matrix does not match the canvas width!"
       end
       if height != matrix_height
         raise ChunkyPNG::ExpectationFailed,
-          'The height of the matrix does not match the canvas height!'
+          "The height of the matrix does not match the canvas height!"
       end
       true
     end

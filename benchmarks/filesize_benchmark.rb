@@ -1,10 +1,10 @@
-require 'rubygems'
-require 'bundler/setup'
+require "rubygems"
+require "bundler/setup"
 
-require 'benchmark'
-require 'chunky_png'
+require "benchmark"
+require "chunky_png"
 
-files = ['pixelstream_reference.png', 'operations.png', 'clock.png']
+files = ["pixelstream_reference.png", "operations.png", "clock.png"]
 
 def encode_png(image, constraints = {})
   filesize = nil
@@ -13,7 +13,7 @@ def encode_png(image, constraints = {})
 end
 
 files.each do |file|
-  filename = File.join(File.dirname(__FILE__), '..', 'spec', 'resources', file)
+  filename = File.join(File.dirname(__FILE__), "..", "spec", "resources", file)
   image = ChunkyPNG::Canvas.from_file(filename)
 
   puts "#{file}: #{image.width}x#{image.height} - #{image.palette.size} colors"

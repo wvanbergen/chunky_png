@@ -27,7 +27,6 @@ module ChunkyPNG
     # @see ChunkyPNG::Canvas::PNGEncoding
     # @see http://www.w3.org/TR/PNG/ The W3C PNG format specification
     module PNGDecoding
-
       # Decodes a Canvas from a PNG encoded string.
       # @param [String] str The string to read from.
       # @return [ChunkyPNG::Canvas] The canvas decoded from the PNG encoded string.
@@ -204,7 +203,6 @@ module ChunkyPNG
         value == 0x01 ? 0xff : 0x00
       end
 
-
       # Decodes a scanline of a 1-bit, indexed image into a row of pixels.
       # @param [String] stream The stream to decode from.
       # @param [Integer] pos The position in the stream on which the scanline starts (including the filter byte).
@@ -258,8 +256,12 @@ module ChunkyPNG
       def decode_png_pixels_from_scanline_truecolor_alpha_16bit(stream, pos, width, _decoding_palette)
         pixels = []
         stream.unpack("@#{pos + 1}n#{width * 4}").each_slice(4) do |r, g, b, a|
-          pixels << ChunkyPNG::Color.rgba(decode_png_resample_16bit_value(r), decode_png_resample_16bit_value(g),
-                                          decode_png_resample_16bit_value(b), decode_png_resample_16bit_value(a))
+          pixels << ChunkyPNG::Color.rgba(
+            decode_png_resample_16bit_value(r),
+            decode_png_resample_16bit_value(g),
+            decode_png_resample_16bit_value(b),
+            decode_png_resample_16bit_value(a),
+          )
         end
         pixels
       end
@@ -268,7 +270,7 @@ module ChunkyPNG
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_truecolor_8bit(stream, pos, width, _decoding_palette)
-        stream.unpack("@#{pos + 1}" << ('NX' * width)).map { |c| c | 0x000000ff }
+        stream.unpack("@#{pos + 1}" << ("NX" * width)).map { |c| c | 0x000000ff }
       end
 
       # Decodes a scanline of a 16-bit, true color image into a row of pixels.
@@ -357,7 +359,6 @@ module ChunkyPNG
           when ChunkyPNG::COLOR_INDEXED         then :"decode_png_pixels_from_scanline_indexed_#{depth}bit"
           when ChunkyPNG::COLOR_GRAYSCALE       then :"decode_png_pixels_from_scanline_grayscale_#{depth}bit"
           when ChunkyPNG::COLOR_GRAYSCALE_ALPHA then :"decode_png_pixels_from_scanline_grayscale_alpha_#{depth}bit"
-          else nil
         end
 
         raise ChunkyPNG::NotSupported, "No decoder found for color mode #{color_mode} and #{depth}-bit depth!" unless respond_to?(decoder_method, true)
@@ -378,7 +379,6 @@ module ChunkyPNG
       # @param [ChunkyPNG::Palette] decoding_palette The palette to use to decode colors.
       # @return (see ChunkyPNG::Canvas::PNGDecoding#decode_png_pixelstream)
       def decode_png_image_pass(stream, width, height, color_mode, depth, start_pos, decoding_palette)
-
         pixels = []
         if width > 0 && height > 0
 
@@ -418,11 +418,11 @@ module ChunkyPNG
       # @return [void]
       def decode_png_str_scanline(stream, pos, prev_pos, line_length, pixel_size)
         case stream.getbyte(pos)
-          when ChunkyPNG::FILTER_NONE    then # noop
-          when ChunkyPNG::FILTER_SUB     then decode_png_str_scanline_sub(     stream, pos, prev_pos, line_length, pixel_size)
-          when ChunkyPNG::FILTER_UP      then decode_png_str_scanline_up(      stream, pos, prev_pos, line_length, pixel_size)
-          when ChunkyPNG::FILTER_AVERAGE then decode_png_str_scanline_average( stream, pos, prev_pos, line_length, pixel_size)
-          when ChunkyPNG::FILTER_PAETH   then decode_png_str_scanline_paeth(   stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_NONE    then # rubocop:disable Lint/EmptyWhen # no-op
+          when ChunkyPNG::FILTER_SUB     then decode_png_str_scanline_sub(stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_UP      then decode_png_str_scanline_up(stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_AVERAGE then decode_png_str_scanline_average(stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_PAETH   then decode_png_str_scanline_paeth(stream, pos, prev_pos, line_length, pixel_size)
           else raise ChunkyPNG::NotSupported, "Unknown filter type: #{stream.getbyte(pos)}!"
         end
       end
@@ -481,7 +481,12 @@ module ChunkyPNG
           pa = (p - a).abs
           pb = (p - b).abs
           pc = (p - c).abs
-          pr = pa <= pb ? (pa <= pc ? a : c) : (pb <= pc ? b : c)
+          pr = if pa <= pb
+            pa <= pc ? a : c
+          else
+            pb <= pc ? b : c
+          end
+
           stream.setbyte(cur_pos, (stream.getbyte(cur_pos) + pr) & 0xff)
         end
       end

@@ -10,7 +10,7 @@ module ChunkyPNG
       #
       # @return [String] The RGBA-formatted pixel data.
       def to_rgba_stream
-        pixels.pack('N*')
+        pixels.pack("N*")
       end
 
       # Creates an RGB-formatted pixelstream with the pixel data from this canvas.
@@ -21,14 +21,14 @@ module ChunkyPNG
       #
       # @return [String] The RGB-formatted pixel data.
       def to_rgb_stream
-        pixels.pack('NX' * pixels.length)
+        pixels.pack("NX" * pixels.length)
       end
 
       # Creates a stream of the alpha channel of this canvas.
       #
       # @return [String] The 0-255 alpha values of all pixels packed as string
       def to_alpha_channel_stream
-        pixels.pack('C*')
+        pixels.pack("C*")
       end
 
       # Creates a grayscale stream of this canvas.
@@ -38,7 +38,7 @@ module ChunkyPNG
       #
       # @return [String] The 0-255 grayscale values of all pixels packed as string.
       def to_grayscale_stream
-        pixels.pack('nX' * pixels.length)
+        pixels.pack("nX" * pixels.length)
       end
 
       # Creates an ABGR-formatted pixelstream with the pixel data from this canvas.
@@ -49,7 +49,7 @@ module ChunkyPNG
       #
       # @return [String] The RGBA-formatted pixel data.
       def to_abgr_stream
-        pixels.pack('V*')
+        pixels.pack("V*")
       end
     end
   end

@@ -1,5 +1,4 @@
 module ChunkyPNG
-
   # Factory method for {ChunkyPNG::Vector} instances.
   #
   # @overload Vector(x0, y0, x1, y1, x2, y2, ...)
@@ -17,8 +16,7 @@ module ChunkyPNG
   # @raise [ArgumentError] If the given arguments could not be understood as a vector.
   # @see ChunkyPNG::Vector
   def self.Vector(*args)
-
-    return args.first if args.length == 1 && args.first.kind_of?(ChunkyPNG::Vector)
+    return args.first if args.length == 1 && args.first.is_a?(ChunkyPNG::Vector)
 
     if args.length == 1 && args.first.respond_to?(:scan)
       ChunkyPNG::Vector.new(ChunkyPNG::Vector.multiple_from_string(args.first)) # e.g. ['1,1 2,2 3,3']
@@ -166,7 +164,7 @@ module ChunkyPNG
     # @return [Array<ChunkyPNG::Point>] The list of points interpreted from the input array.
     def self.multiple_from_array(source)
       return [] if source.empty?
-      if source.first.kind_of?(Numeric) || source.first =~ /^\d+$/
+      if source.first.is_a?(Numeric) || source.first =~ /^\d+$/
         raise ArgumentError, "The points array is expected to have an even number of items!" if source.length % 2 != 0
 
         points = []
