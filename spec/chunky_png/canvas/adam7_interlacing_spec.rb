@@ -6,31 +6,31 @@ describe ChunkyPNG::Canvas::Adam7Interlacing do
   describe '#adam7_pass_sizes' do
     it "should get the pass sizes for a 8x8 image correctly" do
       expect(adam7_pass_sizes(8, 8)).to eql [
-          [1, 1], [1, 1], [2, 1], [2, 2], [4, 2], [4, 4], [8, 4]
+          [1, 1], [1, 1], [2, 1], [2, 2], [4, 2], [4, 4], [8, 4],
         ]
     end
 
     it "should get the pass sizes for a 12x12 image correctly" do
       expect(adam7_pass_sizes(12, 12)).to eql [
-          [2, 2], [1, 2], [3, 1], [3, 3], [6, 3], [6, 6], [12, 6]
+          [2, 2], [1, 2], [3, 1], [3, 3], [6, 3], [6, 6], [12, 6],
         ]
     end
 
     it "should get the pass sizes for a 33x47 image correctly" do
       expect(adam7_pass_sizes(33, 47)).to eql [
-          [5, 6], [4, 6], [9, 6], [8, 12], [17, 12], [16, 24], [33, 23]
+          [5, 6], [4, 6], [9, 6], [8, 12], [17, 12], [16, 24], [33, 23],
         ]
     end
 
     it "should get the pass sizes for a 1x1 image correctly" do
       expect(adam7_pass_sizes(1, 1)).to eql [
-          [1, 1], [0, 1], [1, 0], [0, 1], [1, 0], [0, 1], [1, 0]
+          [1, 1], [0, 1], [1, 0], [0, 1], [1, 0], [0, 1], [1, 0],
         ]
     end
 
     it "should get the pass sizes for a 0x0 image correctly" do
       expect(adam7_pass_sizes(0, 0)).to eql [
-          [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]
+          [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],
         ]
     end
 

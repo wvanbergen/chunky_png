@@ -160,7 +160,7 @@ module ChunkyPNG
           color,
           compression,
           filtering,
-          interlace
+          interlace,
         ].pack('NNC5')
       end
     end
@@ -325,7 +325,7 @@ module ChunkyPNG
         [
           keyword,
           ChunkyPNG::COMPRESSION_DEFAULT,
-          Zlib::Deflate.deflate(value)
+          Zlib::Deflate.deflate(value),
         ].pack('Z*Ca*')
       end
     end

@@ -71,14 +71,18 @@ describe ChunkyPNG::Vector do
 
   describe '#edges' do
     it "should get three edges when closing the path" do
-      expect(subject.edges(true).to_a).to eql [[ChunkyPNG::Point.new(2, 5), ChunkyPNG::Point.new(1, 3)],
-                                          [ChunkyPNG::Point.new(1, 3), ChunkyPNG::Point.new(4, 6)],
-                                          [ChunkyPNG::Point.new(4, 6), ChunkyPNG::Point.new(2, 5)]]
+      expect(subject.edges(true).to_a).to eql [
+        [ChunkyPNG::Point.new(2, 5), ChunkyPNG::Point.new(1, 3)],
+        [ChunkyPNG::Point.new(1, 3), ChunkyPNG::Point.new(4, 6)],
+        [ChunkyPNG::Point.new(4, 6), ChunkyPNG::Point.new(2, 5)],
+      ]
     end
 
     it "should get two edges when not closing the path" do
-      expect(subject.edges(false).to_a).to eql [[ChunkyPNG::Point.new(2, 5), ChunkyPNG::Point.new(1, 3)],
-                                           [ChunkyPNG::Point.new(1, 3), ChunkyPNG::Point.new(4, 6)]]
+      expect(subject.edges(false).to_a).to eql [
+        [ChunkyPNG::Point.new(2, 5), ChunkyPNG::Point.new(1, 3)],
+        [ChunkyPNG::Point.new(1, 3), ChunkyPNG::Point.new(4, 6)],
+      ]
     end
   end
 end

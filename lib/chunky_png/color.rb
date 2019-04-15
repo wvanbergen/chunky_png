@@ -553,7 +553,7 @@ module ChunkyPNG
       [
         decompose_alpha_component(:r, color, mask, bg),
         decompose_alpha_component(:g, color, mask, bg),
-        decompose_alpha_component(:b, color, mask, bg)
+        decompose_alpha_component(:b, color, mask, bg),
       ]
     end
 

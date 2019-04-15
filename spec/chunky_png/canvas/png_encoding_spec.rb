@@ -181,8 +181,10 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
 
     it "should encode a scanline with sub filtering correctly" do
-      stream = [ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-                ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255].pack('C*')
+      stream = [
+        ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+      ].pack('C*')
 
       # Check line with previous line
       encode_png_str_scanline_sub(stream, 10, 0, 9, 3)
@@ -194,8 +196,10 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
 
     it "should encode a scanline with up filtering correctly" do
-      stream = [ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-                ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255].pack('C*')
+      stream = [
+        ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        ChunkyPNG::FILTER_NONE, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+      ].pack('C*')
 
       # Check line with previous line
       encode_png_str_scanline_up(stream, 10, 0, 9, 3)
@@ -207,8 +211,10 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
 
     it "should encode a scanline with average filtering correctly" do
-      stream = [ChunkyPNG::FILTER_NONE, 10, 20, 30, 40, 50, 60, 70, 80,   80, 100, 110, 120,
-                ChunkyPNG::FILTER_NONE,  5, 10, 25, 45, 45, 55, 80, 125, 105, 150, 114, 165].pack('C*')
+      stream = [
+        ChunkyPNG::FILTER_NONE, 10, 20, 30, 40, 50, 60, 70, 80,   80, 100, 110, 120,
+        ChunkyPNG::FILTER_NONE,  5, 10, 25, 45, 45, 55, 80, 125, 105, 150, 114, 165,
+      ].pack('C*')
 
       # Check line with previous line
       encode_png_str_scanline_average(stream, 13, 0, 12, 3)
@@ -220,8 +226,10 @@ describe ChunkyPNG::Canvas::PNGEncoding do
     end
 
     it "should encode a scanline with paeth filtering correctly" do
-      stream = [ChunkyPNG::FILTER_NONE, 10, 20, 30, 40, 50, 60, 70,  80, 80, 100, 110, 120,
-                ChunkyPNG::FILTER_NONE, 10, 20, 40, 60, 60, 60, 70, 120, 90, 120,  54, 120].pack('C*')
+      stream = [
+        ChunkyPNG::FILTER_NONE, 10, 20, 30, 40, 50, 60, 70,  80, 80, 100, 110, 120,
+        ChunkyPNG::FILTER_NONE, 10, 20, 40, 60, 60, 60, 70, 120, 90, 120,  54, 120,
+      ].pack('C*')
 
       # Check line with previous line
       encode_png_str_scanline_paeth(stream, 13, 0, 12, 3)

@@ -14,7 +14,7 @@ module ChunkyPNG
           3 - (pass >> 1),
           pass & 1 == 0 ? 0 : 8 >> ((pass + 1) >> 1),
           pass == 0 ? 3 : 3 - ((pass - 1) >> 1),
-          pass == 0 || pass & 1 == 1 ? 0 : 8 >> (pass >> 1)
+          pass == 0 || pass & 1 == 1 ? 0 : 8 >> (pass >> 1),
         ]
       end
 
@@ -24,8 +24,10 @@ module ChunkyPNG
       # @param [Integer] original_height The height of the original image.
       def adam7_pass_size(pass, original_width, original_height)
         x_shift, x_offset, y_shift, y_offset = adam7_multiplier_offset(pass)
-        [ (original_width  - x_offset + (1 << x_shift) - 1) >> x_shift,
-          (original_height - y_offset + (1 << y_shift) - 1) >> y_shift]
+        [
+          (original_width  - x_offset + (1 << x_shift) - 1) >> x_shift,
+          (original_height - y_offset + (1 << y_shift) - 1) >> y_shift,
+        ]
       end
 
       # Returns an array of the dimension of all the pass images.
