@@ -1,5 +1,4 @@
 module ChunkyPNG
-
   # Factory method for {ChunkyPNG::Vector} instances.
   #
   # @overload Vector(x0, y0, x1, y1, x2, y2, ...)
@@ -17,7 +16,6 @@ module ChunkyPNG
   # @raise [ArgumentError] If the given arguments could not be understood as a vector.
   # @see ChunkyPNG::Vector
   def self.Vector(*args)
-
     return args.first if args.length == 1 && args.first.kind_of?(ChunkyPNG::Vector)
 
     if args.length == 1 && args.first.respond_to?(:scan)

@@ -1,7 +1,6 @@
 require 'rmagick'
 
 module ChunkyPNG
-
   # Methods for importing and exporting RMagick image objects.
   #
   # By default, this module is disabled because of the dependency on RMagick.
@@ -20,7 +19,6 @@ module ChunkyPNG
   #    updated_canvas = ChunkyPNG::RMagick.import(image)
   #
   module RMagick
-
     extend self
 
     # Imports an RMagick image as Canvas object.

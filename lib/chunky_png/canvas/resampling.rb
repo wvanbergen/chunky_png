@@ -8,7 +8,6 @@ module ChunkyPNG
     #
     # @see ChunkyPNG::Canvas
     module Resampling
-
       # Integer Interpolation between two values
       #
       # Used for generating indicies for interpolation (eg, nearest

@@ -2,7 +2,6 @@ module ChunkyPNG
   class Canvas
     # Methods to import a canvas from a PNG data URL.
     module DataUrlImporting
-
       # Imports a canvas from a PNG data URL.
       # @param [String] string The data URL string to load from.
       # @return [Canvas] The imported canvas.

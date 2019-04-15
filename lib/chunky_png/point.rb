@@ -1,5 +1,4 @@
 module ChunkyPNG
-
   # Factory method to create {ChunkyPNG::Point} instances.
   #
   # This method tries to be as flexible as possible with regards to the given input: besides

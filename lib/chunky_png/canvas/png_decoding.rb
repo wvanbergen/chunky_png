@@ -27,7 +27,6 @@ module ChunkyPNG
     # @see ChunkyPNG::Canvas::PNGEncoding
     # @see http://www.w3.org/TR/PNG/ The W3C PNG format specification
     module PNGDecoding
-
       # Decodes a Canvas from a PNG encoded string.
       # @param [String] str The string to read from.
       # @return [ChunkyPNG::Canvas] The canvas decoded from the PNG encoded string.
@@ -419,10 +418,10 @@ module ChunkyPNG
       def decode_png_str_scanline(stream, pos, prev_pos, line_length, pixel_size)
         case stream.getbyte(pos)
           when ChunkyPNG::FILTER_NONE    then # noop
-          when ChunkyPNG::FILTER_SUB     then decode_png_str_scanline_sub(     stream, pos, prev_pos, line_length, pixel_size)
-          when ChunkyPNG::FILTER_UP      then decode_png_str_scanline_up(      stream, pos, prev_pos, line_length, pixel_size)
-          when ChunkyPNG::FILTER_AVERAGE then decode_png_str_scanline_average( stream, pos, prev_pos, line_length, pixel_size)
-          when ChunkyPNG::FILTER_PAETH   then decode_png_str_scanline_paeth(   stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_SUB     then decode_png_str_scanline_sub(stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_UP      then decode_png_str_scanline_up(stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_AVERAGE then decode_png_str_scanline_average(stream, pos, prev_pos, line_length, pixel_size)
+          when ChunkyPNG::FILTER_PAETH   then decode_png_str_scanline_paeth(stream, pos, prev_pos, line_length, pixel_size)
           else raise ChunkyPNG::NotSupported, "Unknown filter type: #{stream.getbyte(pos)}!"
         end
       end

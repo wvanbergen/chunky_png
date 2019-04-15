@@ -9,7 +9,6 @@ module ChunkyPNG
     #   the bounds of the canvas; these pixels will simply be ignored.
     # @see ChunkyPNG::Canvas
     module Drawing
-
       # Composes a pixel on the canvas by alpha blending a color with its
       # background color.
       #

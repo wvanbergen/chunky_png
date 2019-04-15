@@ -3,7 +3,6 @@ require 'bundler/setup'
 require 'chunky_png'
 
 module PNGSuite
-
   def png_suite_file(kind, file)
     File.join(png_suite_dir(kind), file)
   end
@@ -19,7 +18,6 @@ end
 
 
 module ResourceFileHelper
-
   def resource_file(name)
     File.expand_path("./resources/#{name}", File.dirname(__FILE__))
   end
@@ -46,7 +44,6 @@ module ResourceFileHelper
 end
 
 module ChunkOperationsHelper
-
   def serialized_chunk(chunk)
     chunk.write(stream = StringIO.new)
     stream.rewind

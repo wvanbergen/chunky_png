@@ -229,7 +229,7 @@ describe ChunkyPNG::Canvas::Operations do
 
   describe '#rotate_left' do
     it "should rotate the pixels 90 degrees counter-clockwise" do
-      expect(subject.rotate_left).to eql ChunkyPNG::Canvas.new(3, 2, [2, 4, 6, 1, 3, 5] )
+      expect(subject.rotate_left).to eql ChunkyPNG::Canvas.new(3, 2, [2, 4, 6, 1, 3, 5])
     end
 
     it "should not return itself" do
@@ -256,7 +256,7 @@ describe ChunkyPNG::Canvas::Operations do
   describe '#rotate_left!' do
     it "should rotate the pixels 90 degrees clockwise" do
       subject.rotate_left!
-      expect(subject).to eql ChunkyPNG::Canvas.new(3, 2, [2, 4, 6, 1, 3, 5] )
+      expect(subject).to eql ChunkyPNG::Canvas.new(3, 2, [2, 4, 6, 1, 3, 5])
     end
 
     it "should return itself" do
@@ -271,7 +271,7 @@ describe ChunkyPNG::Canvas::Operations do
 
   describe '#rotate_right' do
     it "should rotate the pixels 90 degrees clockwise" do
-      expect(subject.rotate_right).to eql ChunkyPNG::Canvas.new(3, 2, [5, 3, 1, 6, 4, 2] )
+      expect(subject.rotate_right).to eql ChunkyPNG::Canvas.new(3, 2, [5, 3, 1, 6, 4, 2])
     end
 
     it "should not return itself" do
@@ -298,7 +298,7 @@ describe ChunkyPNG::Canvas::Operations do
   describe '#rotate_right!' do
     it "should rotate the pixels 90 degrees clockwise" do
       subject.rotate_right!
-      expect(subject).to eql ChunkyPNG::Canvas.new(3, 2, [5, 3, 1, 6, 4, 2] )
+      expect(subject).to eql ChunkyPNG::Canvas.new(3, 2, [5, 3, 1, 6, 4, 2])
     end
 
     it "should return itself" do

@@ -22,7 +22,6 @@ require 'enumerator'
 #
 # @author Willem van Bergen
 module ChunkyPNG
-
   ###################################################
   # PNG international standard defined constants
   ###################################################

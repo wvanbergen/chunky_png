@@ -1,6 +1,5 @@
 module ChunkyPNG
   class Canvas
-
     # Methods for decoding and encoding Adam7 interlacing.
     #
     # Adam7 interlacing extracts 7 pass images out of a single image, that can be encoded to a
@@ -8,7 +7,6 @@ module ChunkyPNG
     # ChunkyPNG canvas and is used to extract the pass images from the original image, or to
     # reconstruct an original image from separate pass images.
     module Adam7Interlacing
-
       # Returns an array with the x-shift, x-offset, y-shift and y-offset for the requested pass.
       # @param [Integer] pass The pass number, should be in 0..6.
       def adam7_multiplier_offset(pass)

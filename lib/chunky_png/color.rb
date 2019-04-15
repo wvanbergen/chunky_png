@@ -1,5 +1,4 @@
 module ChunkyPNG
-
   # Factory method to return a color value, based on the arguments given.
   #
   # @overload Color(r, g, b, a)
@@ -915,7 +914,7 @@ module ChunkyPNG
     end
 
     # @return [Integer] Black pixel/color
-    BLACK = rgb(  0,   0,   0)
+    BLACK = rgb(0, 0, 0)
 
     # @return [Integer] White pixel/color
     WHITE = rgb(255, 255, 255)

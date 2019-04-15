@@ -1,5 +1,4 @@
 module ChunkyPNG
-
   # The Datastream class represents a PNG formatted datastream. It supports
   # both reading from and writing to strings, streams and files.
   #

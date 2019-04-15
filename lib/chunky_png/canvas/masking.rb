@@ -1,13 +1,11 @@
 module ChunkyPNG
   class Canvas
-
     # The ChunkyPNG::Canvas::Masking module defines methods to perform masking
     # and theming operations on a {ChunkyPNG::Canvas}. The module is included into the Canvas class so all
     # these methods are available on every canvas.
     #
     # @see ChunkyPNG::Canvas
     module Masking
-
       # Creates a new image, based on the current image but with a new theme color.
       #
       # This method will replace one color in an image with another image. This is done by
