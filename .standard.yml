@@ -2,6 +2,8 @@
 # For backwards compatilibity and idiosyncratic preferences of the main author,
 # there are some minor differences listed in here.
 
+ruby_version: 2.2
+
 ignore:
 - lib/chunky_png/**/*.rb:
   # We allow `for` loops in the codebase, especially in hot paths,
