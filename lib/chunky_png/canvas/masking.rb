@@ -65,7 +65,7 @@ module ChunkyPNG
           end
         end
 
-        [ self.class.new(width, height, base_pixels), self.class.new(width, height, mask_pixels) ]
+        [self.class.new(width, height, base_pixels), self.class.new(width, height, mask_pixels)]
       end
 
       # Changes the color of a mask image.
