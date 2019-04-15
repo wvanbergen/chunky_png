@@ -164,13 +164,13 @@ module ChunkyPNG
     # @raise [ArgumentError] if the value given is not a hex color notation.
     def from_hex(hex_value, opacity = nil)
       base_color = case hex_value
-                   when HEX3_COLOR_REGEXP
-                     $1.gsub(/([0-9a-f])/i, '\1\1').hex << 8
-                   when HEX6_COLOR_REGEXP
-                     $1.hex << 8
-                   else
-                     raise ArgumentError, "Not a valid hex color notation: #{hex_value.inspect}!"
-                   end
+        when HEX3_COLOR_REGEXP
+          $1.gsub(/([0-9a-f])/i, '\1\1').hex << 8
+        when HEX6_COLOR_REGEXP
+          $1.hex << 8
+        else
+          raise ArgumentError, "Not a valid hex color notation: #{hex_value.inspect}!"
+     end
       opacity  ||= $2 ? $2.hex : 0xff
       base_color | opacity
     end
@@ -193,6 +193,7 @@ module ChunkyPNG
       raise ArgumentError, "Hue must be between 0 and 360" unless (0..360).cover?(hue)
       raise ArgumentError, "Saturation must be between 0 and 1" unless (0..1).cover?(saturation)
       raise ArgumentError, "Value/brightness must be between 0 and 1" unless (0..1).cover?(value)
+
       chroma = value * saturation
       rgb    = cylindrical_to_cubic(hue, saturation, value, chroma)
       rgb.map! { |component| ((component + value - chroma) * 255).to_i }
@@ -218,6 +219,7 @@ module ChunkyPNG
       raise ArgumentError, "Hue #{hue} was not between 0 and 360" unless (0..360).cover?(hue)
       raise ArgumentError, "Saturation #{saturation} was not between 0 and 1" unless (0..1).cover?(saturation)
       raise ArgumentError, "Lightness #{lightness} was not between 0 and 1" unless (0..1).cover?(lightness)
+
       chroma = (1 - (2 * lightness - 1).abs) * saturation
       rgb    = cylindrical_to_cubic(hue, saturation, lightness, chroma)
       rgb.map! { |component| ((component + lightness - 0.5 * chroma) * 255).to_i }
