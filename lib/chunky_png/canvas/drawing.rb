@@ -41,13 +41,13 @@ module ChunkyPNG
           when 2 then return line(points[0].x, points[0].y, points[1].x, points[1].y, stroke_color)
         end
 
-        curve_points = Array.new
+        curve_points = []
 
         t     = 0
         n     = points.length - 1
-        bicof = 0
 
         while t <= 100
+          bicof = 0
           cur_p = ChunkyPNG::Point.new(0, 0)
 
           # Generate a float of t.
@@ -69,7 +69,6 @@ module ChunkyPNG
 
           curve_points << cur_p
 
-          bicof = 0
           t += 1
         end
 
