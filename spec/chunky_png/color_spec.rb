@@ -163,9 +163,9 @@ describe ChunkyPNG::Color do
       expect(from_hsl(240, 1, 0.5)).to     eql @blue
 
       # Random colors
-      from_hsl(87.27, 0.5, 0.5686)     == 0x96c85aff
-      from_hsl(271.83, 0.5399, 0.4176) == 0x6e31a4ff
-      from_hsl(63.6, 0.5984, 0.4882)   == 0xbec732ff
+      expect(from_hsl(87.27, 0.5, 0.5686)).to     eql 0x95c759ff
+      expect(from_hsl(271.83, 0.5399, 0.4176)).to eql 0x6d30a3ff
+      expect(from_hsl(63.6, 0.5984, 0.4882)).to   eql 0xbec631ff
 
       # Hue 0 and hue 360 should be equivalent
       expect(from_hsl(0, 0.5, 0.5)).to eql from_hsl(360, 0.5, 0.5)
