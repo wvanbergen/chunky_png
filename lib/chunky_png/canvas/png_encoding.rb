@@ -427,7 +427,12 @@ module ChunkyPNG
           pa = (p - a).abs
           pb = (p - b).abs
           pc = (p - c).abs
-          pr = pa <= pb && pa <= pc ? a : (pb <= pc ? b : c)
+          pr = if pa <= pb && pa <= pc
+            a
+          else
+            pb <= pc ? b : c
+          end
+
           stream.setbyte(pos + i, (stream.getbyte(pos + i) - pr) & 0xff)
         end
         stream.setbyte(pos, ChunkyPNG::FILTER_PAETH)
