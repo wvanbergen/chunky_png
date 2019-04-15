@@ -1,5 +1,6 @@
 language: ruby
-script: bundle exec rake
+
+script: bin/rake && bin/standardrb
 
 rvm:
 - "2.2"
