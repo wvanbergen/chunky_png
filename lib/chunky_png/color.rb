@@ -81,7 +81,7 @@ module ChunkyPNG
     # @return [Integer] The color value, with the opacity applied if one was
     #   given.
     def parse(source)
-      return source if source.kind_of?(Integer)
+      return source if source.is_a?(Integer)
       case source.to_s
         when /^\d+$/ then source.to_s.to_i
         when HEX3_COLOR_REGEXP, HEX6_COLOR_REGEXP then from_hex(source.to_s)

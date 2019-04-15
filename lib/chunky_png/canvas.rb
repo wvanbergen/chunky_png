@@ -78,7 +78,7 @@ module ChunkyPNG
     def initialize(width, height, initial = ChunkyPNG::Color::TRANSPARENT)
       @width, @height = width, height
 
-      if initial.kind_of?(Array)
+      if initial.is_a?(Array)
         pixel_count = width * height
         unless initial.length == pixel_count
           raise ArgumentError, "The initial array should have #{width}x#{height} = #{pixel_count} elements!"
@@ -275,7 +275,7 @@ module ChunkyPNG
     # @return [true, false] True if the size and pixel values of the other
     #   canvas are exactly the same as this canvas's size and pixel values.
     def eql?(other)
-      other.kind_of?(self.class) &&
+      other.is_a?(self.class) &&
         other.pixels == pixels &&
         other.width == width &&
         other.height == height
