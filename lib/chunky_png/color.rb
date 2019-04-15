@@ -28,7 +28,7 @@ module ChunkyPNG
   # @raise [ArgumentError] if the arguments weren't understood as a color.
   # @see ChunkyPNG::Color
   # @see ChunkyPNG::Color.parse
-  def self.Color(*args)
+  def self.Color(*args) # rubocop:disable Naming/MethodName # API backwards compatibility
     case args.length
       when 1 then ChunkyPNG::Color.parse(args.first)
       when 2 then (ChunkyPNG::Color.parse(args.first) & 0xffffff00) | args[1].to_i
@@ -37,6 +37,7 @@ module ChunkyPNG
       else raise ArgumentError, "Don't know how to create a color from #{args.inspect}!"
     end
   end
+  # rubocop:enable Naming/MethodName
 
   # The Color module defines methods for handling colors. Within the ChunkyPNG
   # library, the concepts of pixels and colors are both used, and they are

@@ -415,7 +415,7 @@ module ChunkyPNG
       # @return [void]
       def decode_png_str_scanline(stream, pos, prev_pos, line_length, pixel_size)
         case stream.getbyte(pos)
-          when ChunkyPNG::FILTER_NONE    then # noop
+          when ChunkyPNG::FILTER_NONE    then # rubocop:disable Lint/EmptyWhen # no-op
           when ChunkyPNG::FILTER_SUB     then decode_png_str_scanline_sub(stream, pos, prev_pos, line_length, pixel_size)
           when ChunkyPNG::FILTER_UP      then decode_png_str_scanline_up(stream, pos, prev_pos, line_length, pixel_size)
           when ChunkyPNG::FILTER_AVERAGE then decode_png_str_scanline_average(stream, pos, prev_pos, line_length, pixel_size)
