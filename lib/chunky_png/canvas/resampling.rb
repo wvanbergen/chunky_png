@@ -44,7 +44,7 @@ module ChunkyPNG
         # 2 * new_width
         base_step = width / new_width
         err_step = (width % new_width) << 1
-        denominator = (new_width) << 1
+        denominator = new_width << 1
 
         # Initial pixel
         index = (width - new_width) / denominator

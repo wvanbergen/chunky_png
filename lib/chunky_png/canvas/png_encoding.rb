@@ -245,14 +245,16 @@ module ChunkyPNG
       def encode_png_pixels_to_scanline_indexed_1bit(pixels)
         chars = []
         pixels.each_slice(8) do |p1, p2, p3, p4, p5, p6, p7, p8|
-          chars << ((encoding_palette.index(p1) << 7) |
-                    (encoding_palette.index(p2) << 6) |
-                    (encoding_palette.index(p3) << 5) |
-                    (encoding_palette.index(p4) << 4) |
-                    (encoding_palette.index(p5) << 3) |
-                    (encoding_palette.index(p6) << 2) |
-                    (encoding_palette.index(p7) << 1) |
-                    (encoding_palette.index(p8)))
+          chars << (
+            (encoding_palette.index(p1) << 7) |
+            (encoding_palette.index(p2) << 6) |
+            (encoding_palette.index(p3) << 5) |
+            (encoding_palette.index(p4) << 4) |
+            (encoding_palette.index(p5) << 3) |
+            (encoding_palette.index(p6) << 2) |
+            (encoding_palette.index(p7) << 1) |
+            encoding_palette.index(p8)
+          )
         end
         chars.pack('xC*')
       end
@@ -263,10 +265,12 @@ module ChunkyPNG
       def encode_png_pixels_to_scanline_indexed_2bit(pixels)
         chars = []
         pixels.each_slice(4) do |p1, p2, p3, p4|
-          chars << ((encoding_palette.index(p1) << 6) |
-                    (encoding_palette.index(p2) << 4) |
-                    (encoding_palette.index(p3) << 2) |
-                    (encoding_palette.index(p4)))
+          chars << (
+            (encoding_palette.index(p1) << 6) |
+            (encoding_palette.index(p2) << 4) |
+            (encoding_palette.index(p3) << 2) |
+            encoding_palette.index(p4)
+          )
         end
         chars.pack('xC*')
       end
