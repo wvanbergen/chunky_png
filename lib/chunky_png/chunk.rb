@@ -232,9 +232,8 @@ module ChunkyPNG
       #
       # @return [Integer] The color to replace with fully transparent pixels.
       def truecolor_entry(bit_depth)
-        values = content.unpack('nnn').map do |c|
-          ChunkyPNG::Canvas.send(:"decode_png_resample_#{bit_depth}bit_value", c)
-        end
+        decode_method_name = :"decode_png_resample_#{bit_depth}bit_value"
+        values = content.unpack('nnn').map { |c| ChunkyPNG::Canvas.send(decode_method_name, c) }
         ChunkyPNG::Color.rgb(*values)
       end
 

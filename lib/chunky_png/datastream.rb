@@ -125,7 +125,7 @@ module ChunkyPNG
       yield(palette_chunk)      if palette_chunk
       yield(transparency_chunk) if transparency_chunk
       yield(physical_chunk)     if physical_chunk
-      data_chunks.each  { |chunk| yield(chunk) }
+      data_chunks.each { |chunk| yield(chunk) }
       yield(end_chunk)
     end
 

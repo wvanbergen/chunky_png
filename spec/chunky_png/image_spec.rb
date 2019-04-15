@@ -23,9 +23,7 @@ describe ChunkyPNG::Image do
     end
 
     it "should load empty images correctly" do
-      expect do
-        ChunkyPNG::Image.from_file(resource_file('empty.png'))
-      end.to_not raise_error
+      expect { ChunkyPNG::Image.from_file(resource_file('empty.png')) }.to_not raise_error
     end
   end
 end
