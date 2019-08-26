@@ -80,7 +80,12 @@ background processing library.
 
 The library is written by Willem van Bergen for Floorplanner.com, and released
 under the MIT license (see LICENSE). Please contact me for questions or
-remarks. Patches are greatly appreciated!
+remarks. 
+
+I generally consider this library to be feature complete. I will gladly accept 
+patches to fix bugs and improve performance, but I will generally be hesitant 
+to accept new features or API endpoints. Before contributing, please read 
+[CONTRIBUTING.rdoc](CONTRIBUTING.rdoc) that explains this in more detail.
 
 Please check out CHANGELOG.rdoc to see what changed in all versions.
 
