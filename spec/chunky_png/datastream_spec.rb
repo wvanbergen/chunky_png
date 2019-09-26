@@ -39,10 +39,18 @@ describe ChunkyPNG::Datastream do
       expect(ds.metadata["Copyright"]).to eql "Copyright Willem van Schaik, Singapore 1995-96"
     end
 
-    it "ignores iTXt chunks" do
+    it "handles iTXt chunks specially" do
       filename = resource_file("itxt_chunk.png")
       ds = ChunkyPNG::Datastream.from_file(filename)
-      expect(ds.metadata).to be_empty
+      expect(ds.metadata).to eq({
+        "coach" => ChunkyPNG::Chunk::InternationalText.new(
+          "coach",
+          "US extracurricular sports teacher at a school (UK: PE teacher) lowest class on a passenger aircraft (UK: economy)",
+          "en-us",
+          "trainer",
+          ChunkyPNG::COMPRESSED_CONTENT,
+        )
+      })
     end
   end
 

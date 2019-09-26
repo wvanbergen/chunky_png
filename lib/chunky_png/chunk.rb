@@ -69,6 +69,10 @@ module ChunkyPNG
         attributes.each { |k, v| send("#{k}=", v) }
       end
 
+      def ==(other)
+        content == other.content
+      end
+
       # Writes the chunk to the IO stream, using the provided content.
       # The checksum will be calculated and appended to the stream.
       # @param io [IO] The IO stream to write to.

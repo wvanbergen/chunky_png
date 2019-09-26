@@ -50,6 +50,7 @@ avatar.save('composited.png', :fast_rgba) # Force the fast saving routine.
 image = ChunkyPNG::Image.from_file('with_metadata.png')
 puts image.metadata['Title']
 image.metadata['Author'] = 'Willem van Bergen'
+image.metadata['custom_chunk'] = ChunkyPNG::Chunk::InternationalText.new('custom_chunk', "Hola!", "es")
 image.save('with_metadata.png') # Overwrite file
 
 # Low level access to PNG chunks
