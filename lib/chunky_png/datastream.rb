@@ -9,7 +9,7 @@ module ChunkyPNG
   # @see ChunkyPNG::Chunk
   class Datastream
     # The signature that each PNG file or stream should begin with.
-    SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10].pack("C8").force_encoding(Encoding::BINARY).freeze
+    SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10].pack("C8").force_encoding(::Encoding::BINARY).freeze
 
     # The header chunk of this datastream.
     # @return [ChunkyPNG::Chunk::Header]
@@ -72,7 +72,7 @@ module ChunkyPNG
       # @param [IO] io The stream to read from.
       # @return [ChunkyPNG::Datastream] The loaded datastream instance.
       def from_io(io)
-        io.set_encoding(Encoding::BINARY)
+        io.set_encoding(::Encoding::BINARY)
         verify_signature!(io)
 
         ds = new
