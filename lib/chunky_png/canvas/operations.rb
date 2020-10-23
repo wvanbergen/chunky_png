@@ -1,3 +1,5 @@
+# frozen-string-literal: true
+
 module ChunkyPNG
   class Canvas
     # The ChunkyPNG::Canvas::Operations module defines methods to perform

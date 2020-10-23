@@ -1,3 +1,5 @@
+# frozen-string-literal: true
+
 # Basic requirements from standard library
 require "set"
 require "zlib"
@@ -138,16 +140,10 @@ module ChunkyPNG
   class UnitsUnknown < ChunkyPNG::Exception
   end
 
-  # Empty byte array. This basically is an empty string, but with the encoding
-  # set correctly to ASCII-8BIT (binary) in Ruby 1.9.
-  # @return [String] An empty string, with encoding set to binary in Ruby 1.9
-  # @private
-  EMPTY_BYTEARRAY = "".force_encoding(::Encoding::BINARY).freeze
-
   # Null-byte, with the encoding set correctly to ASCII-8BIT (binary) in Ruby 1.9.
   # @return [String] A binary string, consisting of one NULL-byte.
   # @private
-  EXTRA_BYTE = "\0".force_encoding(::Encoding::BINARY).freeze
+  EXTRA_BYTE = "\0".b
 end
 
 require "chunky_png/version"

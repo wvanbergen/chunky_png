@@ -1,3 +1,5 @@
+# frozen-string-literal: true
+
 module ChunkyPNG
   # The Datastream class represents a PNG formatted datastream. It supports
   # both reading from and writing to strings, streams and files.
@@ -155,12 +157,6 @@ module ChunkyPNG
     ##################################################################################
     # WRITING DATASTREAMS
     ##################################################################################
-
-    # Returns an empty stream using binary encoding that can be used as stream to encode to.
-    # @return [String] An empty, binary string.
-    def self.empty_bytearray
-      ChunkyPNG::EMPTY_BYTEARRAY.dup
-    end
 
     # Writes the datastream to the given output stream.
     # @param [IO] io The output stream to write to.
