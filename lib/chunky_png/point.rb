@@ -1,3 +1,5 @@
+# frozen-string-literal: true
+
 module ChunkyPNG
   # Factory method to create {ChunkyPNG::Point} instances.
   #

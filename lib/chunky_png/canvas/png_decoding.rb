@@ -1,3 +1,5 @@
+# frozen-string-literal: true
+
 module ChunkyPNG
   class Canvas
     # The PNGDecoding contains methods for decoding PNG datastreams to create a
@@ -270,7 +272,7 @@ module ChunkyPNG
       # @params (see #decode_png_pixels_from_scanline_indexed_1bit)
       # @return (see #decode_png_pixels_from_scanline_indexed_1bit)
       def decode_png_pixels_from_scanline_truecolor_8bit(stream, pos, width, _decoding_palette)
-        stream.unpack("@#{pos + 1}" << ("NX" * width)).map { |c| c | 0x000000ff }
+        stream.unpack("@#{pos + 1}#{"NX" * width}").map { |c| c | 0x000000ff }
       end
 
       # Decodes a scanline of a 16-bit, true color image into a row of pixels.

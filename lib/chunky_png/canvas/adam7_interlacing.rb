@@ -1,3 +1,5 @@
+# frozen-string-literal: true
+
 module ChunkyPNG
   class Canvas
     # Methods for decoding and encoding Adam7 interlacing.

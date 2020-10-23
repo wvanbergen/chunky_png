@@ -1,3 +1,5 @@
+# frozen-string-literal: true
+
 module ChunkyPNG
   class Canvas
     # Methods to quickly load a canvas from a stream, encoded in RGB, RGBA, BGR or ABGR format.
@@ -51,7 +53,7 @@ module ChunkyPNG
       def from_bgr_stream(width, height, stream)
         string = ChunkyPNG::EXTRA_BYTE.dup # Add a first byte to the first BGR triple.
         string << (stream.respond_to?(:read) ? stream.read(3 * width * height) : stream.to_s[0, 3 * width * height])
-        pixels = string.unpack("@1" << ("XV" * (width * height))).map { |color| color | 0x000000ff }
+        pixels = string.unpack("@1#{"XV" * (width * height)}").map { |color| color | 0x000000ff }
         new(width, height, pixels)
       end
 

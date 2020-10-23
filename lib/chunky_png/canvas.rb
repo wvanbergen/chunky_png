@@ -1,3 +1,5 @@
+# frozen-string-literal: true
+
 require "chunky_png/canvas/png_encoding"
 require "chunky_png/canvas/png_decoding"
 require "chunky_png/canvas/adam7_interlacing"

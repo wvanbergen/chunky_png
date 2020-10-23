@@ -1,3 +1,5 @@
+# frozen-string-literal: true
+
 module ChunkyPNG
   class Canvas
     # The ChunkyPNG::Canvas::Resampling module defines methods to perform image resampling to

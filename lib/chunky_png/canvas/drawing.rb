@@ -1,3 +1,5 @@
+# frozen-string-literal: true
+
 module ChunkyPNG
   class Canvas
     # Module that adds some primitive drawing methods to {ChunkyPNG::Canvas}.

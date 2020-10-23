@@ -1,3 +1,5 @@
+# frozen-string-literal: true
+
 module ChunkyPNG
   # Creates a {ChunkyPNG::Dimension} instance using arguments that can be interpreted
   # as width and height.

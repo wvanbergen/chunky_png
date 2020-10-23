@@ -1,3 +1,5 @@
+# frozen-string-literal: true
+
 module ChunkyPNG
   class Canvas
     # Methods for encoding a Canvas instance into a PNG datastream.
@@ -171,7 +173,7 @@ module ChunkyPNG
       # @param [Integer] filtering The filtering method to use.
       # @return [String] The PNG encoded canvas as string.
       def encode_png_image_without_interlacing(color_mode, bit_depth = 8, filtering = ChunkyPNG::FILTER_NONE)
-        stream = ChunkyPNG::Datastream.empty_bytearray
+        stream = "".b
         encode_png_image_pass_to_stream(stream, color_mode, bit_depth, filtering)
         stream
       end
@@ -187,7 +189,7 @@ module ChunkyPNG
       # @param [Integer] filtering The filtering method to use.
       # @return [String] The PNG encoded canvas as string.
       def encode_png_image_with_interlacing(color_mode, bit_depth = 8, filtering = ChunkyPNG::FILTER_NONE)
-        stream = ChunkyPNG::Datastream.empty_bytearray
+        stream = "".b
         0.upto(6) do |pass|
           subcanvas = self.class.adam7_extract_pass(pass, self)
           subcanvas.encoding_palette = encoding_palette
