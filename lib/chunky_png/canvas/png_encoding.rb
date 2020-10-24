@@ -20,7 +20,7 @@ module ChunkyPNG
     # before the compression step.
     #
     # @see ChunkyPNG::Canvas::PNGDecoding
-    # @see http://www.w3.org/TR/PNG/ The W3C PNG format specification
+    # @see https://www.w3.org/TR/PNG/ The W3C PNG format specification
     module PNGEncoding
       # The palette used for encoding the image.This is only in used for images
       # that get encoded using indexed colors.

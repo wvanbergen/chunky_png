@@ -27,7 +27,7 @@ module ChunkyPNG
     # combined to form the original images.
     #
     # @see ChunkyPNG::Canvas::PNGEncoding
-    # @see http://www.w3.org/TR/PNG/ The W3C PNG format specification
+    # @see https://www.w3.org/TR/PNG/ The W3C PNG format specification
     module PNGDecoding
       # Decodes a Canvas from a PNG encoded string.
       # @param [String] str The string to read from.

@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
     alpha composition and cropping. Finally, it can import from and export to RMagick for
     interoperability.
 
-    Also, have a look at OilyPNG at http://github.com/wvanbergen/oily_png. OilyPNG is a
+    Also, have a look at OilyPNG at https://github.com/wvanbergen/oily_png. OilyPNG is a
     drop in mixin module that implements some of the ChunkyPNG algorithms in C, which
     provides a massive speed boost to encoding and decoding.
   EOT

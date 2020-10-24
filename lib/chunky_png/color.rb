@@ -190,7 +190,7 @@ module ChunkyPNG
     # @param [Fixnum] alpha Defaults to opaque (255).
     # @return [Integer] The newly constructed color value.
     # @raise [ArgumentError] if the hsv triple is invalid.
-    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    # @see https://en.wikipedia.org/wiki/HSL_and_HSV
     def from_hsv(hue, saturation, value, alpha = 255)
       raise ArgumentError, "Hue must be between 0 and 360" unless (0..360).cover?(hue)
       raise ArgumentError, "Saturation must be between 0 and 1" unless (0..1).cover?(saturation)
@@ -216,7 +216,7 @@ module ChunkyPNG
     # @param [Fixnum] alpha Defaults to opaque (255).
     # @return [Integer] The newly constructed color value.
     # @raise [ArgumentError] if the hsl triple is invalid.
-    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    # @see https://en.wikipedia.org/wiki/HSL_and_HSV
     def from_hsl(hue, saturation, lightness, alpha = 255)
       raise ArgumentError, "Hue #{hue} was not between 0 and 360" unless (0..360).cover?(hue)
       raise ArgumentError, "Saturation #{saturation} was not between 0 and 1" unless (0..1).cover?(saturation)
@@ -247,8 +247,7 @@ module ChunkyPNG
     # @param [Fixnum] chroma The associated chroma value.
     # @return [Array<Fixnum>] A scaled r,g,b triple. Scheme-dependent
     #    adjustments are still needed to reach the true r,g,b values.
-    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
-    # @see http://www.tomjewett.com/colors/hsb.html
+    # @see https://en.wikipedia.org/wiki/HSL_and_HSV
     # @private
     def cylindrical_to_cubic(hue, saturation, y_component, chroma)
       hue_prime = hue.fdiv(60)
@@ -592,7 +591,7 @@ module ChunkyPNG
     # @return [Array[2]] The value of the color (0-1)
     # @return [Array[3]] Optional fourth element for alpha, included if
     #    include_alpha=true (0-255)
-    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    # @see https://en.wikipedia.org/wiki/HSL_and_HSV
     def to_hsv(color, include_alpha = false)
       hue, chroma, max, _ = hue_and_chroma(color)
       value      = max
@@ -621,7 +620,7 @@ module ChunkyPNG
     # @return [Array<Fixnum>[2]] The lightness of the color (0-1)
     # @return [Array<Fixnum>[3]] Optional fourth element for alpha, included if
     #     include_alpha=true (0-255)
-    # @see http://en.wikipedia.org/wiki/HSL_and_HSV
+    # @see https://en.wikipedia.org/wiki/HSL_and_HSV
     def to_hsl(color, include_alpha = false)
       hue, chroma, max, min = hue_and_chroma(color)
       lightness  = 0.5 * (max + min)

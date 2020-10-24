@@ -46,7 +46,7 @@ The file documents the changes to this library over the different versions.
 === 1.3.4 - 2015-02-16
 
 - Assert compatibility with Ruby 2.2
-- Improved documentation using RDoc, so it is included on http://www.rubydoc.info/gems/chunky_png
+- Improved documentation using RDoc, so it is included on https://www.rubydoc.info/gems/chunky_png
 - Update chunkypng.com website; migrate some stuff from the wiki.
 
 === 1.3.3 - 2014-10-24
@@ -154,7 +154,7 @@ There are some API changes for this release. If you are using <tt>Canvas#compose
 - Added a list of HTML named colors. Get them by calling <tt>ChunkyPNG::Color(:teal)</tt> or <tt>ChunkyPNG::Color('red @ 0.8')</tt>
 - Added encoding support for 1-, 2-, and 4-bit grayscale images.
 - Cleaned up auto-detection of color mode settings. It will now choose 1 bit grayscale mode if an image only contains black and white. (The other low bitrate grayscale modes are never chosen automatically.)
-- RDoc improvements. See http://rdoc.info/gems/chunky_png/frames.
+- RDoc improvements. See https://rdoc.info/gems/chunky_png.
 - ChunkyPNG is now also tested on Ruby 1.8.6.
 
 === 0.12.0 - 2010-12-12
@@ -214,7 +214,7 @@ There are some API changes for this release. If you are using <tt>Canvas#compose
 
 === 0.7.3 - 2010-04-28
 
-- Based on the suggestion of [Dirkjan Bussink](http://github.com/dbussink), introduced custom exception classes:
+- Based on the suggestion of [Dirkjan Bussink](https://github.com/dbussink), introduced custom exception classes:
   - <tt>ChunkyPNG::SignatureMismatch</tt> is raised when the PNG signature could not be found. Usually this means the the file is not a PNG image.
   - <tt>ChunkyPNG::CRCMismatch</tt> is raised when the a CRC check for a chunk in the PNG file fails.
   - <tt>ChunkyPNG::NotSupported</tt> is raised when the PNG image uses a feature that ChunkyPNG does not support.

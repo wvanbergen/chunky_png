@@ -3,10 +3,10 @@ This library can read and write PNG files. It is written in pure Ruby for
 maximum portability. Let me rephrase: it does NOT require RMagick or any other
 memory leaking image library.
 
-- [Source code](http://github.com/wvanbergen/chunky_png/tree)
-- [RDoc](http://rdoc.info/gems/chunky_png/frames)
-- [Wiki](http://github.com/wvanbergen/chunky_png/wiki)
-- [Issue tracker](http://github.com/wvanbergen/chunky_png/issues)
+- [Source code](https://github.com/wvanbergen/chunky_png/tree/master)
+- [RDoc](https://rdoc.info/gems/chunky_png)
+- [Wiki](https://github.com/wvanbergen/chunky_png/wiki)
+- [Issue tracker](https://github.com/wvanbergen/chunky_png/issues)
 
 ## Features
 
@@ -25,7 +25,7 @@ memory leaking image library.
 - Works on every currently supported Ruby version (2.5+)
 - Interoperability with RMagick if you really have to.
 
-Also, have a look at [OilyPNG](http://github.com/wvanbergen/oily_png) which
+Also, have a look at [OilyPNG](https://github.com/wvanbergen/oily_png) which
 is a mixin module that implements some of the ChunkyPNG algorithms in C, which
 provides a massive speed boost to encoding and decoding.
 
@@ -59,11 +59,11 @@ png_stream.each_chunk { |chunk| p chunk.type }
 
 Also check out the screencast on the ChunkyPNG homepage by John Davison,
 which illustrates basic usage of the library on the [ChunkyPNG
-website](http://chunkypng.com/).
+website](https://chunkypng.com/).
 
 For more information, see the [project
 wiki](https://github.com/wvanbergen/chunky_png/wiki) or the [RDOC
-documentation](http://www.rubydoc.info/gems/chunky_png).
+documentation](https://www.rubydoc.info/gems/chunky_png).
 
 ## Security warning
 
@@ -80,11 +80,11 @@ background processing library.
 
 The library is written by Willem van Bergen for Floorplanner.com, and released
 under the MIT license (see LICENSE). Please contact me for questions or
-remarks. 
+remarks.
 
-I generally consider this library to be feature complete. I will gladly accept 
-patches to fix bugs and improve performance, but I will generally be hesitant 
-to accept new features or API endpoints. Before contributing, please read 
+I generally consider this library to be feature complete. I will gladly accept
+patches to fix bugs and improve performance, but I will generally be hesitant
+to accept new features or API endpoints. Before contributing, please read
 [CONTRIBUTING.rdoc](CONTRIBUTING.rdoc) that explains this in more detail.
 
 Please check out CHANGELOG.rdoc to see what changed in all versions.

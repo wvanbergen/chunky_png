@@ -119,6 +119,8 @@ module ChunkyPNG
     # PNG spec, except for color depth: Only 8-bit depth images are supported.
     # Note that it is still possible to access the chunk for such an image, but
     # ChunkyPNG will raise an exception if you try to access the pixel data.
+    #
+    # @see https://www.w3.org/TR/PNG/#11IHDR
     class Header < Base
       attr_accessor :width, :height, :depth, :color, :compression, :filtering, :interlace
 
@@ -168,6 +170,8 @@ module ChunkyPNG
 
     # The End (IEND) chunk indicates the last chunk of a PNG stream. It does
     # not contain any data.
+    #
+    # @see https://www.w3.org/TR/PNG/#11IEND
     class End < Base
       def initialize
         super("IEND")
@@ -195,6 +199,7 @@ module ChunkyPNG
     # The Palette (PLTE) chunk contains the image's palette, i.e. the
     # 8-bit RGB colors this image is using.
     #
+    # @see https://www.w3.org/TR/PNG/#11PLTE
     # @see ChunkyPNG::Chunk::Transparency
     # @see ChunkyPNG::Palette
     class Palette < Generic
@@ -212,6 +217,7 @@ module ChunkyPNG
     # Images having a color mode that already includes an alpha channel, this
     # chunk should not be included.
     #
+    # @see https://www.w3.org/TR/PNG/#11tRNS
     # @see ChunkyPNG::Chunk::Palette
     # @see ChunkyPNG::Palette
     class Transparency < Generic
@@ -251,7 +257,18 @@ module ChunkyPNG
       end
     end
 
+    # An image data (IDAT) chunk holds (part of) the compressed image pixel data.
+    #
+    # The data of an image can be split over multiple chunks, which will have to be combined
+    # and inflated in order to decode an image. See {{.combine_chunks}} to combine chunks
+    # to decode, and {{.split_in_chunks}} for encoding a pixeldata stream into IDAT chunks.
+    #
+    # @see https://www.w3.org/TR/PNG/#11IDAT
     class ImageData < Generic
+      # Combines the list of IDAT chunks and inflates their contents to produce the
+      # pixeldata stream for the image.
+      #
+      # @return [String] The combined, inflated pixeldata as binary string
       def self.combine_chunks(data_chunks)
         zstream = Zlib::Inflate.new
         data_chunks.each { |c| zstream << c.content }
@@ -260,6 +277,12 @@ module ChunkyPNG
         inflated
       end
 
+      # Splits and compresses a pixeldata stream into a list of IDAT chunks.
+      #
+      # @param data [String] The binary string of pixeldata
+      # @param level [Integer] The compression level to use.
+      # @param chunk_size [Integer] The maximum size of a chunk.
+      # @return Array<ChunkyPNG::Chunk::ImageData> The list of IDAT chunks.
       def self.split_in_chunks(data, level = Zlib::DEFAULT_COMPRESSION, chunk_size = 2147483647)
         streamdata = Zlib::Deflate.deflate(data, level)
         # TODO: Split long streamdata over multiple chunks
@@ -268,11 +291,12 @@ module ChunkyPNG
     end
 
     # The Text (tEXt) chunk contains keyword/value metadata about the PNG
-    # stream.  In this chunk, the value is stored uncompressed.
+    # stream. In this chunk, the value is stored uncompressed.
     #
     # The tEXt chunk only supports Latin-1 encoded textual data. If you need
     # UTF-8 support, check out the InternationalText chunk type.
     #
+    # @see https://www.w3.org/TR/PNG/#11tEXt
     # @see ChunkyPNG::Chunk::CompressedText
     # @see ChunkyPNG::Chunk::InternationalText
     class Text < Base
@@ -301,6 +325,7 @@ module ChunkyPNG
     # PNG stream. In this chunk, the value is compressed using Deflate
     # compression.
     #
+    # @see https://www.w3.org/TR/PNG/#11zTXt
     # @see ChunkyPNG::Chunk::CompressedText
     # @see ChunkyPNG::Chunk::InternationalText
     class CompressedText < Base
@@ -333,7 +358,7 @@ module ChunkyPNG
     # The Physical (pHYs) chunk specifies the intended pixel size or aspect
     # ratio for display of the image.
     #
-    # http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html#C.pHYs
+    # @see https://www.w3.org/TR/PNG/#11pHYs
     class Physical < Base
       attr_accessor :ppux, :ppuy, :unit
 
@@ -376,8 +401,7 @@ module ChunkyPNG
     # a translation of the keyword name. Finally, it supports bot compressed
     # and uncompressed values.
     #
-    # http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html#C.iTXt
-    #
+    # @see https://www.w3.org/TR/PNG/#11iTXt
     # @see ChunkyPNG::Chunk::Text
     # @see ChunkyPNG::Chunk::CompressedText
     class InternationalText < Base
@@ -393,7 +417,7 @@ module ChunkyPNG
         @compression = compression
       end
 
-      # Reads the tTXt chunk.
+      # Reads the iTXt chunk.
       # @param type [String] The four character chunk type indicator (= "iTXt").
       # @param content [String] The content read from the chunk.
       # @return [ChunkyPNG::Chunk::InternationalText] The new End chunk instance.
