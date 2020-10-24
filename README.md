@@ -1,5 +1,4 @@
-# ChunkyPNG [![Build Status](https://travis-ci.org/wvanbergen/chunky_png.svg?branch=master)](https://travis-ci.org/wvanbergen/chunky_png)
-
+# ChunkyPNG
 This library can read and write PNG files. It is written in pure Ruby for
 maximum portability. Let me rephrase: it does NOT require RMagick or any other
 memory leaking image library.
@@ -23,6 +22,7 @@ memory leaking image library.
   depending on the hardware)
 - Reasonably fast for Ruby standards, by only using integer math and a highly
   optimized saving routine.
+- Works on every currently supported Ruby version (2.5+)
 - Interoperability with RMagick if you really have to.
 
 Also, have a look at [OilyPNG](http://github.com/wvanbergen/oily_png) which
@@ -63,7 +63,7 @@ website](http://chunkypng.com/).
 
 For more information, see the [project
 wiki](https://github.com/wvanbergen/chunky_png/wiki) or the [RDOC
-documentation](http://www.rubydoc.info/gems/chunky_png/frames).
+documentation](http://www.rubydoc.info/gems/chunky_png).
 
 ## Security warning
 
