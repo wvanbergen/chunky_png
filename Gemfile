@@ -10,3 +10,13 @@ end
 platform :rbx do
   gem "rubysl"
 end
+
+group :jekyll do
+  gem "jekyll", "~> 3.3"
+  gem "kramdown-parser-gfm"
+end
+
+group :jekyll_plugins do
+  gem "jekyll-commonmark"
+  gem "jekyll-theme-cayman"
+end
