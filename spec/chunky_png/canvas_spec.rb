@@ -231,4 +231,10 @@ describe ChunkyPNG::Canvas do
       expect(subject.send(:replace_canvas!, 2, 2, [1, 2, 3, 4])).to equal(subject)
     end
   end
+
+  describe "#inspect" do
+    it "should give a string description of the canvas" do
+      expect(subject.inspect).to eql "<ChunkyPNG::Canvas 1x1 [\n\t[#ffffffff]\n]>"
+    end
+  end
 end

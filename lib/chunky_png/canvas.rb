@@ -297,7 +297,7 @@ module ChunkyPNG
     # @return [String] A nicely formatted string representation of this canvas.
     # @private
     def inspect
-      inspected = "<#{self.class.name} #{width}x#{height} ["
+      inspected = +"<#{self.class.name} #{width}x#{height} ["
       for y in 0...height
         inspected << "\n\t[" << row(y).map { |p| ChunkyPNG::Color.to_hex(p) }.join(" ") << "]"
       end
