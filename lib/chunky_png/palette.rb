@@ -12,7 +12,9 @@ module ChunkyPNG
   # explicit palette (stores as PLTE & tRNS chunks in a PNG file).
   #
   # @see ChunkyPNG::Color
-  class Palette < SortedSet
+  class Palette
+    include Enumerable
+
     # Builds a new palette given a set (Enumerable instance) of colors.
     #
     # @param enum [Enumerable<Integer>] The set of colors to include in this
@@ -21,9 +23,15 @@ module ChunkyPNG
     #   which they appeared in the palette chunk, so that this array can be
     #   used for decoding.
     def initialize(enum, decoding_map = nil)
-      super(enum)
+      @enum = Set.new enum.to_a
       @decoding_map = decoding_map if decoding_map
     end
+
+    def each(&blk)
+      @enum.each(&blk)
+    end
+
+    def size; @enum.size; end
 
     # Builds a palette instance from a PLTE chunk and optionally a tRNS chunk
     # from a PNG datastream.
