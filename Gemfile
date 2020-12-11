@@ -7,10 +7,6 @@ platforms :jruby do
   gem "jruby-openssl"
 end
 
-platform :rbx do
-  gem "rubysl"
-end
-
 group :jekyll do
   gem "jekyll", "~> 3.3"
   gem "kramdown-parser-gfm"
