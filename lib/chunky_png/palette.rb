@@ -12,7 +12,7 @@ module ChunkyPNG
   # explicit palette (stores as PLTE & tRNS chunks in a PNG file).
   #
   # @see ChunkyPNG::Color
-  class Palette < SortedSet
+  class Palette < Set
     # Builds a new palette given a set (Enumerable instance) of colors.
     #
     # @param enum [Enumerable<Integer>] The set of colors to include in this
@@ -21,8 +21,10 @@ module ChunkyPNG
     #   which they appeared in the palette chunk, so that this array can be
     #   used for decoding.
     def initialize(enum, decoding_map = nil)
-      super(enum)
+      super(enum.sort.freeze)
       @decoding_map = decoding_map if decoding_map
+      @encoding_map = {}
+      freeze
     end
 
     # Builds a palette instance from a PLTE chunk and optionally a tRNS chunk
@@ -135,7 +137,7 @@ module ChunkyPNG
     # @return [true, false] True if a encoding map was built when this palette
     #   was loaded.
     def can_encode?
-      !@encoding_map.nil?
+      !@encoding_map.empty?
     end
 
     # Returns a color, given the position in the original palette chunk.
@@ -176,8 +178,8 @@ module ChunkyPNG
     # @return [ChunkyPNG::Chunk::Palette] The PLTE chunk.
     # @see ChunkyPNG::Palette#can_encode?
     def to_plte_chunk
-      @encoding_map = {}
-      colors        = []
+      @encoding_map.clear
+      colors = []
 
       each_with_index do |color, index|
         @encoding_map[color] = index
