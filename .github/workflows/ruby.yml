@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: [ '2.5', '2.6', '2.7', 'ruby-head' ]
+        ruby: [ '2.5', '2.6', '2.7', '3.0', 'ruby-head' ]
 
     steps:
     - uses: actions/checkout@v2
