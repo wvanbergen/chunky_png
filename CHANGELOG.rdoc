@@ -7,6 +7,21 @@ The file documents the changes to this library over the different versions.
 
 === Unreleased changes
 
+=== 1.4.0 - 2020-12-28
+
+- Add compatibility for Ruby 3.0. 
+
+=== 1.3.14 - 2018-11-21
+
+- Fix Canvas#inspect to not modify frozen string literal.
+
+=== 1.3.13 - 2018-11-21
+
+- Add <tt>frozen-string-literal: true</tt> to all source files.
+- Remove some backfills that were needed only for Ruby 1.8 compatibility.
+
+=== 1.3.12 - 2018-11-21
+
 - Implemented <tt>ChunkyPNG::Dimension#hash</tt> to fix some specs after a behavior change in RSpec.
 
 === 1.3.11 - 2018-11-21
