@@ -14,11 +14,13 @@ describe ChunkyPNG::Image do
       image = ChunkyPNG::Image.new(10, 10)
       image.metadata["Title"]  = "My amazing icon!"
       image.metadata["Author"] = "Willem van Bergen"
+      image.metadata["iTXt_fun"] = ChunkyPNG::Chunk::InternationalText.new("iTXt_fun", "Hola!", "es")
       image.save(filename)
 
       metadata = ChunkyPNG::Datastream.from_file(filename).metadata
-      expect(metadata["Title"]).to  eql "My amazing icon!"
-      expect(metadata["Author"]).to eql "Willem van Bergen"
+      expect(metadata["Title"]).to    eql "My amazing icon!"
+      expect(metadata["Author"]).to   eql "Willem van Bergen"
+      expect(metadata["iTXt_fun"]).to eq  ChunkyPNG::Chunk::InternationalText.new("iTXt_fun", "Hola!", "es")
     end
 
     it "should load empty images correctly" do

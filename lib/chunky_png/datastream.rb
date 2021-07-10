@@ -141,11 +141,10 @@ module ChunkyPNG
     # Returns all the textual metadata key/value pairs as hash.
     # @return [Hash] A hash containing metadata fields and their values.
     def metadata
-      metadata = {}
-      other_chunks.each do |chunk|
-        metadata[chunk.keyword] = chunk.value if chunk.respond_to?(:keyword) && chunk.respond_to?(:value)
+      other_chunks.each_with_object({}) do |chunk, hash|
+        hash[chunk.keyword] = chunk.value if chunk.respond_to?(:keyword) && chunk.respond_to?(:value)
+        hash[chunk.keyword] = chunk       if chunk.respond_to?(:keyword) && chunk.respond_to?(:text)
       end
-      metadata
     end
 
     # Returns the uncompressed image data, combined from all the IDAT chunks
