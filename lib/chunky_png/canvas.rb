@@ -74,7 +74,7 @@ module ChunkyPNG
     # @overload initialize(width, height, initial)
     #   @param [Integer] width The width in pixels of this canvas
     #   @param [Integer] height The height in pixels of this canvas
-    #   @param [Array<Integer>] initial The initial pizel values. Must be an
+    #   @param [Array<Integer>] initial The initial pixel values. Must be an
     #     array with <tt>width * height</tt> elements.
     def initialize(width, height, initial = ChunkyPNG::Color::TRANSPARENT)
       @width, @height = width, height
