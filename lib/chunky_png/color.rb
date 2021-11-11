@@ -667,6 +667,7 @@ module ChunkyPNG
     def to_truecolor_alpha_bytes(color)
       [r(color), g(color), b(color), a(color)]
     end
+    alias to_rgba to_truecolor_alpha_bytes
 
     # Returns an array with the separate RGB values for this color. The alpha
     # channel will be discarded.
@@ -676,6 +677,7 @@ module ChunkyPNG
     def to_truecolor_bytes(color)
       [r(color), g(color), b(color)]
     end
+    alias to_rgb to_truecolor_bytes
 
     # Returns an array with the grayscale teint value for this color.
     #
