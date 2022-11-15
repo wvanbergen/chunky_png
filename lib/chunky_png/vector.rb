@@ -166,7 +166,7 @@ module ChunkyPNG
     # @return [Array<ChunkyPNG::Point>] The list of points interpreted from the input array.
     def self.multiple_from_array(source)
       return [] if source.empty?
-      if source.first.is_a?(Numeric) || source.first =~ /^\d+$/
+      if source.first.is_a?(Numeric) || ( source.first.respond_to?(:=~) && source.first =~ /^\d+$/ )
         raise ArgumentError, "The points array is expected to have an even number of items!" if source.length % 2 != 0
 
         points = []
