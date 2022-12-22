@@ -237,4 +237,9 @@ describe ChunkyPNG::Canvas do
       expect(subject.inspect).to eql "<ChunkyPNG::Canvas 1x1 [\n\t[#ffffffff]\n]>"
     end
   end
+  
+  it "should behave properly with the new Ruby 3.0 Ractors" do
+    img = Ractor.new { ChunkyPNG::Canvas.from_file(resource_file("operations.png")) }.take
+    expect(img).to eql ChunkyPNG::Canvas.from_file(resource_file("operations.png"))
+  end
 end
