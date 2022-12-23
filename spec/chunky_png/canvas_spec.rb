@@ -239,7 +239,9 @@ describe ChunkyPNG::Canvas do
   end
   
   it "should behave properly with the new Ruby 3.0 Ractors" do
-    img = Ractor.new { ChunkyPNG::Canvas.from_file(resource_file("operations.png")) }.take
-    expect(img).to eql ChunkyPNG::Canvas.from_file(resource_file("operations.png"))
+    filename = resource_file("operations.png")
+    ractor = Ractor.new { ChunkyPNG::Canvas.from_file(Ractor.receive) }
+    ractor.send(filename)
+    expect(ractor.take).to eql ChunkyPNG::Canvas.from_file(filename)
   end
 end
