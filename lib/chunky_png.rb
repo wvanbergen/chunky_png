@@ -143,7 +143,7 @@ module ChunkyPNG
   # Null-byte, with the encoding set correctly to ASCII-8BIT (binary) in Ruby 1.9.
   # @return [String] A binary string, consisting of one NULL-byte.
   # @private
-  EXTRA_BYTE = "\0".b
+  EXTRA_BYTE = "\0".b.freeze
 end
 
 require "chunky_png/version"

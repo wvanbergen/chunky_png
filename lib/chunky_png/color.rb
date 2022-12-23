@@ -888,7 +888,7 @@ module ChunkyPNG
       whitesmoke: 0xf5f5f500,
       yellow: 0xffff0000,
       yellowgreen: 0x9acd3200,
-    }
+    }.freeze
 
     # Gets a color value based on a HTML color name.
     #

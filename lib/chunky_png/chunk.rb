@@ -467,6 +467,6 @@ module ChunkyPNG
       "zTXt" => CompressedText,
       "iTXt" => InternationalText,
       "pHYs" => Physical,
-    }
+    }.freeze
   end
 end
